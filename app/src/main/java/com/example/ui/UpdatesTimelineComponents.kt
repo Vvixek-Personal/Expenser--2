@@ -1,0 +1,781 @@
+package com.example.ui
+
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.ui.theme.*
+import java.text.SimpleDateFormat
+import java.util.*
+
+enum class SpecCategory(val label: String, val tagColor: Color) {
+    FEATURE("FEATURE", Color(0xFF10B981)),
+    ANIMATION("ANIMATION", Color(0xFFEC4899)),
+    UI_UX("UI / UX", Color(0xFF6366F1)),
+    PERFORMANCE("PERFORMANCE", Color(0xFF0EA5E9)),
+    SECURITY("SECURITY", Color(0xFFF59E0B)),
+    SYSTEM("SYSTEM", Color(0xFF8B5CF6))
+}
+
+data class UpdateSpecification(
+    val category: SpecCategory,
+    val title: String,
+    val description: String
+)
+
+data class AppReleaseUpdate(
+    val version: String,
+    val releaseTag: String,
+    val releaseDate: String,
+    val relativeTime: String,
+    val timestamp: Long,
+    val headline: String,
+    val specifications: List<UpdateSpecification>,
+    val isLatest: Boolean = false,
+    val startDate: String = releaseDate,
+    val endDate: String = releaseDate
+)
+
+/**
+ * Each release is anchored to a REAL, FIXED calendar date (set once, the day it shipped) — never
+ * to "now minus N days". The previous version computed every release's date from
+ * System.currentTimeMillis() on every app launch, which meant "Yesterday" silently became "2 days
+ * ago", then "3 days ago", forever, and the release's displayed calendar date itself drifted
+ * forward a day at a time instead of staying fixed at when it actually shipped.
+ *
+ * `epochDay(year, month, day)` below builds a fixed UTC-midnight timestamp for a release date.
+ * `relativeLabel(timestamp)` computes "Today" / "Yesterday" / "N days ago" / a calendar date for
+ * anything older than a month, freshly, from that FIXED timestamp compared to the real current
+ * time — so the label correctly advances day by day instead of being wrong forever.
+ *
+ * To ship a new release: add ONE new epochDay(...) anchor with today's real date. Never reuse
+ * "now" for a release's timestamp.
+ */
+private fun epochDay(year: Int, month: Int, day: Int): Long {
+    val cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+    cal.clear()
+    cal.set(year, month - 1, day, 0, 0, 0)
+    return cal.timeInMillis
+}
+
+private fun relativeLabel(releaseTimestamp: Long, now: Long = System.currentTimeMillis()): String {
+    val sdf = SimpleDateFormat("MMM d, yyyy", Locale.US).apply {
+        timeZone = TimeZone.getTimeZone("UTC")
+    }
+    return sdf.format(Date(releaseTimestamp))
+}
+
+fun getAppUpdatesHistory(): List<AppReleaseUpdate> {
+    val tsV128 = epochDay(2026, 9, 29)
+    val tsV127 = epochDay(2026, 9, 28)
+    val tsV126 = epochDay(2026, 9, 16)
+    val tsV125 = epochDay(2026, 8, 15)
+
+    return listOf(
+        AppReleaseUpdate(
+            version = "V1.28",
+            releaseTag = "CONTINUE",
+            releaseDate = "29th Sept - Continue",
+            relativeTime = "Today",
+            timestamp = tsV128,
+            startDate = "29th Sept",
+            endDate = "Continue",
+            headline = "Local Only vs Online Cloud Sync Architecture, Proper Sync Now Action Engine, Exact Long Minor Units, Unified Single-Ledger Architecture, WorkManager Bill Reminders, Cryptographic PIN Storage, Full-App UI Animations, 3D Isometric Logo, Swipe-to-Fullscreen Sidebar, Delivery Truck Loader, Preference Persistence & Lock Isolation Fixes",
+            isLatest = true,
+            specifications = listOf(
+                UpdateSpecification(
+                    category = SpecCategory.FEATURE,
+                    title = "Local Only vs Online Cloud Sync Architecture (Privacy & Cloud Invariant)",
+                    description = "Introduced a dedicated, prominent option between 100% Offline Local Storage and Online Cloud Sync. In Local Only mode, accounts, transactions, budgets, and goals remain strictly on-device in Room SQLite with zero external data transmission. In Online Cloud Sync mode, records securely synchronize with Firebase Cloud Firestore."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.FEATURE,
+                    title = "Proper 'Sync Now' & 'Restore from Cloud' Action Engine",
+                    description = "Engineered proper high-visibility M3 action buttons in Backup & Restore and Data Management screens: 'Sync Now to Cloud' with tactile spring feedback, live progress indicator, status badge ('Synced', 'Offline - Local', 'Syncing'), and last-synced timestamp, paired with an atomic 'Restore from Cloud Vault' confirmation dialog."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SYSTEM,
+                    title = "Offline-First Cloud Sync Resilience",
+                    description = "Integrated robust network exception handling (UnknownHostException, SocketTimeoutException, Unavailable) ensuring cloud synchronization never blocks, breaks, or crashes offline financial bookkeeping. Unsynced records remain safely in local Room database until connectivity is re-established."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SECURITY,
+                    title = "Unified Preference Architecture & Launch Persistence Shield (Bug 1 Fix)",
+                    description = "Eliminated SharedPreferences conflict by routing FinanceViewModel, FinanceAppScreen analytics filters, and BaseActivity dynamic text scaling to AppSettingsManager.PREFS_NAME ('app_settings_prefs'). Prevents startup data wipes of user name, daily streak, DOB, income, and custom categories."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SECURITY,
+                    title = "PinLockScreen Touch Event Interception & Accessibility Isolation (Bug 2 Fix)",
+                    description = "Added awaitPointerEvent pointerInput consumption loop on PinLockScreen root Box to eliminate tap-through events reaching underlying dashboard cards while locked, plus clearAndSetSemantics accessibility isolation against screen readers."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SECURITY,
+                    title = "Security-Gated Dialog Windows & Streak Animation Scheduling (Bug 3 Fix)",
+                    description = "Gated DailyStreakCelebrationDialog, OnboardingNameDialog, FirstRunPinSetupDialog, ChangePinDialog, and startup loaders behind !locked verification (isAppLocked && !appPin.isNullOrBlank()), ensuring celebration dialogs only present after successful PIN authentication."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.ANIMATION,
+                    title = "Uiverse.io Physics-Driven Delivery Truck Loading Engine",
+                    description = "Implemented high-fidelity Compose animation faithfully translating vinodjangid07's Uiverse.io delivery truck loader: 200dp x 100dp container with clipped overflow, 130dp truck body with 1s linear infinite suspension bobbing (0dp -> 3dp -> 0dp), 24dp rotating alloy wheels with emerald hubcaps, 1.4s linear infinite road translation with dynamic white dashes, and 90dp street lamp post with warm illuminated beam. Integrated across app launch, encrypted backup code generation, data restoration, and interactive testing in About screen with full LocalAnimationsEnabled power-saver compliance."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.UI_UX,
+                    title = "Swipe-to-Fullscreen Expandable Navigation Sidebar",
+                    description = "Engineered two-tier dynamic modal drawer gestures: opening from edge renders standard 330dp drawer with 24dp rounded corners, and a second right swipe seamlessly expands the drawer to edge-to-edge full screen with Spring stiffness medium-low. Swiping left once shrinks to standard width and swiping again closes. Back navigation shrinks first before dismissing, and layout wraps within 600dp max width for tablets."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.UI_UX,
+                    title = "Custom 3D Isometric Gemstone & Shield Fintech Logo",
+                    description = "Designed and installed a bespoke luxury fintech logo featuring a 3D isometric geometric gemstone shield with glowing emerald facets and gold coin accents. Configured adaptive launcher layer-list in 66dp safe zone on #0A0F1D background, generated full-density raster PNG mipmaps (mdpi to xxxhdpi) with circular masked round icons, and embedded the brand mark in the drawer and About screen."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.ANIMATION,
+                    title = "Full-App UI & Component Interactive Animation Suite",
+                    description = "Engineered responsive spring physics across every UI component: tactile touch bounce feedback (bouncyPress, bouncyClickable) on cards, chips, and buttons, numeric count-up animations (animateAmountFloat) for net balance, income, and expense stats, animated glowing ambient brush gradients, and liquid-glass screen transitions respecting LocalAnimationsEnabled."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.ANIMATION,
+                    title = "Advanced Spring & Staggered Entrance Animation Engine",
+                    description = "Enhanced app-wide animation suite with spring physics, interactive bouncy press feedback, staggered entrance animations, animated shimmering glow brushes, and smooth count-up number transitions respecting LocalAnimationsEnabled and power-saver states."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.ANIMATION,
+                    title = "System-Aware Animation Engine & Power Saver Loop Rest (Fix #2)",
+                    description = "Made the animations toggle genuinely functional across the app: synchronized isAnimationEnabled with AppSettingsManager persistence to prevent toggle reset on restart, wired Android global animator duration scale detection (Settings.Global.ANIMATOR_DURATION_SCALE), provided LocalAnimationsEnabled via CompositionLocalProvider at root, and replaced infinite transitions with rememberLoopFloat to immediately cease frame rendering and hold resting values when animations are turned off."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.FEATURE,
+                    title = "Pre-Due Recurring Bill Reminders & Nudge Engine",
+                    description = "Integrated RecurringBillReminderScheduler to notify users 1 day before recurring bills (rent, salary, subscriptions) are due. Automatically reschedules nudges when RecurringProcessor advances nextDueDate."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SYSTEM,
+                    title = "Safe Notification ID Hashing",
+                    description = "Replaced 32-bit truncation with Long.hashCode() for collision-resistant notification IDs, preventing manual reminders and recurring bill nudges from overwriting each other."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SECURITY,
+                    title = "End-to-End Cryptographic PIN Creation & Auto Migration (Issue #1)",
+                    description = "Eliminated plaintext PIN storage: wired setAppPin() and AppSettingsIntent.SetPin to hash passcodes using PBKDF2WithHmacSHA256 (210,000 iterations) with Android Keystore HMAC pepper (v3/v2 format) before writing to SharedPreferences. Added automatic one-time migration for legacy unhashed PINs on startup and transparent rehash on unlock via needsRehash()."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SYSTEM,
+                    title = "Unified Single Ledger Architecture (Issue #9)",
+                    description = "Consolidated parallel duplicate tables into a unified single-source-of-truth expenses ledger with accountId, kind, and goalId relational integrity, backed by dynamic reactive account balance computation."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SECURITY,
+                    title = "Complete Forgot-PIN Security Reset & Full Storage Wipe",
+                    description = "Engineered comprehensive emergency reset: clears all database tables in one transaction, deletes all local recovery snapshots, pre-migration database files, receipt images, user avatars, cache files, cancels all scheduled WorkManager reminders, and removes PIN credentials last."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SYSTEM,
+                    title = "WorkManager Scheduled Bill Reminders (Issue #7)",
+                    description = "Integrated WorkManager OneTimeWorkRequest scheduling with exact due-date delays, replacing false creation-time notifications with real background notifications when bills are due."
+                )
+            )
+        ),
+        AppReleaseUpdate(
+            version = "v1.27",
+            releaseTag = "MEGA UPDATE",
+            releaseDate = "25 Sept - 28 Sept",
+            relativeTime = "Sept 28, 2026",
+            timestamp = tsV127,
+            startDate = "25 Sept",
+            endDate = "28 Sept",
+            headline = "Zero-Data-Loss Database Engine, OWASP PIN Security & Boot Lockout, Auto-Lock, Financial Health Score & EMI Calculator",
+            isLatest = false,
+            specifications = listOf(
+                UpdateSpecification(
+                    category = SpecCategory.SECURITY,
+                    title = "Firebase AI Logic & App Check Architecture",
+                    description = "Migrated AI functionality to Firebase AI Logic with App Check support, removing static API keys."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SECURITY,
+                    title = "PBKDF2-210k PIN Hashing & Boot-Count Lockout",
+                    description = "Upgraded app lock security to OWASP standards with PBKDF2 hashing and secure recovery."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.FEATURE,
+                    title = "Real-Time Financial Health Score & EMI Calculator",
+                    description = "Dynamic 0-100 diagnostic engine on dashboard with loan amortization calculator."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SYSTEM,
+                    title = "Multi-Currency Dynamic Stamping & Normalization",
+                    description = "All transaction creation paths stamp active currency code with cross-currency statistics aggregation."
+                )
+            )
+        ),
+        AppReleaseUpdate(
+            version = "v1.26",
+            releaseTag = "STABLE",
+            releaseDate = "12 Sept - 16 Sept",
+            relativeTime = "Sept 16, 2026",
+            timestamp = tsV126,
+            startDate = "12 Sept",
+            endDate = "16 Sept",
+            headline = "Real Exchange Rate API, Room Reminders, Push Notifications & Lifecycle Re-Lock",
+            isLatest = false,
+            specifications = listOf(
+                UpdateSpecification(
+                    category = SpecCategory.FEATURE,
+                    title = "Real Open Exchange Rate API Integration",
+                    description = "Robust JSON forex API client parsing live rates and dynamically updating CurrencyManager conversions."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.FEATURE,
+                    title = "Room Database Reminders & Push Notifications",
+                    description = "Local Room persistence for reminders paired with Android NotificationManager push alerts."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.UI_UX,
+                    title = "4-Week Calendar Grid & Week View",
+                    description = "Simultaneous rendering of all 4+ weeks of the month in week view with weekly cashflow totals."
+                )
+            )
+        ),
+        AppReleaseUpdate(
+            version = "V1.25",
+            releaseTag = "MAJOR",
+            releaseDate = "August - 15 August",
+            relativeTime = "Aug 15, 2026",
+            timestamp = tsV125,
+            startDate = "August",
+            endDate = "15 August",
+            headline = "Micro-Interactions, Streak Celebration, Multi-Currency Engine & Consolidated Legacy History",
+            isLatest = false,
+            specifications = listOf(
+                UpdateSpecification(
+                    category = SpecCategory.ANIMATION,
+                    title = "Daily Streak Celebration Polish",
+                    description = "Tap-anywhere dismissal mechanism with particle ember bursts and rotating sunburst animations."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.FEATURE,
+                    title = "100+ Currencies Option A / Option B",
+                    description = "Complete currency catalog with safe Option A (keep existing) and Option B (convert existing) mechanisms."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SYSTEM,
+                    title = "Full 9-Language Localization Suite",
+                    description = "Comprehensive translations for Hindi, Bengali, Marathi, Punjabi, French, Chinese, Urdu, and Japanese."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.FEATURE,
+                    title = "Consolidated Legacy Foundation (v1.0 - v1.24)",
+                    description = "Includes all foundational architecture, Safe-to-Spend allowance engine, exchange rate caching, category customization, calculations hub, Room database persistence, and Material 3 design system."
+                )
+            )
+        )
+    )
+}
+
+/**
+ * 🚀 Interactive Updates Timeline View
+ * Strictly implements "One Day = 1 Version" logic: every day has its own dedicated release version
+ * with real-time dates, animated glowing milestone nodes, category filter chips, and expandable specifications.
+ */
+@Composable
+fun UpdatesTimelineView(
+    modifier: Modifier = Modifier
+) {
+    val updates = remember { getAppUpdatesHistory() }
+    var selectedFilter by remember { mutableStateOf("All") }
+    var isCheckingUpdates by remember { mutableStateOf(false) }
+    var showCheckToast by remember { mutableStateOf(false) }
+
+    // Pulsing radar animation for latest release milestone
+    val pulseScale = rememberLoopFloat(1f, 1.38f, 1200, "pulse_scale", FastOutSlowInEasing, reverse = true, rest = 1f)
+    val pulseAlpha = rememberLoopFloat(0.65f, 0.08f, 1200, "pulse_alpha", FastOutSlowInEasing, reverse = true, rest = 0.3f)
+
+    // Shimmering alpha for active card border
+    val shimmerAlpha = rememberLoopFloat(0.35f, 0.85f, 1800, "shimmer_alpha", reverse = true, rest = 0.6f)
+
+    // Rotating check spinner
+    val rotation = rememberLoopFloat(0f, 360f, 900, "rotation")
+
+    val filterCategories = remember { listOf("All", "FEATURE", "ANIMATION", "UI / UX", "PERFORMANCE", "SYSTEM") }
+
+    Column(modifier = modifier.fillMaxWidth()) {
+        // Timeline Header Card
+        Card(
+            colors = CardDefaults.cardColors(containerColor = SleekSurface),
+            border = BorderStroke(1.dp, SleekBorder),
+            shape = RoundedCornerShape(22.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 14.dp)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = "Release Timeline & Specs",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = SleekTextPrimary
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Surface(
+                                shape = RoundedCornerShape(6.dp),
+                                color = SleekPrimary.copy(alpha = 0.15f)
+                            ) {
+                                Text(
+                                    text = "LIVE",
+                                    fontSize = 9.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = SleekPrimary,
+                                    modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp)
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = "Daily versions with real-time dates • Verified specifications",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = SleekTextSecondary
+                        )
+                    }
+
+                    Button(
+                        onClick = { isCheckingUpdates = true },
+                        colors = ButtonDefaults.buttonColors(containerColor = SleekPrimary),
+                        shape = RoundedCornerShape(12.dp),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                    ) {
+                        if (isCheckingUpdates) {
+                            Icon(
+                                Icons.Rounded.Refresh,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier
+                                    .size(16.dp)
+                                    .rotate(rotation)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text("Checking...", fontSize = 12.sp, color = Color.White)
+                        } else {
+                            Icon(
+                                Icons.Rounded.Sync,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text("Check", fontSize = 12.sp, color = Color.White)
+                        }
+                    }
+                }
+
+                LaunchedEffect(isCheckingUpdates) {
+                    if (isCheckingUpdates) {
+                        kotlinx.coroutines.delay(1000)
+                        isCheckingUpdates = false
+                        showCheckToast = true
+                    }
+                }
+
+                AnimatedVisibility(
+                    visible = showCheckToast,
+                    enter = expandVertically() + fadeIn(),
+                    exit = shrinkVertically() + fadeOut()
+                ) {
+                    Column {
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = Color(0xFF10B981).copy(alpha = 0.14f),
+                            border = BorderStroke(1.dp, Color(0xFF10B981).copy(alpha = 0.35f)),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    Icons.Rounded.CheckCircle,
+                                    contentDescription = null,
+                                    tint = Color(0xFF10B981),
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "You are on the latest release (v1.28). Everything is up to date!",
+                                    color = Color(0xFF10B981),
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Filter chips row
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 14.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(filterCategories) { cat ->
+                val isSelected = selectedFilter == cat
+                FilterChip(
+                    selected = isSelected,
+                    onClick = { selectedFilter = cat },
+                    label = { Text(cat, fontSize = 11.sp, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = SleekPrimary,
+                        selectedLabelColor = Color.White,
+                        containerColor = SleekSurfaceVariant,
+                        labelColor = SleekTextSecondary
+                    ),
+                    border = FilterChipDefaults.filterChipBorder(
+                        enabled = true,
+                        selected = isSelected,
+                        borderColor = SleekBorder,
+                        selectedBorderColor = SleekPrimary
+                    )
+                )
+            }
+        }
+
+        // Timeline items list (One day = 1 version)
+        Column(modifier = Modifier.fillMaxWidth()) {
+            updates.forEachIndexed { index, release ->
+                val isLast = index == updates.lastIndex
+                TimelineReleaseNodeCard(
+                    release = release,
+                    isLast = isLast,
+                    selectedFilter = selectedFilter,
+                    pulseScale = if (release.isLatest) pulseScale else 1f,
+                    pulseAlpha = if (release.isLatest) pulseAlpha else 0f,
+                    shimmerAlpha = if (release.isLatest) shimmerAlpha else 0.3f
+                )
+            }
+        }
+    }
+}
+
+/**
+ * 📦 Single Node on the Updates Timeline (One day = 1 version).
+ * Shows the version badge, real-time date, relative time, headline, and specifications with spring animations.
+ */
+@Composable
+fun TimelineReleaseNodeCard(
+    release: AppReleaseUpdate,
+    isLast: Boolean,
+    selectedFilter: String,
+    pulseScale: Float = 1f,
+    pulseAlpha: Float = 0f,
+    shimmerAlpha: Float = 0.3f
+) {
+    var expanded by remember { mutableStateOf(release.isLatest) }
+
+    val filteredSpecs = remember(selectedFilter, release.specifications) {
+        if (selectedFilter == "All") release.specifications
+        else release.specifications.filter { it.category.label == selectedFilter }
+    }
+
+    if (selectedFilter != "All" && filteredSpecs.isEmpty()) return
+
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val cardScale by animateFloatAsState(
+        targetValue = if (isPressed) 0.98f else 1f,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
+        label = "cardScale"
+    )
+
+    val arrowRotation by animateFloatAsState(
+        targetValue = if (expanded) 180f else 0f,
+        animationSpec = spring(stiffness = Spring.StiffnessLow),
+        label = "arrowRotation"
+    )
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("timeline_release_${release.version}")
+    ) {
+        // Left Column: Timeline Stem & Milestone Icon Node
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.width(36.dp)
+        ) {
+            // Milestone Node
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.size(34.dp)
+            ) {
+                if (release.isLatest) {
+                    Box(
+                        modifier = Modifier
+                            .size(34.dp * pulseScale)
+                            .clip(CircleShape)
+                            .background(SleekPrimary.copy(alpha = pulseAlpha))
+                    )
+                }
+
+                Box(
+                    modifier = Modifier
+                        .size(26.dp)
+                        .clip(CircleShape)
+                        .background(
+                            if (release.isLatest) {
+                                Brush.radialGradient(listOf(Color(0xFF6366F1), SleekPrimary))
+                            } else {
+                                Brush.linearGradient(listOf(Color(0xFF64748B), Color(0xFF475569)))
+                            }
+                        )
+                        .border(
+                            BorderStroke(2.dp, if (release.isLatest) Color.White else SleekSurface),
+                            CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = if (release.isLatest) Icons.Rounded.RocketLaunch else Icons.Rounded.Check,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(14.dp)
+                    )
+                }
+            }
+
+            // Connecting Vertical Stem
+            if (!isLast) {
+                Box(
+                    modifier = Modifier
+                        .width(2.5.dp)
+                        .weight(1f)
+                        .background(
+                            Brush.verticalGradient(
+                                listOf(
+                                    if (release.isLatest) SleekPrimary else Color(0xFF64748B).copy(alpha = 0.6f),
+                                    Color(0xFF64748B).copy(alpha = 0.25f)
+                                )
+                            )
+                        )
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.width(10.dp))
+
+        // Right Column: Release Specification Card
+        Card(
+            colors = CardDefaults.cardColors(containerColor = SleekSurface),
+            border = BorderStroke(
+                1.dp,
+                if (release.isLatest) SleekPrimary.copy(alpha = shimmerAlpha) else SleekBorder
+            ),
+            shape = RoundedCornerShape(20.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp)
+                .scale(cardScale)
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = null
+                ) {
+                    expanded = !expanded
+                }
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                // Top Header Row: Version badge, Tag, Real-time Date, Relative Time
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = if (release.isLatest) SleekPrimary else SleekSurfaceVariant,
+                            border = BorderStroke(
+                                1.dp,
+                                if (release.isLatest) SleekPrimary else SleekBorder
+                            )
+                        ) {
+                            Text(
+                                text = release.version,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (release.isLatest) Color.White else SleekTextPrimary,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                            )
+                        }
+
+                        Surface(
+                            shape = RoundedCornerShape(6.dp),
+                            color = if (release.isLatest) IncomeGreen.copy(alpha = 0.15f) else SleekSurfaceVariant
+                        ) {
+                            Text(
+                                text = release.releaseTag,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (release.isLatest) IncomeGreen else SleekTextSecondary,
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                            )
+                        }
+                    }
+
+                    // Stable Calendar Date Display
+                    Column(horizontalAlignment = Alignment.End) {
+                        Text(
+                            text = if (release.startDate == release.endDate) release.endDate else "${release.startDate} – ${release.endDate}",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (release.isLatest) SleekPrimary else SleekTextPrimary
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text(
+                    text = release.headline,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = SleekTextPrimary
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Specifications count & Expand Toggle
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "${filteredSpecs.size} specifications listed",
+                        fontSize = 11.sp,
+                        color = SleekTextSecondary
+                    )
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(top = 2.dp)
+                    ) {
+                        Text(
+                            text = if (expanded) "Hide Details" else "View Details",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = SleekPrimary
+                        )
+                        Spacer(modifier = Modifier.width(3.dp))
+                        Icon(
+                            imageVector = Icons.Rounded.KeyboardArrowDown,
+                            contentDescription = null,
+                            tint = SleekPrimary,
+                            modifier = Modifier
+                                .size(16.dp)
+                                .rotate(arrowRotation)
+                        )
+                    }
+                }
+
+                // Expandable Specifications List with Spring Animation
+                AnimatedVisibility(
+                    visible = expanded,
+                    enter = expandVertically(animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy)) + fadeIn(),
+                    exit = shrinkVertically(animationSpec = tween(180)) + fadeOut()
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 12.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        HorizontalDivider(color = SleekBorder.copy(alpha = 0.6f))
+
+                        filteredSpecs.forEach { spec ->
+                            SpecificationItemRow(spec = spec)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * 🏷️ Single Specification Detail Item with Tag Pill
+ */
+@Composable
+fun SpecificationItemRow(spec: UpdateSpecification) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.Top
+    ) {
+        Surface(
+            shape = RoundedCornerShape(6.dp),
+            color = spec.category.tagColor.copy(alpha = 0.16f),
+            border = BorderStroke(1.dp, spec.category.tagColor.copy(alpha = 0.35f)),
+            modifier = Modifier.padding(top = 2.dp)
+        ) {
+            Text(
+                text = spec.category.label,
+                fontSize = 9.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = spec.category.tagColor,
+                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.width(10.dp))
+
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = spec.title,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                color = SleekTextPrimary
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = spec.description,
+                fontSize = 11.sp,
+                color = SleekTextSecondary,
+                lineHeight = 16.sp
+            )
+        }
+    }
+}

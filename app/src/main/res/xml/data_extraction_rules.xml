@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+   Sample data extraction rules file; uncomment and customize as necessary.
+   See https://developer.android.com/about/versions/12/backup-restore#xml-changes
+   for details.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="sharedpref" path="finance_prefs.xml"/>
+        <exclude domain="sharedpref" path="app_settings_prefs.xml"/>
+        <exclude domain="database" path="finance_database"/>
+        <exclude domain="database" path="finance_database-wal"/>
+        <exclude domain="database" path="finance_database-shm"/>
+        <exclude domain="file" path="receipts"/>
+        <exclude domain="file" path="local_recovery"/>
+        <exclude domain="file" path="db_pre_migration"/>
+        <exclude domain="root" path="databases/finance_database"/>
+        <exclude domain="root" path="databases/finance_database-wal"/>
+        <exclude domain="root" path="databases/finance_database-shm"/>
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="sharedpref" path="finance_prefs.xml"/>
+        <exclude domain="sharedpref" path="app_settings_prefs.xml"/>
+        <exclude domain="database" path="finance_database"/>
+        <exclude domain="database" path="finance_database-wal"/>
+        <exclude domain="database" path="finance_database-shm"/>
+        <exclude domain="file" path="receipts"/>
+        <exclude domain="file" path="local_recovery"/>
+        <exclude domain="file" path="db_pre_migration"/>
+        <exclude domain="root" path="databases/finance_database"/>
+        <exclude domain="root" path="databases/finance_database-wal"/>
+        <exclude domain="root" path="databases/finance_database-shm"/>
+    </device-transfer>
+</data-extraction-rules>

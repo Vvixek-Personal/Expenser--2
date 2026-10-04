@@ -1,0 +1,106 @@
+package com.example.ui
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.ui.theme.*
+
+@Composable
+fun AiConsentDialog(
+    onConsentAccepted: () -> Unit,
+    onConsentDeclined: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.AutoAwesome,
+                    contentDescription = "AI",
+                    tint = SleekPrimary,
+                    modifier = Modifier.size(24.dp)
+                )
+                Text(
+                    text = "AI Financial Advisor Consent",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = SleekTextPrimary
+                )
+            }
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(
+                    text = "To provide personalized financial advice, this feature transmits your question and high-level monthly summaries to Google servers (Gemini via Firebase):",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = SleekTextPrimary,
+                    lineHeight = 20.sp
+                )
+
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = SleekSurfaceVariant.copy(alpha = 0.6f)),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Text(
+                            text = "✓ What is sent: Aggregated monthly income, total expenses, net balance, top spending category, and category names.",
+                            fontSize = 12.sp,
+                            color = SleekTextPrimary,
+                            lineHeight = 16.sp
+                        )
+                        HorizontalDivider(color = SleekBorder.copy(alpha = 0.4f), modifier = Modifier.padding(vertical = 4.dp))
+                        Text(
+                            text = "✗ What is NEVER sent: Transaction notes, merchant names, individual account numbers, or personal credentials.",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = SleekPrimary,
+                            lineHeight = 16.sp
+                        )
+                    }
+                }
+
+                Text(
+                    text = "You can enable or disable AI features at any time in Settings > Privacy & Security.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = SleekTextSecondary,
+                    lineHeight = 16.sp
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = onConsentAccepted,
+                colors = ButtonDefaults.buttonColors(containerColor = SleekPrimary),
+                shape = RoundedCornerShape(10.dp)
+            ) {
+                Text("Allow & Continue", color = Color.White, fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = {
+            OutlinedButton(
+                onClick = onConsentDeclined,
+                shape = RoundedCornerShape(10.dp)
+            ) {
+                Text("Decline", color = SleekTextSecondary)
+            }
+        },
+        shape = RoundedCornerShape(20.dp),
+        containerColor = SleekSurface
+    )
+}

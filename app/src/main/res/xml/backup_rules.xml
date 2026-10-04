@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+   Sample backup rules file; uncomment and customize as necessary.
+   See https://developer.android.com/guide/topics/data/autobackup
+   for details.
+   Note: This file is ignored for devices older than API 31
+   See https://developer.android.com/about/versions/12/backup-restore
+-->
+<full-backup-content>
+    <exclude domain="sharedpref" path="finance_prefs.xml"/>
+    <exclude domain="sharedpref" path="app_settings_prefs.xml"/>
+    <exclude domain="database" path="finance_database"/>
+    <exclude domain="database" path="finance_database-wal"/>
+    <exclude domain="database" path="finance_database-shm"/>
+    <exclude domain="file" path="receipts"/>
+    <exclude domain="file" path="local_recovery"/>
+    <exclude domain="file" path="db_pre_migration"/>
+    <exclude domain="root" path="databases/finance_database"/>
+    <exclude domain="root" path="databases/finance_database-wal"/>
+    <exclude domain="root" path="databases/finance_database-shm"/>
+</full-backup-content>
