@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 var activeFontFamilyChoiceState by mutableStateOf("Default")
@@ -128,4 +129,30 @@ fun createAppTypography(choice: String): Typography {
 
 val Typography: Typography
     get() = createAppTypography(activeFontFamilyChoiceState)
+
+/**
+ * Standardized typography and sizing scale for buttons, icons, and text across tabs.
+ */
+object SleekSizes {
+    // Icon sizing scale
+    val iconMicro = 14.dp
+    val iconSmall = 18.dp
+    val iconMedium = 22.dp
+    val iconLarge = 28.dp
+    val iconHero = 36.dp
+
+    // Button height scale
+    val buttonSmall = 36.dp
+    val buttonMedium = 48.dp
+    val buttonLarge = 56.dp
+
+    // Typography sp scale
+    val textMicro = 10.sp
+    val textCaption = 11.sp
+    val textBodySmall = 12.sp
+    val textBody = 14.sp
+    val textSubhead = 16.sp
+    val textTitle = 18.sp
+    val textHeadline = 22.sp
+}
 

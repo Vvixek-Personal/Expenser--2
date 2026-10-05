@@ -152,6 +152,21 @@ fun getAppUpdatesHistory(): List<AppReleaseUpdate> {
                     category = SpecCategory.SECURITY,
                     title = "Cloud Sync Metadata & ID Enrichment",
                     description = "Updated Cloud Sync DataExtensions to include 'id' mapping for all entities, ensuring atomic updates and eliminating duplicate row creation during cloud synchronization."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SYSTEM,
+                    title = "Deep Insights Crash Elimination",
+                    description = "Diagnosed and resolved runtime crash in Deep Insights (Analytics) tab by correcting a malformed string format specifier inside SpendingPatternDetectionSection peak spending highlights."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.UI_UX,
+                    title = "Analytics Empty-State Architecture",
+                    description = "Implemented dedicated, polished empty-state placeholders across all Deep Insights sections (Category Trends, Budget Performance, Account Distribution, and Weekly Rhythm) for periods with zero recorded transactions."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.UI_UX,
+                    title = "Standardized Design Tokens (SleekSizes)",
+                    description = "Introduced SleekSizes design token system establishing consistent, accessible typography (10sp-22sp), button touch targets (36dp-56dp), and icon scales across tabs, replacing ad-hoc fractional dimensions."
                 )
             )
         ),

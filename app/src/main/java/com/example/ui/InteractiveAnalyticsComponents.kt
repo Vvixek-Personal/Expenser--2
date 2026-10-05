@@ -400,7 +400,7 @@ fun InteractiveAnalyticsHeader(
                         )
                         Text(
                             text = label,
-                            fontSize = 11.5.sp,
+                            fontSize = SleekSizes.textCaption,
                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                             color = if (isSelected) Color.White else SleekTextSecondary,
                             maxLines = 1
@@ -445,7 +445,7 @@ fun InteractiveAnalyticsHeader(
                 ) {
                     Text(
                         text = tf,
-                        fontSize = 11.5.sp,
+                        fontSize = SleekSizes.textCaption,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                         color = if (isSelected) SleekPrimary else SleekTextSecondary
                     )
@@ -456,12 +456,12 @@ fun InteractiveAnalyticsHeader(
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(12.dp))
-                    .background(if (selectedTimeFilter == "Custom") SleekPrimaryContainer else Color.Transparent)
-                    .clickable {
-                        haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                        onCustomDateRangeClick()
-                    }
-                    .padding(horizontal = 8.dp, vertical = 7.dp),
+                .background(if (selectedTimeFilter == "Custom") SleekPrimaryContainer else Color.Transparent)
+                .clickable {
+                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                    onCustomDateRangeClick()
+                }
+                .padding(horizontal = 8.dp, vertical = 7.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Row(
@@ -476,7 +476,7 @@ fun InteractiveAnalyticsHeader(
                     )
                     Text(
                         text = "Custom",
-                        fontSize = 11.5.sp,
+                        fontSize = SleekSizes.textCaption,
                         fontWeight = if (selectedTimeFilter == "Custom") FontWeight.Bold else FontWeight.Medium,
                         color = if (selectedTimeFilter == "Custom") SleekPrimary else SleekTextSecondary
                     )
@@ -733,7 +733,7 @@ fun CategoryTrendsSection(
                         text = "Tap any category to inspect daily trend & transactions",
                         style = MaterialTheme.typography.bodySmall,
                         color = SleekTextSecondary,
-                        fontSize = 11.5.sp
+                        fontSize = SleekSizes.textCaption
                     )
                 }
                 Box(
@@ -1087,7 +1087,7 @@ fun BudgetPerformanceSection(
                         text = "Planned limit vs actual expense tracking",
                         style = MaterialTheme.typography.bodySmall,
                         color = SleekTextSecondary,
-                        fontSize = 11.5.sp
+                        fontSize = SleekSizes.textCaption
                     )
                 }
                 Box(
@@ -1110,7 +1110,11 @@ fun BudgetPerformanceSection(
                         .padding(vertical = 16.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("No budgets configured yet. Add budgets in Settings.", fontSize = 12.5.sp, color = SleekTextSecondary)
+                    Text(
+                        text = "No budgets configured yet. Add budgets in Settings.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = SleekTextSecondary
+                    )
                 }
             } else {
                 budgetPerformance.forEach { item ->
@@ -1221,7 +1225,7 @@ fun AccountWiseAnalyticsSection(
                         text = "Balances and activity across your accounts",
                         style = MaterialTheme.typography.bodySmall,
                         color = SleekTextSecondary,
-                        fontSize = 11.5.sp
+                        fontSize = SleekSizes.textCaption
                     )
                 }
                 Box(
@@ -1244,7 +1248,11 @@ fun AccountWiseAnalyticsSection(
                         .padding(vertical = 16.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("No accounts created yet.", fontSize = 12.5.sp, color = SleekTextSecondary)
+                    Text(
+                        text = "No accounts created yet.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = SleekTextSecondary
+                    )
                 }
             } else {
                 accounts.forEach { acc ->
@@ -1346,112 +1354,138 @@ fun SpendingPatternDetectionSection(
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            // Peak Spend Day Highlight Box
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFFFFF7ED))
-                    .border(1.dp, Color(0xFFF97316).copy(alpha = 0.35f), RoundedCornerShape(16.dp))
-                    .padding(12.dp)
-            ) {
+            val hasNoPatterns = pattern.peakDayTotal <= 0.0 || pattern.dayAverages.values.all { it <= 0.0 }
+            if (hasNoPatterns) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 24.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(
+                            imageVector = Icons.Default.Timeline,
+                            contentDescription = null,
+                            tint = SleekTextSecondary.copy(alpha = 0.5f),
+                            modifier = Modifier.size(36.dp)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "No spending patterns detected for this period yet",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = SleekTextSecondary
+                        )
+                    }
+                }
+            } else {
+                // Peak Spend Day Highlight Box
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(Color(0xFFFFF7ED))
+                        .border(1.dp, Color(0xFFF97316).copy(alpha = 0.35f), RoundedCornerShape(16.dp))
+                        .padding(12.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Text("🔥", fontSize = 20.sp)
+                        Column {
+                            Text(
+                                text = "Peak Spending Day: ${pattern.peakDayName}",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 13.sp,
+                                color = Color(0xFFC2410C)
+                            )
+                            val formattedPeakTotal = String.format(Locale.getDefault(), "%,.0f", pattern.peakDayTotal)
+                            Text(
+                                text = "${pattern.peakDayName} represents ${pattern.peakDayPercentage.roundToInt()}% of your active period expenses ($currencySymbol$formattedPeakTotal total).",
+                                fontSize = 11.sp,
+                                color = Color(0xFF9A3412)
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                // Day of Week Distribution Bars
+                Text("Day of Week Distribution", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = SleekTextPrimary)
+                Spacer(modifier = Modifier.height(8.dp))
+
+                val maxDayVal = pattern.dayAverages.values.maxOrNull()?.coerceAtLeast(1.0) ?: 1.0
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Bottom
                 ) {
-                    Text("🔥", fontSize = 20.sp)
-                    Column {
-                        Text(
-                            text = "Peak Spending Day: ${pattern.peakDayName}",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 13.sp,
-                            color = Color(0xFFC2410C)
-                        )
-                        Text(
-                            text = "${pattern.peakDayName} represents ${pattern.peakDayPercentage.roundToInt()}% of your active period expenses ($currencySymbol%,.0f total).".format(pattern.peakDayTotal),
-                            fontSize = 11.sp,
-                            color = Color(0xFF9A3412)
-                        )
-                    }
-                }
-            }
+                    pattern.dayAverages.forEach { (day, amount) ->
+                        val ratio = (amount / maxDayVal).toFloat().coerceIn(0.08f, 1f)
+                        val isPeak = day == pattern.peakDayName
 
-            Spacer(modifier = Modifier.height(14.dp))
-
-            // Day of Week Distribution Bars
-            Text("Day of Week Distribution", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = SleekTextPrimary)
-            Spacer(modifier = Modifier.height(8.dp))
-
-            val maxDayVal = pattern.dayAverages.values.maxOrNull()?.coerceAtLeast(1.0) ?: 1.0
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Bottom
-            ) {
-                pattern.dayAverages.forEach { (day, amount) ->
-                    val ratio = (amount / maxDayVal).toFloat().coerceIn(0.08f, 1f)
-                    val isPeak = day == pattern.peakDayName
-
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text(
-                            text = if (amount > 0) "$currencySymbol%,.0f".format(amount) else "-",
-                            fontSize = 9.sp,
-                            color = if (isPeak) Color(0xFFF97316) else SleekTextSecondary,
-                            fontWeight = if (isPeak) FontWeight.Bold else FontWeight.Normal,
-                            maxLines = 1
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Box(
-                            modifier = Modifier
-                                .width(18.dp)
-                                .height((60 * ratio).dp)
-                                .clip(RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp))
-                                .background(if (isPeak) Color(0xFFF97316) else SleekPrimary.copy(alpha = 0.4f))
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = day,
-                            fontSize = 10.5.sp,
-                            fontWeight = if (isPeak) FontWeight.Bold else FontWeight.Medium,
-                            color = if (isPeak) Color(0xFFF97316) else SleekTextSecondary
-                        )
-                    }
-                }
-            }
-
-            // Anomaly / Spike alert cards if any
-            if (pattern.unusualSpikes.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text("⚠️ Unusually High Expense Spikes", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color(0xFFEF4444))
-                Spacer(modifier = Modifier.height(6.dp))
-
-                pattern.unusualSpikes.take(3).forEach { spike ->
-                    val sdf = SimpleDateFormat("MMM d", Locale.getDefault())
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(Color(0xFFFEF2F2))
-                            .padding(horizontal = 10.dp, vertical = 8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column {
-                            Text(spike.note ?: spike.category, fontWeight = FontWeight.Bold, fontSize = 12.5.sp, color = Color(0xFF991B1B))
-                            Text("${spike.category} • ${sdf.format(Date(spike.date))}", fontSize = 10.5.sp, color = Color(0xFFB91C1C))
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(
+                                text = if (amount > 0) String.format(Locale.getDefault(), "%s%,.0f", currencySymbol, amount) else "-",
+                                fontSize = 9.sp,
+                                color = if (isPeak) Color(0xFFF97316) else SleekTextSecondary,
+                                fontWeight = if (isPeak) FontWeight.Bold else FontWeight.Normal,
+                                maxLines = 1
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Box(
+                                modifier = Modifier
+                                    .width(18.dp)
+                                    .height((60 * ratio).dp)
+                                    .clip(RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp))
+                                    .background(if (isPeak) Color(0xFFF97316) else SleekPrimary.copy(alpha = 0.4f))
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = day,
+                                fontSize = 11.sp,
+                                fontWeight = if (isPeak) FontWeight.Bold else FontWeight.Medium,
+                                color = if (isPeak) Color(0xFFF97316) else SleekTextSecondary
+                            )
                         }
-                        Text(
-                            text = "$currencySymbol%,.2f".format(spike.amount),
-                            fontWeight = FontWeight.Black,
-                            fontSize = 13.5.sp,
-                            color = Color(0xFFDC2626)
-                        )
                     }
-                    Spacer(modifier = Modifier.height(4.dp))
+                }
+
+                // Anomaly / Spike alert cards if any
+                if (pattern.unusualSpikes.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text("⚠️ Unusually High Expense Spikes", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color(0xFFEF4444))
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    pattern.unusualSpikes.take(3).forEach { spike ->
+                        val sdf = SimpleDateFormat("MMM d", Locale.getDefault())
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(Color(0xFFFEF2F2))
+                                .padding(horizontal = 10.dp, vertical = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column {
+                                Text(spike.note ?: spike.category, fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Color(0xFF991B1B))
+                                Text("${spike.category} • ${sdf.format(Date(spike.date))}", fontSize = 11.sp, color = Color(0xFFB91C1C))
+                            }
+                            Text(
+                                text = String.format(Locale.getDefault(), "%s%,.2f", currencySymbol, spike.amount),
+                                fontWeight = FontWeight.Black,
+                                fontSize = 13.sp,
+                                color = Color(0xFFDC2626)
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(4.dp))
+                    }
                 }
             }
         }
