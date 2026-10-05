@@ -5,7 +5,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 fun getFinanceDbMigrations(defaultCurrency: String): Array<Migration> {
     return arrayOf(
-        MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, 
+        MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5,
         MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9,
         createMigration9To10(defaultCurrency),
         createMigration10To11(defaultCurrency),
@@ -30,7 +30,7 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
 
 val MIGRATION_3_4 = object : Migration(3, 4) {
     override fun migrate(db: SupportSQLiteDatabase) {
-        // Placeholder or actual migration
+        // No-op (already matches v4)
     }
 }
 
@@ -60,48 +60,100 @@ val MIGRATION_7_8 = object : Migration(7, 8) {
 
 val MIGRATION_8_9 = object : Migration(8, 9) {
     override fun migrate(db: SupportSQLiteDatabase) {
-        // No-op or already handled
+        // Ensure budgets has currencyCode
+        addColumnIfNotExists(db, "budgets", "currencyCode", "TEXT NOT NULL DEFAULT 'INR'")
     }
 }
 
 fun createMigration9To10(defaultCurrency: String): Migration = object : Migration(9, 10) {
     override fun migrate(db: SupportSQLiteDatabase) {
-        // Migration to minor units
-        // 1. Alter expenses to add amountMinor
+        // Minor units migration
         db.execSQL("ALTER TABLE `expenses` ADD COLUMN `amountMinor` INTEGER NOT NULL DEFAULT 0")
-        db.execSQL("UPDATE `expenses` SET `amountMinor` = CAST(`amount` * 100 AS INTEGER)") // Simple heuristic
-        
-        // 2. Alter accounts to add balanceMinor
+        db.execSQL("UPDATE `expenses` SET `amountMinor` = CAST(ROUND(`amount` * 100) AS INTEGER)")
+
+        db.execSQL("ALTER TABLE `accounts` ADD COLUMN `currencyCode` TEXT NOT NULL DEFAULT '$defaultCurrency'")
         db.execSQL("ALTER TABLE `accounts` ADD COLUMN `balanceMinor` INTEGER NOT NULL DEFAULT 0")
-        db.execSQL("UPDATE `accounts` SET `balanceMinor` = CAST(`balance` * 100 AS INTEGER)")
         
-        // 3. Alter budgets to add amountLimitMinor
+        // Infer currency for accounts from transactions
+        db.execSQL("""
+            UPDATE accounts SET currencyCode = (
+                SELECT currencyCode FROM transactions 
+                WHERE transactions.accountId = accounts.id 
+                LIMIT 1
+            ) WHERE EXISTS (
+                SELECT 1 FROM transactions WHERE transactions.accountId = accounts.id
+            )
+        """.trimIndent())
+
+        // Update balanceMinor based on currency (simple heuristic for common ones)
+        db.execSQL("UPDATE accounts SET balanceMinor = CAST(ROUND(balance * 100) AS INTEGER) WHERE currencyCode NOT IN ('JPY', 'KRW', 'CLP', 'VND', 'PYG')")
+        db.execSQL("UPDATE accounts SET balanceMinor = CAST(ROUND(balance * 1) AS INTEGER) WHERE currencyCode IN ('JPY', 'KRW', 'CLP', 'VND', 'PYG')")
+        db.execSQL("UPDATE accounts SET balanceMinor = CAST(ROUND(balance * 1000) AS INTEGER) WHERE currencyCode IN ('KWD', 'BHD', 'OMR', 'JOD', 'LYD', 'TND')")
+
         db.execSQL("ALTER TABLE `budgets` ADD COLUMN `amountLimitMinor` INTEGER NOT NULL DEFAULT 0")
-        db.execSQL("UPDATE `budgets` SET `amountLimitMinor` = CAST(`amountLimit` * 100 AS INTEGER)")
-        
-        // 4. Alter savings_goals to add minor unit fields
+        db.execSQL("UPDATE `budgets` SET `amountLimitMinor` = CAST(ROUND(`amountLimit` * 100) AS INTEGER)")
+
         db.execSQL("ALTER TABLE `savings_goals` ADD COLUMN `targetAmountMinor` INTEGER NOT NULL DEFAULT 0")
         db.execSQL("ALTER TABLE `savings_goals` ADD COLUMN `currentAmountMinor` INTEGER NOT NULL DEFAULT 0")
         db.execSQL("ALTER TABLE `savings_goals` ADD COLUMN `contributionAmountMinor` INTEGER NOT NULL DEFAULT 0")
         db.execSQL("ALTER TABLE `savings_goals` ADD COLUMN `currencyCode` TEXT NOT NULL DEFAULT '$defaultCurrency'")
+
+        db.execSQL("UPDATE `savings_goals` SET `targetAmountMinor` = CAST(ROUND(`targetAmount` * 100) AS INTEGER)")
+        db.execSQL("UPDATE `savings_goals` SET `currentAmountMinor` = CAST(ROUND(`currentAmount` * 100) AS INTEGER)")
+        db.execSQL("UPDATE `savings_goals` SET `contributionAmountMinor` = CAST(ROUND(`contributionAmount` * 100) AS INTEGER)")
         
-        db.execSQL("UPDATE `savings_goals` SET `targetAmountMinor` = CAST(`targetAmount` * 100 AS INTEGER)")
-        db.execSQL("UPDATE `savings_goals` SET `currentAmountMinor` = CAST(`currentAmount` * 100 AS INTEGER)")
-        db.execSQL("UPDATE `savings_goals` SET `contributionAmountMinor` = CAST(`contributionAmount` * 100 AS INTEGER)")
+        // Update transactions to minor units
+        db.execSQL("ALTER TABLE `transactions` ADD COLUMN `amountMinor` INTEGER NOT NULL DEFAULT 0")
+        db.execSQL("UPDATE `transactions` SET `amountMinor` = CAST(ROUND(`amount` * 100) AS INTEGER)")
     }
 }
 
 fun createMigration10To11(defaultCurrency: String): Migration = object : Migration(10, 11) {
     override fun migrate(db: SupportSQLiteDatabase) {
+        // 1. Unified Ledger Migration
+        db.execSQL("ALTER TABLE `accounts` ADD COLUMN `openingBalance` REAL NOT NULL DEFAULT 0.0")
         db.execSQL("ALTER TABLE `accounts` ADD COLUMN `openingBalanceMinor` INTEGER NOT NULL DEFAULT 0")
-        db.execSQL("UPDATE `accounts` SET `openingBalanceMinor` = `balanceMinor`")
+        
+        // 2. Add missing columns to expenses (recreate table to add FK and not null constraints properly)
+        db.execSQL("CREATE TABLE `expenses_new` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `amount` REAL NOT NULL, `amountMinor` INTEGER NOT NULL, `category` TEXT NOT NULL, `date` INTEGER NOT NULL, `note` TEXT, `imagePath` TEXT, `type` TEXT NOT NULL, `currencyCode` TEXT NOT NULL, `accountId` INTEGER NOT NULL, `kind` TEXT NOT NULL, `goalId` INTEGER, `recurringRuleId` INTEGER, FOREIGN KEY(`accountId`) REFERENCES `accounts`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )")
+        
+        // Copy old expenses to new (default accountId to 1, kind to 'REGULAR')
+        // We assume account 1 exists or will be created. 
+        db.execSQL("""
+            INSERT INTO expenses_new (id, amount, amountMinor, category, date, note, imagePath, type, currencyCode, accountId, kind)
+            SELECT id, amount, amountMinor, category, date, note, imagePath, type, currencyCode, 1, 'REGULAR'
+            FROM expenses
+        """.trimIndent())
+        
+        // Move transactions to expenses
+        db.execSQL("""
+            INSERT INTO expenses_new (amount, amountMinor, category, date, note, imagePath, type, currencyCode, accountId, kind)
+            SELECT amount, amountMinor, category, timestamp, title || (CASE WHEN note IS NOT NULL THEN ': ' || note ELSE '' END), imagePath, type, currencyCode, accountId, 'REGULAR'
+            FROM transactions
+        """.trimIndent())
+
+        // Compute opening balances for accounts
+        // openingBalance = currentBalance - (sum of all expenses/incomes in that account)
+        db.execSQL("""
+            UPDATE accounts SET openingBalanceMinor = balanceMinor - (
+                SELECT COALESCE(SUM(CASE WHEN type = 'INCOME' THEN amountMinor ELSE -amountMinor END), 0)
+                FROM expenses_new WHERE expenses_new.accountId = accounts.id
+            )
+        """.trimIndent())
+        db.execSQL("UPDATE accounts SET openingBalance = CAST(openingBalanceMinor AS REAL) / 100.0")
+
+        db.execSQL("DROP TABLE expenses")
+        db.execSQL("ALTER TABLE expenses_new RENAME TO expenses")
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_expenses_accountId` ON `expenses` (`accountId`)")
+
+        // Keep transactions as legacy
+        db.execSQL("ALTER TABLE transactions RENAME TO transactions_legacy")
     }
 }
 
 val MIGRATION_11_12 = object : Migration(11, 12) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("CREATE TABLE IF NOT EXISTS `recurring_rules` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `amountMinor` INTEGER NOT NULL, `category` TEXT NOT NULL, `frequency` TEXT NOT NULL, `startDate` INTEGER NOT NULL, `nextDueDate` INTEGER NOT NULL, `isActive` INTEGER NOT NULL, `currencyCode` TEXT NOT NULL, `accountId` INTEGER NOT NULL, `note` TEXT)")
-        db.execSQL("ALTER TABLE `expenses` ADD COLUMN `recurringRuleId` INTEGER")
     }
 }
 

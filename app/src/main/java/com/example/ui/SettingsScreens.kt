@@ -2241,37 +2241,38 @@ fun CategoriesTagsScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    LazyColumn(
+                    Column(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        items(categoryList.size) { idx ->
-                            val cat = categoryList[idx]
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(SleekBg, RoundedCornerShape(10.dp))
-                                    .padding(horizontal = 12.dp, vertical = 10.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    cat,
-                                    fontWeight = FontWeight.Medium,
-                                    color = SleekTextPrimary
-                                )
-                                IconButton(
-                                    onClick = {
-                                        viewModel.deleteAnyCategory(cat)
-                                        Toast.makeText(context, "Deleted '$cat'", Toast.LENGTH_SHORT).show()
-                                    },
-                                    modifier = Modifier.size(28.dp)
+                        categoryList.forEach { cat ->
+                            key(cat) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(SleekBg, RoundedCornerShape(10.dp))
+                                        .padding(horizontal = 12.dp, vertical = 10.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Icon(
-                                        Icons.Outlined.Delete,
-                                        contentDescription = "Delete",
-                                        tint = MaterialTheme.colorScheme.error,
-                                        modifier = Modifier.size(18.dp)
+                                    Text(
+                                        cat,
+                                        fontWeight = FontWeight.Medium,
+                                        color = SleekTextPrimary
                                     )
+                                    IconButton(
+                                        onClick = {
+                                            viewModel.deleteAnyCategory(cat)
+                                            Toast.makeText(context, "Deleted '$cat'", Toast.LENGTH_SHORT).show()
+                                        },
+                                        modifier = Modifier.size(28.dp)
+                                    ) {
+                                        Icon(
+                                            Icons.Outlined.Delete,
+                                            contentDescription = "Delete",
+                                            tint = MaterialTheme.colorScheme.error,
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                    }
                                 }
                             }
                         }

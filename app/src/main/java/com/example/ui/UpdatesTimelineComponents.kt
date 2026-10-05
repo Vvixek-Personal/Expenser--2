@@ -90,6 +90,7 @@ private fun relativeLabel(releaseTimestamp: Long, now: Long = System.currentTime
 }
 
 fun getAppUpdatesHistory(): List<AppReleaseUpdate> {
+    val tsV129 = epochDay(2026, 10, 4)
     val tsV128 = epochDay(2026, 9, 29)
     val tsV127 = epochDay(2026, 9, 28)
     val tsV126 = epochDay(2026, 9, 16)
@@ -97,15 +98,53 @@ fun getAppUpdatesHistory(): List<AppReleaseUpdate> {
 
     return listOf(
         AppReleaseUpdate(
+            version = "V1.29",
+            releaseTag = "FIXES",
+            releaseDate = "4th Oct - Bug Fixes",
+            relativeTime = "Today",
+            timestamp = tsV129,
+            startDate = "4th Oct",
+            endDate = "4th Oct",
+            headline = "Critical Database Layer Restoration, Schema Alignment, and Categories UI Fix",
+            isLatest = true,
+            specifications = listOf(
+                UpdateSpecification(
+                    category = SpecCategory.SYSTEM,
+                    title = "Database Schema Restoration (v12)",
+                    description = "Restored the high-fidelity v12 database schema: re-aligned 'expenses', 'accounts', and 'recurring_rules' tables with exact column matches (accountId, kind, goalId). Fixed missing transactions_legacy table."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SYSTEM,
+                    title = "Robust Migration Engine (10->11->12)",
+                    description = "Re-implemented the Unified Ledger migration: automates the move of legacy transactions to the unified expenses table, calculates account opening balances, and enforces relational integrity via foreign keys."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.UI_UX,
+                    title = "Categories UI Nesting Fix",
+                    description = "Eliminated the crash in Categories & Tags screen by replacing the infinite-height LazyColumn with a standard Column inside the scrollable container."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.PERFORMANCE,
+                    title = "Entity Type Safety (Long IDs)",
+                    description = "Migrated all Primary Key IDs and Minor Unit fields to Long types for consistent 64-bit integer precision across SQLite and Kotlin, improving large-amount handling."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SECURITY,
+                    title = "Cloud Sync Metadata Enrichment",
+                    description = "Updated Cloud Sync DataExtensions to include 'id' mapping for all entities, ensuring atomic record updates and preventing duplicates during Firebase synchronization."
+                )
+            )
+        ),
+        AppReleaseUpdate(
             version = "V1.28",
             releaseTag = "CONTINUE",
             releaseDate = "29th Sept - Continue",
-            relativeTime = "Today",
+            relativeTime = "Yesterday",
             timestamp = tsV128,
             startDate = "29th Sept",
             endDate = "Continue",
             headline = "Local Only vs Online Cloud Sync Architecture, Proper Sync Now Action Engine, Exact Long Minor Units, Unified Single-Ledger Architecture, WorkManager Bill Reminders, Cryptographic PIN Storage, Full-App UI Animations, 3D Isometric Logo, Swipe-to-Fullscreen Sidebar, Delivery Truck Loader, Preference Persistence & Lock Isolation Fixes",
-            isLatest = true,
+            isLatest = false,
             specifications = listOf(
                 UpdateSpecification(
                     category = SpecCategory.FEATURE,

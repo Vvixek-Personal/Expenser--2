@@ -52,6 +52,7 @@ object RecurringProcessor {
                     note = rule.note ?: "Recurring: ${rule.title}",
                     type = "EXPENSE",
                     accountId = rule.accountId,
+                    kind = "RECURRING",
                     recurringRuleId = rule.id
                 )
                 dao.insertExpense(expense)

@@ -1,6 +1,7 @@
 package com.example.data
 
 fun Expense.toMap() = mapOf(
+    "id" to id,
     "amount" to amount,
     "amountMinor" to amountMinor,
     "category" to category,
@@ -16,6 +17,7 @@ fun Expense.toMap() = mapOf(
 )
 
 fun Account.toMap() = mapOf(
+    "id" to id,
     "name" to name,
     "type" to type,
     "currencyCode" to currencyCode,
@@ -26,6 +28,7 @@ fun Account.toMap() = mapOf(
 )
 
 fun Budget.toMap() = mapOf(
+    "id" to id,
     "category" to category,
     "amountLimit" to amountLimit,
     "amountLimitMinor" to amountLimitMinor,
@@ -34,6 +37,7 @@ fun Budget.toMap() = mapOf(
 )
 
 fun SavingsGoal.toMap() = mapOf(
+    "id" to id,
     "name" to name,
     "targetAmount" to targetAmount,
     "currentAmount" to currentAmount,
@@ -48,4 +52,26 @@ fun SavingsGoal.toMap() = mapOf(
     "category" to category,
     "imageUri" to imageUri,
     "currencyCode" to currencyCode
+)
+
+fun RecurringRule.toMap() = mapOf(
+    "id" to id,
+    "title" to title,
+    "amountMinor" to amountMinor,
+    "category" to category,
+    "frequency" to frequency,
+    "startDate" to startDate,
+    "nextDueDate" to nextDueDate,
+    "isActive" to isActive,
+    "currencyCode" to currencyCode,
+    "accountId" to accountId,
+    "note" to note
+)
+
+fun ReminderEntity.toMap() = mapOf(
+    "id" to id,
+    "text" to text,
+    "dueDate" to dueDate,
+    "isCompleted" to isCompleted,
+    "isEnabled" to isEnabled
 )

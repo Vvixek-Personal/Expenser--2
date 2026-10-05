@@ -1890,12 +1890,15 @@ class FinanceViewModel(
             repository.insertExpense(
                 Expense(
                     amount = amount,
+                    amountMinor = Money.fromDouble(amount, resolvedCurrencyCode),
                     category = category,
                     date = date,
                     note = note,
                     imagePath = imagePath,
                     type = type,
-                    currencyCode = resolvedCurrencyCode
+                    currencyCode = resolvedCurrencyCode,
+                    accountId = 1L, // Default to first account for now
+                    kind = "REGULAR"
                 )
             )
         }
