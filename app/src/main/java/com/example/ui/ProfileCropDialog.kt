@@ -46,6 +46,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.example.ui.theme.SleekShapes
+import com.example.ui.theme.SleekSizes
 import java.io.File
 import java.io.FileOutputStream
 
@@ -141,9 +143,11 @@ fun ProfilePictureCropDialog(
                     }
                     Text(
                         text = "Crop Profile Photo",
-                        fontSize = 18.sp,
+                        fontSize = SleekSizes.textTitle,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = Color.White,
+                        maxLines = 1,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                     )
                     IconButton(
                         onClick = {
@@ -182,7 +186,7 @@ fun ProfilePictureCropDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
-                        .clip(RoundedCornerShape(24.dp))
+                        .clip(SleekShapes.xxl)
                         .background(Color.Black)
                         .pointerInput(Unit) {
                             detectTransformGestures { _, pan, zoom, _ ->
@@ -269,13 +273,15 @@ fun ProfilePictureCropDialog(
                     // Floating Instruction
                     Text(
                         text = "Pinch to zoom • Drag to align face",
-                        fontSize = 11.sp,
+                        fontSize = SleekSizes.textCaption,
                         fontWeight = FontWeight.Medium,
                         color = Color.White.copy(alpha = 0.8f),
+                        maxLines = 1,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                             .padding(bottom = 12.dp)
-                            .background(Color.Black.copy(alpha = 0.6f), RoundedCornerShape(12.dp))
+                            .background(Color.Black.copy(alpha = 0.6f), SleekShapes.md)
                             .padding(horizontal = 12.dp, vertical = 6.dp)
                     )
                 }
@@ -285,7 +291,7 @@ fun ProfilePictureCropDialog(
                 // Adjustment Toolbar Card
                 Card(
                     colors = CardDefaults.cardColors(containerColor = Color(0xFF1B1C22)),
-                    shape = RoundedCornerShape(22.dp),
+                    shape = SleekShapes.xl,
                     border = BorderStroke(1.dp, Color(0xFF2E303A)),
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -301,7 +307,7 @@ fun ProfilePictureCropDialog(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            Text("Zoom", fontSize = 12.sp, color = Color.LightGray, fontWeight = FontWeight.Bold)
+                            Text("Zoom", fontSize = SleekSizes.textBodySmall, color = Color.LightGray, fontWeight = FontWeight.Bold)
                             Slider(
                                 value = scale,
                                 onValueChange = { scale = it },
@@ -313,7 +319,7 @@ fun ProfilePictureCropDialog(
                                 ),
                                 modifier = Modifier.weight(1f)
                             )
-                            Text("%.1fx".format(scale), fontSize = 12.sp, color = Color.White, fontWeight = FontWeight.Bold)
+                            Text("%.1fx".format(scale), fontSize = SleekSizes.textBodySmall, color = Color.White, fontWeight = FontWeight.Bold)
                         }
 
                         HorizontalDivider(color = Color(0xFF2E303A))
@@ -327,37 +333,40 @@ fun ProfilePictureCropDialog(
                             // Rotate 90° Left
                             OutlinedButton(
                                 onClick = { rotationAngle = (rotationAngle - 90f) % 360f },
-                                shape = RoundedCornerShape(12.dp),
+                                shape = SleekShapes.md,
                                 border = BorderStroke(1.dp, Color(0xFF2E303A)),
-                                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
+                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+                                modifier = Modifier.heightIn(min = SleekSizes.buttonSmall)
                             ) {
-                                Icon(Icons.Rounded.RotateLeft, contentDescription = "Rotate Left", tint = Color.White, modifier = Modifier.size(18.dp))
+                                Icon(Icons.Rounded.RotateLeft, contentDescription = "Rotate Left", tint = Color.White, modifier = Modifier.size(SleekSizes.iconSmall))
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text("90° Left", fontSize = 11.sp, color = Color.White)
+                                Text("90° Left", fontSize = SleekSizes.textCaption, color = Color.White, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
                             }
 
                             // Rotate 90° Right
                             OutlinedButton(
                                 onClick = { rotationAngle = (rotationAngle + 90f) % 360f },
-                                shape = RoundedCornerShape(12.dp),
+                                shape = SleekShapes.md,
                                 border = BorderStroke(1.dp, Color(0xFF2E303A)),
-                                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
+                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+                                modifier = Modifier.heightIn(min = SleekSizes.buttonSmall)
                             ) {
-                                Icon(Icons.Rounded.RotateRight, contentDescription = "Rotate Right", tint = Color.White, modifier = Modifier.size(18.dp))
+                                Icon(Icons.Rounded.RotateRight, contentDescription = "Rotate Right", tint = Color.White, modifier = Modifier.size(SleekSizes.iconSmall))
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text("90° Right", fontSize = 11.sp, color = Color.White)
+                                Text("90° Right", fontSize = SleekSizes.textCaption, color = Color.White, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
                             }
 
                             // Shape Toggle
                             OutlinedButton(
                                 onClick = { isCircleCrop = !isCircleCrop },
-                                shape = RoundedCornerShape(12.dp),
+                                shape = SleekShapes.md,
                                 border = BorderStroke(1.dp, Color(0xFF2E303A)),
-                                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
+                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+                                modifier = Modifier.heightIn(min = SleekSizes.buttonSmall)
                             ) {
-                                Icon(Icons.Rounded.CropFree, contentDescription = "Toggle Shape", tint = Color.White, modifier = Modifier.size(18.dp))
+                                Icon(Icons.Rounded.CropFree, contentDescription = "Toggle Shape", tint = Color.White, modifier = Modifier.size(SleekSizes.iconSmall))
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text(if (isCircleCrop) "Circle" else "Square", fontSize = 11.sp, color = Color.White)
+                                Text(if (isCircleCrop) "Circle" else "Square", fontSize = SleekSizes.textCaption, color = Color.White, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
                             }
 
                             // Reset

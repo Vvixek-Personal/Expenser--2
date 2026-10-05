@@ -165,6 +165,11 @@ fun getAppUpdatesHistory(): List<AppReleaseUpdate> {
                 ),
                 UpdateSpecification(
                     category = SpecCategory.UI_UX,
+                    title = "Unified Sizing Scale & Overflow Guard Engine (Part 1)",
+                    description = "Consolidated 35 arbitrary font sizes into a unified typographic scale (SleekSizes: micro 10sp, caption 11sp, bodySmall 12sp, bodyMedium 13sp, body 14sp, bodyLarge 15sp, subhead 16sp, title 18sp, titleLarge 20sp, headline 22sp, display 28sp). Replaced 16 ad-hoc corner radii with a canonical 6-tier radius system (SleekRadius: xs 4dp, sm 8dp, md 12dp, lg 16dp, xl 20dp, xxl 24dp, pill 999dp) and matching SleekShapes. Enhanced buttons with standard minimum touch targets (36dp/48dp) and added rigorous TextOverflow.Ellipsis and maxLines protection across FloatingDockBar, StreakComponents, TruckLoadingComponents, AiConsentDialog, ProfileCropDialog, and UpdatesTimelineComponents."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.UI_UX,
                     title = "Standardized Design Tokens (SleekSizes)",
                     description = "Introduced SleekSizes design token system establishing consistent, accessible typography (10sp-22sp), button touch targets (36dp-56dp), and icon scales across tabs, replacing ad-hoc fractional dimensions."
                 )
@@ -501,14 +506,16 @@ fun UpdatesTimelineView(
                                     Icons.Rounded.CheckCircle,
                                     contentDescription = null,
                                     tint = Color(0xFF10B981),
-                                    modifier = Modifier.size(18.dp)
+                                    modifier = Modifier.size(SleekSizes.iconSmall)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
                                     text = "You are on the latest release (v1.29). Everything is up to date!",
                                     color = Color(0xFF10B981),
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.SemiBold
+                                    fontSize = SleekSizes.textCaption,
+                                    fontWeight = FontWeight.SemiBold,
+                                    maxLines = 1,
+                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                                 )
                             }
                         }
@@ -529,7 +536,15 @@ fun UpdatesTimelineView(
                 FilterChip(
                     selected = isSelected,
                     onClick = { selectedFilter = cat },
-                    label = { Text(cat, fontSize = 11.sp, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal) },
+                    label = {
+                        Text(
+                            text = cat,
+                            fontSize = SleekSizes.textCaption,
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                            maxLines = 1,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                        )
+                    },
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = SleekPrimary,
                         selectedLabelColor = Color.White,
@@ -676,7 +691,7 @@ fun TimelineReleaseNodeCard(
                 1.dp,
                 if (release.isLatest) SleekPrimary.copy(alpha = shimmerAlpha) else SleekBorder
             ),
-            shape = RoundedCornerShape(20.dp),
+            shape = SleekShapes.xl,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
@@ -700,7 +715,7 @@ fun TimelineReleaseNodeCard(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Surface(
-                            shape = RoundedCornerShape(8.dp),
+                            shape = SleekShapes.sm,
                             color = if (release.isLatest) SleekPrimary else SleekSurfaceVariant,
                             border = BorderStroke(
                                 1.dp,
@@ -709,22 +724,26 @@ fun TimelineReleaseNodeCard(
                         ) {
                             Text(
                                 text = release.version,
-                                fontSize = 12.sp,
+                                fontSize = SleekSizes.textBodySmall,
                                 fontWeight = FontWeight.Bold,
                                 color = if (release.isLatest) Color.White else SleekTextPrimary,
+                                maxLines = 1,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
                             )
                         }
 
                         Surface(
-                            shape = RoundedCornerShape(6.dp),
+                            shape = SleekShapes.xs,
                             color = if (release.isLatest) IncomeGreen.copy(alpha = 0.15f) else SleekSurfaceVariant
                         ) {
                             Text(
                                 text = release.releaseTag,
-                                fontSize = 10.sp,
+                                fontSize = SleekSizes.textMicro,
                                 fontWeight = FontWeight.Bold,
                                 color = if (release.isLatest) IncomeGreen else SleekTextSecondary,
+                                maxLines = 1,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                                 modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                             )
                         }
@@ -734,9 +753,11 @@ fun TimelineReleaseNodeCard(
                     Column(horizontalAlignment = Alignment.End) {
                         Text(
                             text = if (release.startDate == release.endDate) release.endDate else "${release.startDate} – ${release.endDate}",
-                            fontSize = 11.sp,
+                            fontSize = SleekSizes.textCaption,
                             fontWeight = FontWeight.Bold,
-                            color = if (release.isLatest) SleekPrimary else SleekTextPrimary
+                            color = if (release.isLatest) SleekPrimary else SleekTextPrimary,
+                            maxLines = 1,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                         )
                     }
                 }
@@ -747,7 +768,9 @@ fun TimelineReleaseNodeCard(
                     text = release.headline,
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
-                    color = SleekTextPrimary
+                    color = SleekTextPrimary,
+                    maxLines = 3,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -760,7 +783,7 @@ fun TimelineReleaseNodeCard(
                 ) {
                     Text(
                         text = "${filteredSpecs.size} specifications listed",
-                        fontSize = 11.sp,
+                        fontSize = SleekSizes.textCaption,
                         color = SleekTextSecondary
                     )
 
@@ -770,9 +793,11 @@ fun TimelineReleaseNodeCard(
                     ) {
                         Text(
                             text = if (expanded) "Hide Details" else "View Details",
-                            fontSize = 11.sp,
+                            fontSize = SleekSizes.textCaption,
                             fontWeight = FontWeight.Bold,
-                            color = SleekPrimary
+                            color = SleekPrimary,
+                            maxLines = 1,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                         )
                         Spacer(modifier = Modifier.width(3.dp))
                         Icon(
@@ -820,16 +845,18 @@ fun SpecificationItemRow(spec: UpdateSpecification) {
         verticalAlignment = Alignment.Top
     ) {
         Surface(
-            shape = RoundedCornerShape(6.dp),
+            shape = SleekShapes.xs,
             color = spec.category.tagColor.copy(alpha = 0.16f),
             border = BorderStroke(1.dp, spec.category.tagColor.copy(alpha = 0.35f)),
             modifier = Modifier.padding(top = 2.dp)
         ) {
             Text(
                 text = spec.category.label,
-                fontSize = 9.sp,
+                fontSize = SleekSizes.textMicro,
                 fontWeight = FontWeight.ExtraBold,
                 color = spec.category.tagColor,
+                maxLines = 1,
+                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                 modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
             )
         }
@@ -839,14 +866,16 @@ fun SpecificationItemRow(spec: UpdateSpecification) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = spec.title,
-                fontSize = 12.sp,
+                fontSize = SleekSizes.textBodySmall,
                 fontWeight = FontWeight.Bold,
-                color = SleekTextPrimary
+                color = SleekTextPrimary,
+                maxLines = 2,
+                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = spec.description,
-                fontSize = 11.sp,
+                fontSize = SleekSizes.textCaption,
                 color = SleekTextSecondary,
                 lineHeight = 16.sp
             )

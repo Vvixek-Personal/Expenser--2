@@ -36,8 +36,10 @@ fun AiConsentDialog(
                 Text(
                     text = "AI Financial Advisor Consent",
                     fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
-                    color = SleekTextPrimary
+                    fontSize = SleekSizes.textTitle,
+                    color = SleekTextPrimary,
+                    maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                 )
             }
         },
@@ -52,7 +54,7 @@ fun AiConsentDialog(
 
                 Card(
                     colors = CardDefaults.cardColors(containerColor = SleekSurfaceVariant.copy(alpha = 0.6f)),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = SleekShapes.md
                 ) {
                     Column(
                         modifier = Modifier.padding(12.dp),
@@ -60,14 +62,14 @@ fun AiConsentDialog(
                     ) {
                         Text(
                             text = "✓ What is sent: Aggregated monthly income, total expenses, net balance, top spending category, and category names.",
-                            fontSize = 12.sp,
+                            fontSize = SleekSizes.textBodySmall,
                             color = SleekTextPrimary,
                             lineHeight = 16.sp
                         )
                         HorizontalDivider(color = SleekBorder.copy(alpha = 0.4f), modifier = Modifier.padding(vertical = 4.dp))
                         Text(
                             text = "✗ What is NEVER sent: Transaction notes, merchant names, individual account numbers, or personal credentials.",
-                            fontSize = 12.sp,
+                            fontSize = SleekSizes.textBodySmall,
                             fontWeight = FontWeight.SemiBold,
                             color = SleekPrimary,
                             lineHeight = 16.sp
@@ -87,20 +89,33 @@ fun AiConsentDialog(
             Button(
                 onClick = onConsentAccepted,
                 colors = ButtonDefaults.buttonColors(containerColor = SleekPrimary),
-                shape = RoundedCornerShape(10.dp)
+                shape = SleekShapes.md,
+                modifier = Modifier.heightIn(min = SleekSizes.buttonSmall)
             ) {
-                Text("Allow & Continue", color = Color.White, fontWeight = FontWeight.Bold)
+                Text(
+                    text = "Allow & Continue",
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                )
             }
         },
         dismissButton = {
             OutlinedButton(
                 onClick = onConsentDeclined,
-                shape = RoundedCornerShape(10.dp)
+                shape = SleekShapes.md,
+                modifier = Modifier.heightIn(min = SleekSizes.buttonSmall)
             ) {
-                Text("Decline", color = SleekTextSecondary)
+                Text(
+                    text = "Decline",
+                    color = SleekTextSecondary,
+                    maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                )
             }
         },
-        shape = RoundedCornerShape(20.dp),
+        shape = SleekShapes.xl,
         containerColor = SleekSurface
     )
 }

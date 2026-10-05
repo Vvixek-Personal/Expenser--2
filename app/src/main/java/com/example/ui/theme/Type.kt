@@ -1,5 +1,6 @@
 package com.example.ui.theme
 
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -7,6 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -150,9 +152,56 @@ object SleekSizes {
     val textMicro = 10.sp
     val textCaption = 11.sp
     val textBodySmall = 12.sp
+    val textBodyMedium = 13.sp
     val textBody = 14.sp
+    val textBodyLarge = 15.sp
     val textSubhead = 16.sp
     val textTitle = 18.sp
+    val textTitleLarge = 20.sp
     val textHeadline = 22.sp
+    val textHeadlineLarge = 24.sp
+    val textDisplay = 28.sp
+    val textHero = 34.sp
+    val textMega = 42.sp
+}
+
+/**
+ * Standardized corner radius tokens to replace ad-hoc radius values across all components.
+ */
+object SleekRadius {
+    val xs = 4.dp
+    val sm = 8.dp
+    val md = 12.dp
+    val lg = 16.dp
+    val xl = 20.dp
+    val xxl = 24.dp
+    val pill = 999.dp
+}
+
+/**
+ * Predefined RoundedCornerShapes matching [SleekRadius] for cards, surfaces, and buttons.
+ */
+object SleekShapes {
+    val xs = RoundedCornerShape(4.dp)
+    val sm = RoundedCornerShape(8.dp)
+    val md = RoundedCornerShape(12.dp)
+    val lg = RoundedCornerShape(16.dp)
+    val xl = RoundedCornerShape(20.dp)
+    val xxl = RoundedCornerShape(24.dp)
+    val pill = RoundedCornerShape(999.dp)
+}
+
+/**
+ * Standardized layout spacing scale based on 4dp/8dp grid.
+ */
+object SleekSpacing {
+    val xxs = 2.dp
+    val xs = 4.dp
+    val sm = 8.dp
+    val md = 12.dp
+    val lg = 16.dp
+    val xl = 20.dp
+    val xxl = 24.dp
+    val xxxl = 32.dp
 }
 

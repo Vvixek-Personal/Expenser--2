@@ -10,11 +10,18 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 data class AdaptiveDimens(
-    val cardCornerRadius: Dp = 16.dp,
-    val buttonCornerRadius: Dp = 12.dp,
-    val defaultPadding: Dp = 16.dp,
-    val compactPadding: Dp = 8.dp
-)
+    val cardCornerRadius: Dp = SleekRadius.lg,
+    val buttonCornerRadius: Dp = SleekRadius.md,
+    val defaultPadding: Dp = SleekSpacing.lg,
+    val compactPadding: Dp = SleekSpacing.sm,
+    val buttonMinHeight: Dp = SleekSizes.buttonSmall,
+    val iconSize: Dp = SleekSizes.iconSmall
+) {
+    val cardShape: RoundedCornerShape
+        get() = RoundedCornerShape(cardCornerRadius)
+    val buttonShape: RoundedCornerShape
+        get() = RoundedCornerShape(buttonCornerRadius)
+}
 
 val LocalAdaptiveDimens = staticCompositionLocalOf { AdaptiveDimens() }
 
@@ -25,22 +32,28 @@ fun AdaptiveScalingProvider(content: @Composable () -> Unit) {
     // Adaptive logic: when font is large, shrink paddings and slightly flatten corners to prevent overflow and visual imbalance
     val adaptiveDimens = when {
         fontScale >= 1.4f -> AdaptiveDimens(
-            cardCornerRadius = 8.dp,
-            buttonCornerRadius = 6.dp,
-            defaultPadding = 8.dp,
-            compactPadding = 4.dp
+            cardCornerRadius = SleekRadius.sm,
+            buttonCornerRadius = SleekRadius.xs,
+            defaultPadding = SleekSpacing.sm,
+            compactPadding = SleekSpacing.xs,
+            buttonMinHeight = 32.dp,
+            iconSize = SleekSizes.iconMicro
         )
         fontScale >= 1.2f -> AdaptiveDimens(
-            cardCornerRadius = 12.dp,
-            buttonCornerRadius = 8.dp,
-            defaultPadding = 12.dp,
-            compactPadding = 6.dp
+            cardCornerRadius = SleekRadius.md,
+            buttonCornerRadius = SleekRadius.sm,
+            defaultPadding = SleekSpacing.md,
+            compactPadding = 6.dp,
+            buttonMinHeight = 34.dp,
+            iconSize = SleekSizes.iconSmall
         )
         else -> AdaptiveDimens(
-            cardCornerRadius = 16.dp,
-            buttonCornerRadius = 12.dp,
-            defaultPadding = 16.dp,
-            compactPadding = 8.dp
+            cardCornerRadius = SleekRadius.lg,
+            buttonCornerRadius = SleekRadius.md,
+            defaultPadding = SleekSpacing.lg,
+            compactPadding = SleekSpacing.sm,
+            buttonMinHeight = SleekSizes.buttonSmall,
+            iconSize = SleekSizes.iconSmall
         )
     }
 

@@ -393,7 +393,9 @@ fun DeliveryTruckLoader(
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
                 color = SleekTextPrimary,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                maxLines = 2,
+                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
             )
         }
         if (!subCaption.isNullOrBlank()) {
@@ -402,7 +404,9 @@ fun DeliveryTruckLoader(
                 text = subCaption,
                 style = MaterialTheme.typography.bodySmall,
                 color = SleekTextSecondary,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                maxLines = 3,
+                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
             )
         }
     }
@@ -503,7 +507,7 @@ fun TruckLoadingScreen(
         contentAlignment = Alignment.Center
     ) {
         Surface(
-            shape = RoundedCornerShape(24.dp),
+            shape = SleekShapes.xxl,
             color = SleekSurface,
             border = androidx.compose.foundation.BorderStroke(1.dp, SleekBorder),
             shadowElevation = 16.dp,
@@ -545,7 +549,7 @@ fun TruckLoadingDialog(
             )
         ) {
             Surface(
-                shape = RoundedCornerShape(24.dp),
+                shape = SleekShapes.xxl,
                 color = SleekSurface,
                 border = androidx.compose.foundation.BorderStroke(1.dp, SleekBorder),
                 shadowElevation = 24.dp

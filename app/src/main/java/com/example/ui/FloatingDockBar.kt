@@ -44,6 +44,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ui.theme.SleekBorder
 import com.example.ui.theme.SleekPrimary
+import com.example.ui.theme.SleekShapes
+import com.example.ui.theme.SleekSizes
 import com.example.ui.theme.isDarkModeActive
 import com.example.ui.theme.mixPrimaryWithColor
 
@@ -95,12 +97,12 @@ fun FloatingDockBar(
     ) {
         // Outer Container Pill
         Surface(
-            shape = RoundedCornerShape(42.dp),
+            shape = SleekShapes.pill,
             color = dockContainerBg,
             border = BorderStroke(1.2.dp, dockBorderColor),
             shadowElevation = if (isDarkModeActive) 16.dp else 10.dp,
             tonalElevation = 4.dp,
-            modifier = Modifier.clip(RoundedCornerShape(42.dp))
+            modifier = Modifier.clip(SleekShapes.pill)
         ) {
             Row(
                 modifier = Modifier
@@ -162,19 +164,19 @@ private fun AnimatedDockTile(
         horizontalArrangement = Arrangement.Center,
         modifier = Modifier
             .testTag(testTag)
-            .height(48.dp)
+            .height(SleekSizes.buttonMedium)
             .graphicsLayer {
                 scaleX = animatedScale
                 scaleY = animatedScale
             }
-            .clip(RoundedCornerShape(26.dp))
+            .clip(SleekShapes.pill)
             .background(containerBg)
             .border(
                 border = BorderStroke(
                     width = if (isSelected) 1.2.dp else 0.dp,
                     color = if (isSelected) activePillBorder else Color.Transparent
                 ),
-                shape = RoundedCornerShape(26.dp)
+                shape = SleekShapes.pill
             )
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
@@ -233,7 +235,7 @@ private fun AnimatedDockTile(
                 } else {
                     if (isDarkModeActive) Color.White.copy(alpha = 0.75f) else Color(0xFF475569)
                 },
-                modifier = Modifier.size(if (isSelected) 19.dp else 18.dp)
+                modifier = Modifier.size(if (isSelected) SleekSizes.iconMedium else SleekSizes.iconSmall)
             )
         }
 
@@ -251,7 +253,7 @@ private fun AnimatedDockTile(
                 Text(
                     text = title,
                     color = Color.White,
-                    fontSize = 13.sp,
+                    fontSize = SleekSizes.textBodySmall,
                     fontWeight = FontWeight.Bold,
                     maxLines = 1,
                     overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
