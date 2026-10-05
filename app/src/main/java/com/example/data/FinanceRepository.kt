@@ -10,15 +10,80 @@ class FinanceRepository(private val dao: FinanceDao, private val database: Finan
     val allRecurringRules: Flow<List<RecurringRule>> = dao.getAllRecurringRules()
     val allReminders: Flow<List<ReminderEntity>> = dao.getAllReminders()
 
-    suspend fun insertExpense(expense: Expense) = dao.insertExpense(expense)
+    suspend fun insertExpense(expense: Expense): Long {
+        val targetAccountId = if (expense.accountId > 0L) {
+            if (dao.getAccountById(expense.accountId) == null) {
+                dao.insertAccount(
+                    Account(
+                        id = expense.accountId,
+                        name = "Cash",
+                        type = "CASH",
+                        currencyCode = expense.currencyCode,
+                        openingBalanceMinor = 0L,
+                        balanceMinor = 0L
+                    )
+                )
+            }
+            expense.accountId
+        } else {
+            dao.getAccountsSnapshot().firstOrNull()?.id ?: dao.insertAccount(
+                Account(
+                    name = "Cash",
+                    type = "CASH",
+                    currencyCode = expense.currencyCode,
+                    openingBalanceMinor = 0L,
+                    balanceMinor = 0L
+                )
+            )
+        }
+
+        var toInsert = expense.copy(accountId = targetAccountId)
+        if (toInsert.amount == 0.0 && toInsert.amountMinor != 0L) {
+            toInsert = toInsert.copy(amount = Money.toDouble(toInsert.amountMinor, toInsert.currencyCode))
+        } else if (toInsert.amount != 0.0 && toInsert.amountMinor == 0L) {
+            toInsert = toInsert.copy(amountMinor = Money.fromDouble(toInsert.amount, toInsert.currencyCode))
+        }
+        return dao.insertExpense(toInsert)
+    }
     suspend fun updateExpense(expense: Expense) = dao.updateExpense(expense)
     suspend fun deleteExpense(expense: Expense) = dao.deleteExpense(expense)
     suspend fun deleteExpenseById(id: Long) = dao.deleteExpenseById(id)
     suspend fun deleteAllExpenses() = dao.deleteAllExpenses()
 
-    suspend fun insertAccount(account: Account) = dao.insertAccount(account)
+    suspend fun insertAccount(account: Account): Long {
+        var toInsert = account
+        if (toInsert.openingBalance == 0.0 && toInsert.openingBalanceMinor != 0L) {
+            toInsert = toInsert.copy(openingBalance = Money.toDouble(toInsert.openingBalanceMinor, toInsert.currencyCode))
+        } else if (toInsert.openingBalance != 0.0 && toInsert.openingBalanceMinor == 0L) {
+            toInsert = toInsert.copy(openingBalanceMinor = Money.fromDouble(toInsert.openingBalance, toInsert.currencyCode))
+        }
+        if (toInsert.balance == 0.0 && toInsert.balanceMinor != 0L) {
+            toInsert = toInsert.copy(balance = Money.toDouble(toInsert.balanceMinor, toInsert.currencyCode))
+        } else if (toInsert.balance != 0.0 && toInsert.balanceMinor == 0L) {
+            toInsert = toInsert.copy(balanceMinor = Money.fromDouble(toInsert.balance, toInsert.currencyCode))
+        }
+        return dao.insertAccount(toInsert)
+    }
     suspend fun updateAccount(account: Account) = dao.updateAccount(account)
     suspend fun deleteAccount(account: Account) = dao.deleteAccount(account)
+    suspend fun getAccountById(id: Long) = dao.getAccountById(id)
+
+    suspend fun getExpenseById(id: Long) = dao.getExpenseById(id)
+
+    suspend fun computeAccountBalanceMinor(accountId: Long): Long {
+        val account = dao.getAccountById(accountId) ?: return 0L
+        val expenses = dao.getExpensesSnapshot().filter { it.accountId == accountId }
+        val netChange = expenses.sumOf { exp ->
+            val sign = if (exp.type == "INCOME") 1L else -1L
+            val amountInAccountCurrencyMinor = if (exp.currencyCode == account.currencyCode) {
+                exp.amountMinor
+            } else {
+                Money.convert(exp.amountMinor, exp.currencyCode, account.currencyCode)
+            }
+            sign * amountInAccountCurrencyMinor
+        }
+        return account.openingBalanceMinor + netChange
+    }
 
     suspend fun insertBudget(budget: Budget) = dao.insertBudget(budget)
     suspend fun updateBudget(budget: Budget) = dao.updateBudget(budget)
@@ -48,10 +113,10 @@ class FinanceRepository(private val dao: FinanceDao, private val database: Finan
         reminders: List<ReminderEntity>
     ) {
         dao.clearAllData()
-        expenses.forEach { dao.insertExpense(it) }
-        accounts.forEach { dao.insertAccount(it) }
-        budgets.forEach { dao.insertBudget(it) }
-        goals.forEach { dao.insertSavingsGoal(it) }
-        reminders.forEach { dao.insertReminder(it) }
+        accounts.forEach { insertAccount(it) }
+        expenses.forEach { insertExpense(it) }
+        budgets.forEach { insertBudget(it) }
+        goals.forEach { insertSavingsGoal(it) }
+        reminders.forEach { insertReminder(it) }
     }
 }

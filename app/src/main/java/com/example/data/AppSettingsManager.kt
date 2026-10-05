@@ -93,6 +93,10 @@ class AppSettingsManager private constructor(context: Context) {
                 INSTANCE ?: AppSettingsManager(context).also { INSTANCE = it }
             }
         }
+
+        fun resetInstanceForTesting() {
+            INSTANCE = null
+        }
     }
 
     private val prefs: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)

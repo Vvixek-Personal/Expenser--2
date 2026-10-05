@@ -21,8 +21,8 @@ class FinanceDatabaseMigrationTest {
         get() = ApplicationProvider.getApplicationContext()
 
     @Test
-    fun databaseVersionConstantIsTwelve() {
-        assertEquals("FINANCE_DB_VERSION should be 12", 12, FINANCE_DB_VERSION)
+    fun databaseVersionConstantIsThirteen() {
+        assertEquals("FINANCE_DB_VERSION should be 13", 13, FINANCE_DB_VERSION)
     }
 
     @Test

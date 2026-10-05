@@ -22,11 +22,37 @@ object PreMigrationBackup {
         val dbFile = context.getDatabasePath(dbName)
         if (!dbFile.exists()) return false
 
-        val backupDir = getBackupDir(context)
-        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
-        val backupFile = File(backupDir, "db_v_before_mig_${timestamp}.db")
-
         return try {
+            var version = 0
+            try {
+                val db = android.database.sqlite.SQLiteDatabase.openDatabase(
+                    dbFile.path,
+                    null,
+                    android.database.sqlite.SQLiteDatabase.OPEN_READONLY
+                )
+                version = db.version
+                db.close()
+            } catch (e: Exception) {
+                // Ignore
+            }
+
+            val backupDir = getBackupDir(context)
+            val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
+            val backupFile = File(backupDir, "db_v${version}_${timestamp}.db")
+
+            // Checkpoint WAL so uncommitted WAL rows are flushed to the main database file
+            try {
+                val db = android.database.sqlite.SQLiteDatabase.openDatabase(
+                    dbFile.path,
+                    null,
+                    android.database.sqlite.SQLiteDatabase.OPEN_READWRITE
+                )
+                db.rawQuery("PRAGMA wal_checkpoint(FULL)", null).use { it.moveToFirst() }
+                db.close()
+            } catch (e: Exception) {
+                // Ignore
+            }
+
             FileInputStream(dbFile).use { input ->
                 FileOutputStream(backupFile).use { output ->
                     input.copyTo(output)

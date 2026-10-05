@@ -11,6 +11,12 @@ interface FinanceDao {
     @Query("SELECT * FROM expenses ORDER BY date DESC")
     suspend fun getExpensesSnapshot(): List<Expense>
 
+    @Query("SELECT * FROM expenses WHERE id = :id")
+    suspend fun getExpenseById(id: Long): Expense?
+
+    @Query("SELECT EXISTS(SELECT 1 FROM expenses WHERE recurringRuleId = :ruleId AND date = :date)")
+    suspend fun recurringExpenseExists(ruleId: Long, date: Long): Boolean
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertExpense(expense: Expense): Long
 
@@ -32,6 +38,9 @@ interface FinanceDao {
 
     @Query("SELECT * FROM accounts")
     suspend fun getAccountsSnapshot(): List<Account>
+
+    @Query("SELECT * FROM accounts WHERE id = :id")
+    suspend fun getAccountById(id: Long): Account?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAccount(account: Account): Long

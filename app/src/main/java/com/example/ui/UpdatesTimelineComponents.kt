@@ -99,39 +99,59 @@ fun getAppUpdatesHistory(): List<AppReleaseUpdate> {
     return listOf(
         AppReleaseUpdate(
             version = "V1.29",
-            releaseTag = "FIXES",
-            releaseDate = "4th Oct - Bug Fixes",
+            releaseTag = "UPGRADE",
+            releaseDate = "4th Oct - Normalizer & Fixes",
             relativeTime = "Today",
             timestamp = tsV129,
             startDate = "4th Oct",
             endDate = "4th Oct",
-            headline = "Critical Database Layer Restoration, Schema Alignment, and Categories UI Fix",
+            headline = "Universal Database Normalizer (v13), Safe Migration Engine, Schema Alignment, and Stability Fixes",
             isLatest = true,
             specifications = listOf(
                 UpdateSpecification(
                     category = SpecCategory.SYSTEM,
-                    title = "Database Schema Restoration (v12)",
-                    description = "Restored the high-fidelity v12 database schema: re-aligned 'expenses', 'accounts', and 'recurring_rules' tables with exact column matches (accountId, kind, goalId). Fixed missing transactions_legacy table."
+                    title = "Universal Schema Normalizer",
+                    description = "Engineered a robust SQL-based table normalizer that dynamically inspects table existence and columns via PRAGMA table_info. Rebuilds and normalizes expenses, accounts, budgets, savings goals, and recurring rules into the exact Room Entities structure from any legacy database layout (v9, v10, v11, v12) without data loss."
                 ),
                 UpdateSpecification(
                     category = SpecCategory.SYSTEM,
-                    title = "Robust Migration Engine (10->11->12)",
-                    description = "Re-implemented the Unified Ledger migration: automates the move of legacy transactions to the unified expenses table, calculates account opening balances, and enforces relational integrity via foreign keys."
+                    title = "Database Version 13 Upgrade & Multi-Step Migration",
+                    description = "Bumped internal database version to 13. Replaced the crash-prone step 10->11 with normalizeLedgerSchema and added createMigration12To13 to guarantee safe, idempotent upgrades across all user install states."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SYSTEM,
+                    title = "Atomic Account Balance & Opening Balance Computation",
+                    description = "Opening balances and current balances are atomically recomputed using net transactions from the unified ledger during migration, ensuring absolute balance fidelity even if legacy records were desynchronized."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SYSTEM,
+                    title = "Zero-Decimal & Three-Decimal SQL Currency Scaling",
+                    description = "Embedded specialized unit calculation expressions directly in SQLite queries to handle zero-decimal currencies (JPY, KRW, CLP, VND, PYG) and three-decimal currencies (KWD, BHD, OMR, JOD, LYD, TND) accurately."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SYSTEM,
+                    title = "Orphaned Entry Recovery (Default Cash Account)",
+                    description = "Implemented automatic fallback creation of a default Cash account during migration if legacy transactions exist without an associated account, preventing foreign key constraint violations."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SYSTEM,
+                    title = "Database Schema Restoration (v12 & v13)",
+                    description = "Restored high-fidelity database schema: re-aligned expenses, accounts, and recurring_rules tables with exact column matches (accountId, kind, goalId, recurringRuleId). Preserved legacy transactions as transactions_legacy."
                 ),
                 UpdateSpecification(
                     category = SpecCategory.UI_UX,
-                    title = "Categories UI Nesting Fix",
-                    description = "Eliminated the crash in Categories & Tags screen by replacing the infinite-height LazyColumn with a standard Column inside the scrollable container."
+                    title = "Categories & Tags Nested Scroll Crash Fix",
+                    description = "Resolved runtime layout crash in Categories & Tags screen by replacing the unconstrained LazyColumn with a standard Column inside the verticalScroll container."
                 ),
                 UpdateSpecification(
                     category = SpecCategory.PERFORMANCE,
-                    title = "Entity Type Safety (Long IDs)",
-                    description = "Migrated all Primary Key IDs and Minor Unit fields to Long types for consistent 64-bit integer precision across SQLite and Kotlin, improving large-amount handling."
+                    title = "Entity Type Safety (Long IDs & Minor Units)",
+                    description = "Standardized primary IDs, foreign key references, and monetary minor units to Long (64-bit integer) across all entities and SQLite definitions to prevent overflow and maintain SQLite type harmony."
                 ),
                 UpdateSpecification(
                     category = SpecCategory.SECURITY,
-                    title = "Cloud Sync Metadata Enrichment",
-                    description = "Updated Cloud Sync DataExtensions to include 'id' mapping for all entities, ensuring atomic record updates and preventing duplicates during Firebase synchronization."
+                    title = "Cloud Sync Metadata & ID Enrichment",
+                    description = "Updated Cloud Sync DataExtensions to include 'id' mapping for all entities, ensuring atomic updates and eliminating duplicate row creation during cloud synchronization."
                 )
             )
         ),
@@ -470,7 +490,7 @@ fun UpdatesTimelineView(
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = "You are on the latest release (v1.28). Everything is up to date!",
+                                    text = "You are on the latest release (v1.29). Everything is up to date!",
                                     color = Color(0xFF10B981),
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.SemiBold

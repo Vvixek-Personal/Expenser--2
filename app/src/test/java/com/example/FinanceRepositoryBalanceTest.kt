@@ -61,7 +61,7 @@ class FinanceRepositoryBalanceTest {
         )
 
         // Current computed balance should be 950000 paise (₹9,500)
-        var computedBal = repository.computeAccountBalanceMinor(account)
+        var computedBal = repository.computeAccountBalanceMinor(account.id)
         assertEquals(950000L, computedBal)
 
         // Edit expense: ₹500 -> ₹1,000 (100000 paise)
@@ -79,7 +79,7 @@ class FinanceRepositoryBalanceTest {
         )
 
         // Expected computed balance: 1000000 - 100000 = 900000 paise (₹9,000)
-        computedBal = repository.computeAccountBalanceMinor(account)
+        computedBal = repository.computeAccountBalanceMinor(account.id)
         assertEquals(900000L, computedBal)
     }
 
@@ -104,7 +104,7 @@ class FinanceRepositoryBalanceTest {
             )
         )
 
-        var computedBal = repository.computeAccountBalanceMinor(account)
+        var computedBal = repository.computeAccountBalanceMinor(account.id)
         assertEquals(950000L, computedBal)
 
         // Change from EXPENSE ₹500 -> INCOME ₹500
@@ -123,7 +123,7 @@ class FinanceRepositoryBalanceTest {
         )
 
         // Expected computed balance: 1000000 + 50000 = 1050000 paise (₹10,500)
-        computedBal = repository.computeAccountBalanceMinor(account)
+        computedBal = repository.computeAccountBalanceMinor(account.id)
         assertEquals(1050000L, computedBal)
     }
 
@@ -145,12 +145,12 @@ class FinanceRepositoryBalanceTest {
         )
         val expId = repository.insertExpense(exp)
 
-        var computedBal = repository.computeAccountBalanceMinor(account)
+        var computedBal = repository.computeAccountBalanceMinor(account.id)
         assertEquals(170000L, computedBal)
 
         repository.deleteExpense(exp.copy(id = expId))
 
-        computedBal = repository.computeAccountBalanceMinor(account)
+        computedBal = repository.computeAccountBalanceMinor(account.id)
         assertEquals(200000L, computedBal)
     }
 
@@ -173,7 +173,8 @@ class FinanceRepositoryBalanceTest {
             expenses = listOf(exp1),
             accounts = listOf(accountA),
             budgets = emptyList(),
-            goals = emptyList()
+            goals = emptyList(),
+            reminders = emptyList()
         )
 
         val restoredAccounts = repository.allAccounts.first()
@@ -235,7 +236,7 @@ class FinanceRepositoryBalanceTest {
 
         // Balance must be ₹10,000 - ₹835 = ₹9,165 (916500 paise), NOT ₹10,000 - $10 = ₹9,990!
         val expectedBalance = 1000000L - 83500L
-        val computedBal = repository.computeAccountBalanceMinor(account)
+        val computedBal = repository.computeAccountBalanceMinor(account.id)
         assertEquals(expectedBalance, computedBal)
     }
 }

@@ -7743,7 +7743,7 @@ fun FaqAccordion(viewModel: FinanceViewModel) {
                     border = BorderStroke(1.dp, SleekPrimary.copy(alpha = 0.35f))
                 ) {
                     Text(
-                        text = "v1.27",
+                        text = "v1.29",
                         fontSize = 11.sp,
                         fontWeight = FontWeight.ExtraBold,
                         color = SleekPrimary,

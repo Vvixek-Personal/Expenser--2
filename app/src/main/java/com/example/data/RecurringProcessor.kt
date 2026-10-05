@@ -42,20 +42,22 @@ object RecurringProcessor {
             
             var nextDue = rule.nextDueDate
             while (nextDue <= now) {
-                // Create expense for this occurrence
-                val expense = Expense(
-                    amount = Money.toDouble(rule.amountMinor, rule.currencyCode),
-                    amountMinor = rule.amountMinor,
-                    currencyCode = rule.currencyCode,
-                    category = rule.category,
-                    date = nextDue,
-                    note = rule.note ?: "Recurring: ${rule.title}",
-                    type = "EXPENSE",
-                    accountId = rule.accountId,
-                    kind = "RECURRING",
-                    recurringRuleId = rule.id
-                )
-                dao.insertExpense(expense)
+                // Create expense for this occurrence if it doesn't already exist
+                if (!dao.recurringExpenseExists(rule.id, nextDue)) {
+                    val expense = Expense(
+                        amount = Money.toDouble(rule.amountMinor, rule.currencyCode),
+                        amountMinor = rule.amountMinor,
+                        currencyCode = rule.currencyCode,
+                        category = rule.category,
+                        date = nextDue,
+                        note = rule.note ?: "Recurring: ${rule.title}",
+                        type = "EXPENSE",
+                        accountId = rule.accountId,
+                        kind = "RECURRING",
+                        recurringRuleId = rule.id
+                    )
+                    dao.insertExpense(expense)
+                }
                 
                 // Update next due date
                 val cal = Calendar.getInstance().apply {
