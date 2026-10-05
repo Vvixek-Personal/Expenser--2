@@ -1354,8 +1354,8 @@ fun SpendingPatternDetectionSection(
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            val hasNoPatterns = pattern.peakDayTotal <= 0.0 || pattern.dayAverages.values.all { it <= 0.0 }
-            if (hasNoPatterns) {
+            val hasAnySpending = pattern.dayAverages.values.sum() > 0.0 && pattern.peakDayTotal > 0.0
+            if (!hasAnySpending) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -1371,7 +1371,7 @@ fun SpendingPatternDetectionSection(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "No spending patterns detected for this period yet",
+                            text = "No spending recorded in this period yet",
                             style = MaterialTheme.typography.bodyMedium,
                             color = SleekTextSecondary
                         )
