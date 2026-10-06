@@ -825,9 +825,37 @@ fun DashboardTab(
         )
     }
 
-    val currentCalendar = Calendar.getInstance()
-    val currentMonth = currentCalendar.get(Calendar.MONTH)
-    val currentYear = currentCalendar.get(Calendar.YEAR)
+    val (thisMonthRange, lastMonthRange) = remember {
+        val cal = Calendar.getInstance()
+        val cMonth = cal.get(Calendar.MONTH)
+        val cYear = cal.get(Calendar.YEAR)
+
+        val calStart = Calendar.getInstance().apply {
+            set(cYear, cMonth, 1, 0, 0, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        val calEnd = Calendar.getInstance().apply {
+            set(cYear, cMonth, getActualMaximum(Calendar.DAY_OF_MONTH), 23, 59, 59)
+            set(Calendar.MILLISECOND, 999)
+        }
+
+        val lmCal = Calendar.getInstance().apply {
+            add(Calendar.MONTH, -1)
+        }
+        val lmMonth = lmCal.get(Calendar.MONTH)
+        val lmYear = lmCal.get(Calendar.YEAR)
+
+        val lmStart = Calendar.getInstance().apply {
+            set(lmYear, lmMonth, 1, 0, 0, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        val lmEnd = Calendar.getInstance().apply {
+            set(lmYear, lmMonth, getActualMaximum(Calendar.DAY_OF_MONTH), 23, 59, 59)
+            set(Calendar.MILLISECOND, 999)
+        }
+
+        (calStart.timeInMillis..calEnd.timeInMillis) to (lmStart.timeInMillis..lmEnd.timeInMillis)
+    }
 
     // All-time income, expense, and savings goals totals for Total Net Balance
     val totalAllTimeIncome = remember(expenses, selectedCurrencyCode) { expenses.realIncome(selectedCurrencyCode) }
@@ -836,37 +864,42 @@ fun DashboardTab(
     val overallTotalNetBalance = remember(expenses, savingsGoals, selectedCurrencyCode) { expenses.netWorth(savingsGoals, selectedCurrencyCode) }
 
     // Filter current month expenses
-    val thisMonthExpenses = expenses.filter {
-        val cal = Calendar.getInstance().apply { timeInMillis = it.date }
-        cal.get(Calendar.MONTH) == currentMonth && cal.get(Calendar.YEAR) == currentYear && it.type != "INCOME" && it.category != "Locked Savings"
+    val thisMonthExpenses = remember(expenses, thisMonthRange) {
+        expenses.filter {
+            it.date in thisMonthRange && it.type != "INCOME" && it.category != "Locked Savings"
+        }
     }
-    val thisMonthTotal = thisMonthExpenses.realExpense(selectedCurrencyCode)
+    val thisMonthTotal = remember(thisMonthExpenses, selectedCurrencyCode) {
+        thisMonthExpenses.realExpense(selectedCurrencyCode)
+    }
 
     // Filter current month incomes
-    val thisMonthIncomes = expenses.filter {
-        val cal = Calendar.getInstance().apply { timeInMillis = it.date }
-        cal.get(Calendar.MONTH) == currentMonth && cal.get(Calendar.YEAR) == currentYear && it.type == "INCOME" && it.category != "Goal Withdrawal"
+    val thisMonthIncomes = remember(expenses, thisMonthRange) {
+        expenses.filter {
+            it.date in thisMonthRange && it.type == "INCOME" && it.category != "Goal Withdrawal"
+        }
     }
-    val thisMonthIncomeTotal = thisMonthIncomes.realIncome(selectedCurrencyCode)
+    val thisMonthIncomeTotal = remember(thisMonthIncomes, selectedCurrencyCode) {
+        thisMonthIncomes.realIncome(selectedCurrencyCode)
+    }
 
     // Last month expenses
-    val lastMonthCalendar = Calendar.getInstance().apply {
-        add(Calendar.MONTH, -1)
+    val lastMonthExpenses = remember(expenses, lastMonthRange) {
+        expenses.filter {
+            it.date in lastMonthRange && it.type != "INCOME" && it.category != "Locked Savings"
+        }
     }
-    val lastMonth = lastMonthCalendar.get(Calendar.MONTH)
-    val lastMonthYear = lastMonthCalendar.get(Calendar.YEAR)
-
-    val lastMonthExpenses = expenses.filter {
-        val cal = Calendar.getInstance().apply { timeInMillis = it.date }
-        cal.get(Calendar.MONTH) == lastMonth && cal.get(Calendar.YEAR) == lastMonthYear && it.type != "INCOME" && it.category != "Locked Savings"
+    val lastMonthTotal = remember(lastMonthExpenses, selectedCurrencyCode) {
+        lastMonthExpenses.realExpense(selectedCurrencyCode)
     }
-    val lastMonthTotal = lastMonthExpenses.realExpense(selectedCurrencyCode)
 
     // Difference Calculation
-    val diffPct = if (lastMonthTotal > 0) {
-        ((thisMonthTotal - lastMonthTotal) / lastMonthTotal) * 100
-    } else {
-        0.0
+    val diffPct = remember(thisMonthTotal, lastMonthTotal) {
+        if (lastMonthTotal > 0) {
+            ((thisMonthTotal - lastMonthTotal) / lastMonthTotal) * 100
+        } else {
+            0.0
+        }
     }
 
     var showChangeNameDialog by remember { mutableStateOf(false) }

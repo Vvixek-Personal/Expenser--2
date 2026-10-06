@@ -4784,6 +4784,8 @@ fun BackupRestoreScreen(
 
     // ☁️ CLOUD RESTORE CONFIRMATION DIALOG
     if (showCloudRestoreConfirmDialog) {
+        val authUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+        val isUserLoggedIn = authUser != null
         AlertDialog(
             onDismissRequest = { showCloudRestoreConfirmDialog = false },
             title = {
@@ -4793,7 +4795,11 @@ fun BackupRestoreScreen(
                 }
             },
             text = {
-                Text("This will download your latest cloud backup and restore your accounts, transactions, budgets, and savings goals into local database. Current data will be replaced. Proceed?")
+                if (!isUserLoggedIn) {
+                    Text("You must be signed in to access and restore your cloud vault. Please sign in via the Account tab first.")
+                } else {
+                    Text("This will download your latest cloud backup and restore your accounts, transactions, budgets, and savings goals into the local database. An emergency safety backup of your current local database will be created automatically before restoring. Proceed?")
+                }
             },
             confirmButton = {
                 Button(
@@ -4803,6 +4809,7 @@ fun BackupRestoreScreen(
                             Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
                         }
                     },
+                    enabled = isUserLoggedIn,
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0284C7))
                 ) {
                     Text("Restore from Cloud")

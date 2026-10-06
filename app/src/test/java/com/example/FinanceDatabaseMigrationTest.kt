@@ -446,9 +446,9 @@ class FinanceDatabaseMigrationTest {
     }
 
     @Test
-    fun testRoomMigrationFromVersions3To11() {
-        for (version in 3..11) {
-            val dbName = "test_migration_v${version}_to_12.db"
+    fun testRoomMigrationFromVersions3To13() {
+        for (version in 3..12) {
+            val dbName = "test_migration_v${version}_to_13.db"
             context.deleteDatabase(dbName)
 
             val helper = FrameworkSQLiteOpenHelperFactory().create(
@@ -459,30 +459,44 @@ class FinanceDatabaseMigrationTest {
                             if (version >= 1) {
                                 db.execSQL("CREATE TABLE IF NOT EXISTS `reminders` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `text` TEXT NOT NULL, `dueDate` INTEGER NOT NULL, `isCompleted` INTEGER NOT NULL, `isEnabled` INTEGER NOT NULL)")
                             }
-                            if (version >= 3) {
+                            if (version in 3..11) {
                                 db.execSQL("CREATE TABLE IF NOT EXISTS `accounts` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `balance` REAL NOT NULL, `type` TEXT NOT NULL)")
                                 db.execSQL("CREATE TABLE IF NOT EXISTS `transactions` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `amount` REAL NOT NULL, `type` TEXT NOT NULL, `category` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, `accountId` INTEGER NOT NULL, `note` TEXT, `imagePath` TEXT)")
                                 db.execSQL("CREATE TABLE IF NOT EXISTS `budgets` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `category` TEXT NOT NULL, `amountLimit` REAL NOT NULL, `monthYear` TEXT NOT NULL)")
                                 db.execSQL("CREATE TABLE IF NOT EXISTS `savings_goals` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `targetAmount` REAL NOT NULL, `currentAmount` REAL NOT NULL DEFAULT 0.0, `targetDate` INTEGER NOT NULL DEFAULT 0, `frequency` TEXT NOT NULL DEFAULT 'WEEKLY', `contributionAmount` REAL NOT NULL DEFAULT 0.0, `isAutoGap` INTEGER NOT NULL DEFAULT 1, `iconTag` TEXT NOT NULL DEFAULT '🎮', `category` TEXT NOT NULL DEFAULT 'Saving', `imageUri` TEXT)")
                             }
-                            if (version >= 2) {
+                            if (version in 2..11) {
                                 db.execSQL("CREATE TABLE IF NOT EXISTS `expenses` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `amount` REAL NOT NULL, `category` TEXT NOT NULL, `date` INTEGER NOT NULL, `note` TEXT, `imagePath` TEXT)")
                             }
-                            if (version >= 5) {
+                            if (version in 5..11) {
                                 try { db.execSQL("ALTER TABLE `expenses` ADD COLUMN `type` TEXT NOT NULL DEFAULT 'EXPENSE'") } catch (e: Exception) {}
                             }
-                            if (version >= 6) {
+                            if (version in 6..11) {
                                 try { db.execSQL("ALTER TABLE `expenses` ADD COLUMN `currencyCode` TEXT NOT NULL DEFAULT 'INR'") } catch (e: Exception) {}
                             }
-                            if (version >= 7) {
+                            if (version in 7..11) {
                                 try { db.execSQL("ALTER TABLE `transactions` ADD COLUMN `currencyCode` TEXT NOT NULL DEFAULT 'INR'") } catch (e: Exception) {}
                             }
+                            if (version >= 12) {
+                                db.execSQL("CREATE TABLE IF NOT EXISTS `accounts` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `type` TEXT NOT NULL, `currencyCode` TEXT NOT NULL, `openingBalanceMinor` INTEGER NOT NULL DEFAULT 0, `balanceMinor` INTEGER NOT NULL DEFAULT 0)")
+                                db.execSQL("CREATE TABLE IF NOT EXISTS `expenses` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `amountMinor` INTEGER NOT NULL, `category` TEXT NOT NULL, `date` INTEGER NOT NULL, `note` TEXT, `imagePath` TEXT, `type` TEXT NOT NULL, `currencyCode` TEXT NOT NULL, `accountId` INTEGER NOT NULL, `kind` TEXT NOT NULL, `goalId` INTEGER, `recurringRuleId` INTEGER)")
+                                db.execSQL("CREATE TABLE IF NOT EXISTS `budgets` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `category` TEXT NOT NULL, `amountLimitMinor` INTEGER NOT NULL, `monthYear` TEXT NOT NULL, `currencyCode` TEXT NOT NULL)")
+                                db.execSQL("CREATE TABLE IF NOT EXISTS `savings_goals` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `targetAmountMinor` INTEGER NOT NULL, `currentAmountMinor` INTEGER NOT NULL, `targetDate` INTEGER NOT NULL, `frequency` TEXT NOT NULL, `contributionAmountMinor` INTEGER NOT NULL, `isAutoGap` INTEGER NOT NULL, `iconTag` TEXT NOT NULL, `category` TEXT NOT NULL, `imageUri` TEXT, `currencyCode` TEXT NOT NULL)")
+                                db.execSQL("CREATE TABLE IF NOT EXISTS `recurring_rules` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `amountMinor` INTEGER NOT NULL, `category` TEXT NOT NULL, `frequency` TEXT NOT NULL, `startDate` INTEGER NOT NULL, `nextDueDate` INTEGER NOT NULL, `isActive` INTEGER NOT NULL, `currencyCode` TEXT NOT NULL, `accountId` INTEGER NOT NULL, `note` TEXT)")
+                            }
 
-                            try { db.execSQL("INSERT INTO `accounts` (`id`, `name`, `balance`, `type`) VALUES (1, 'Test Acc', 1000.0, 'BANK')") } catch (e: Exception) {}
-                            try { db.execSQL("INSERT INTO `budgets` (`id`, `category`, `amountLimit`, `monthYear`) VALUES (1, 'Food', 500.0, '10-2026')") } catch (e: Exception) {}
-                            try { db.execSQL("INSERT INTO `transactions` (`id`, `title`, `amount`, `type`, `category`, `timestamp`, `accountId`) VALUES (1, 'Tx', 50.0, 'EXPENSE', 'Food', 1234, 1)") } catch (e: Exception) {}
-                            try { db.execSQL("INSERT INTO `expenses` (`id`, `amount`, `category`, `date`) VALUES (1, 50.0, 'Food', 1234)") } catch (e: Exception) {}
-                            try { db.execSQL("INSERT INTO `savings_goals` (`id`, `name`, `targetAmount`, `currentAmount`) VALUES (1, 'Goal', 1000.0, 100.0)") } catch (e: Exception) {}
+                            if (version < 12) {
+                                try { db.execSQL("INSERT INTO `accounts` (`id`, `name`, `balance`, `type`) VALUES (1, 'Test Acc', 1000.0, 'BANK')") } catch (e: Exception) {}
+                                try { db.execSQL("INSERT INTO `budgets` (`id`, `category`, `amountLimit`, `monthYear`) VALUES (1, 'Food', 500.0, '10-2026')") } catch (e: Exception) {}
+                                try { db.execSQL("INSERT INTO `transactions` (`id`, `title`, `amount`, `type`, `category`, `timestamp`, `accountId`) VALUES (1, 'Tx', 50.0, 'EXPENSE', 'Food', 1234, 1)") } catch (e: Exception) {}
+                                try { db.execSQL("INSERT INTO `expenses` (`id`, `amount`, `category`, `date`) VALUES (1, 50.0, 'Food', 1234)") } catch (e: Exception) {}
+                                try { db.execSQL("INSERT INTO `savings_goals` (`id`, `name`, `targetAmount`, `currentAmount`) VALUES (1, 'Goal', 1000.0, 100.0)") } catch (e: Exception) {}
+                            } else {
+                                try { db.execSQL("INSERT INTO `accounts` (`id`, `name`, `type`, `currencyCode`, `openingBalanceMinor`, `balanceMinor`) VALUES (1, 'Test Acc', 'BANK', 'INR', 100000, 100000)") } catch (e: Exception) {}
+                                try { db.execSQL("INSERT INTO `budgets` (`id`, `category`, `amountLimitMinor`, `monthYear`, `currencyCode`) VALUES (1, 'Food', 50000, '10-2026', 'INR')") } catch (e: Exception) {}
+                                try { db.execSQL("INSERT INTO `expenses` (`id`, `amountMinor`, `category`, `date`, `type`, `currencyCode`, `accountId`, `kind`) VALUES (1, 5000, 'Food', 1234, 'EXPENSE', 'INR', 1, 'REGULAR')") } catch (e: Exception) {}
+                                try { db.execSQL("INSERT INTO `savings_goals` (`id`, `name`, `targetAmountMinor`, `currentAmountMinor`, `targetDate`, `frequency`, `contributionAmountMinor`, `isAutoGap`, `iconTag`, `category`, `currencyCode`) VALUES (1, 'Goal', 100000, 10000, 12345, 'WEEKLY', 5000, 1, '🎮', 'Saving', 'INR')") } catch (e: Exception) {}
+                            }
                         }
                         override fun onUpgrade(db: SupportSQLiteDatabase, oldVersion: Int, newVersion: Int) {}
                     })
@@ -498,7 +512,8 @@ class FinanceDatabaseMigrationTest {
 
             val dao = roomDb.financeDao()
             val accounts = kotlinx.coroutines.runBlocking { dao.getAccountsSnapshot() }
-            assertNotNull(accounts)
+            assertNotNull("Accounts must not be null after migrating from version $version to 13", accounts)
+            assertTrue("Accounts must contain at least 1 account after migration", accounts.isNotEmpty())
 
             val budgetsTableInfo = roomDb.openHelper.writableDatabase.query("PRAGMA table_info(`budgets`)")
             var hasCurrencyCode = false
@@ -516,5 +531,184 @@ class FinanceDatabaseMigrationTest {
             roomDb.close()
             context.deleteDatabase(dbName)
         }
+    }
+
+    @Test
+    fun testMigration12To13FromExactV12Schema() {
+        val dbName = "test_migration_exact_v12_to_13.db"
+        context.deleteDatabase(dbName)
+
+        val helper = FrameworkSQLiteOpenHelperFactory().create(
+            androidx.sqlite.db.SupportSQLiteOpenHelper.Configuration.builder(context)
+                .name(dbName)
+                .callback(object : androidx.sqlite.db.SupportSQLiteOpenHelper.Callback(12) {
+                    override fun onCreate(db: SupportSQLiteDatabase) {
+                        // Create exact v12 tables according to schemas/12.json
+                        db.execSQL("""
+                            CREATE TABLE IF NOT EXISTS `accounts` (
+                                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                `name` TEXT NOT NULL,
+                                `type` TEXT NOT NULL,
+                                `currencyCode` TEXT NOT NULL,
+                                `openingBalanceMinor` INTEGER NOT NULL DEFAULT 0,
+                                `balanceMinor` INTEGER NOT NULL DEFAULT 0
+                            )
+                        """.trimIndent())
+
+                        db.execSQL("""
+                            CREATE TABLE IF NOT EXISTS `expenses` (
+                                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                `amountMinor` INTEGER NOT NULL,
+                                `category` TEXT NOT NULL,
+                                `date` INTEGER NOT NULL,
+                                `note` TEXT,
+                                `imagePath` TEXT,
+                                `type` TEXT NOT NULL,
+                                `currencyCode` TEXT NOT NULL,
+                                `accountId` INTEGER NOT NULL,
+                                `kind` TEXT NOT NULL,
+                                `goalId` INTEGER,
+                                `recurringRuleId` INTEGER,
+                                FOREIGN KEY(`accountId`) REFERENCES `accounts`(`id`) ON UPDATE NO ACTION ON DELETE RESTRICT
+                            )
+                        """.trimIndent())
+
+                        db.execSQL("""
+                            CREATE TABLE IF NOT EXISTS `budgets` (
+                                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                `category` TEXT NOT NULL,
+                                `amountLimitMinor` INTEGER NOT NULL,
+                                `monthYear` TEXT NOT NULL,
+                                `currencyCode` TEXT NOT NULL
+                            )
+                        """.trimIndent())
+
+                        db.execSQL("""
+                            CREATE TABLE IF NOT EXISTS `savings_goals` (
+                                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                `name` TEXT NOT NULL,
+                                `targetAmountMinor` INTEGER NOT NULL,
+                                `currentAmountMinor` INTEGER NOT NULL,
+                                `targetDate` INTEGER NOT NULL,
+                                `frequency` TEXT NOT NULL,
+                                `contributionAmountMinor` INTEGER NOT NULL,
+                                `isAutoGap` INTEGER NOT NULL,
+                                `iconTag` TEXT NOT NULL,
+                                `category` TEXT NOT NULL,
+                                `imageUri` TEXT,
+                                `currencyCode` TEXT NOT NULL
+                            )
+                        """.trimIndent())
+
+                        db.execSQL("""
+                            CREATE TABLE IF NOT EXISTS `recurring_rules` (
+                                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                `title` TEXT NOT NULL,
+                                `amountMinor` INTEGER NOT NULL,
+                                `category` TEXT NOT NULL,
+                                `frequency` TEXT NOT NULL,
+                                `startDate` INTEGER NOT NULL,
+                                `nextDueDate` INTEGER NOT NULL,
+                                `isActive` INTEGER NOT NULL,
+                                `currencyCode` TEXT NOT NULL,
+                                `accountId` INTEGER NOT NULL,
+                                `note` TEXT
+                            )
+                        """.trimIndent())
+
+                        db.execSQL("""
+                            CREATE TABLE IF NOT EXISTS `reminders` (
+                                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                `text` TEXT NOT NULL,
+                                `dueDate` INTEGER NOT NULL,
+                                `isCompleted` INTEGER NOT NULL,
+                                `isEnabled` INTEGER NOT NULL
+                            )
+                        """.trimIndent())
+
+                        db.execSQL("""
+                            CREATE TABLE IF NOT EXISTS `transactions_legacy` (
+                                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                `title` TEXT NOT NULL,
+                                `amount` REAL NOT NULL,
+                                `type` TEXT NOT NULL,
+                                `category` TEXT NOT NULL,
+                                `timestamp` INTEGER NOT NULL,
+                                `accountId` INTEGER NOT NULL,
+                                `note` TEXT,
+                                `imagePath` TEXT,
+                                `currencyCode` TEXT NOT NULL DEFAULT 'INR'
+                            )
+                        """.trimIndent())
+
+                        // Seed test data in v12 tables
+                        db.execSQL("INSERT INTO `accounts` (`id`, `name`, `type`, `currencyCode`, `openingBalanceMinor`, `balanceMinor`) VALUES (1, 'Main Bank', 'BANK', 'INR', 500000, 500000)")
+                        db.execSQL("INSERT INTO `expenses` (`id`, `amountMinor`, `category`, `date`, `note`, `type`, `currencyCode`, `accountId`, `kind`) VALUES (1, 15000, 'Groceries', 123456789, 'Weekly groceries', 'EXPENSE', 'INR', 1, 'REGULAR')")
+                        db.execSQL("INSERT INTO `budgets` (`id`, `category`, `amountLimitMinor`, `monthYear`, `currencyCode`) VALUES (1, 'Groceries', 100000, '10-2026', 'INR')")
+                        db.execSQL("INSERT INTO `savings_goals` (`id`, `name`, `targetAmountMinor`, `currentAmountMinor`, `targetDate`, `frequency`, `contributionAmountMinor`, `isAutoGap`, `iconTag`, `category`, `currencyCode`) VALUES (1, 'Vacation', 2000000, 500000, 170000000, 'MONTHLY', 100000, 1, '✈️', 'Travel', 'INR')")
+                        db.execSQL("INSERT INTO `recurring_rules` (`id`, `title`, `amountMinor`, `category`, `frequency`, `startDate`, `nextDueDate`, `isActive`, `currencyCode`, `accountId`, `note`) VALUES (1, 'Netflix', 64900, 'Entertainment', 'MONTHLY', 123456, 123456, 1, 'INR', 1, 'Sub')")
+                        db.execSQL("INSERT INTO `reminders` (`id`, `text`, `dueDate`, `isCompleted`, `isEnabled`) VALUES (1, 'Pay Rent', 123456, 0, 1)")
+                    }
+                    override fun onUpgrade(db: SupportSQLiteDatabase, oldVersion: Int, newVersion: Int) {}
+                })
+                .build()
+        )
+        val writableDb = helper.writableDatabase
+
+        // Execute migration 12 -> 13
+        val migration12To13 = createMigration12To13("INR")
+        migration12To13.migrate(writableDb)
+        writableDb.close()
+        helper.close()
+
+        // Open with Room Database at version 13
+        val roomDb = Room.databaseBuilder(context, FinanceDatabase::class.java, dbName)
+            .addMigrations(*getFinanceDbMigrations("INR"))
+            .allowMainThreadQueries()
+            .build()
+
+        val dao = roomDb.financeDao()
+
+        // Verify Expenses: both amount and amountMinor must be present and accurate
+        val expenses = kotlinx.coroutines.runBlocking { dao.getExpensesSnapshot() }
+        assertEquals(1, expenses.size)
+        assertEquals(15000L, expenses[0].amountMinor)
+        assertEquals(150.0, expenses[0].amount, 0.001)
+        assertEquals("Groceries", expenses[0].category)
+        assertEquals(1L, expenses[0].accountId)
+
+        // Verify Accounts: openingBalance, balance, openingBalanceMinor, balanceMinor
+        val accounts = kotlinx.coroutines.runBlocking { dao.getAccountsSnapshot() }
+        assertEquals(1, accounts.size)
+        assertEquals(500000L, accounts[0].balanceMinor)
+        assertEquals(5000.0, accounts[0].balance, 0.001)
+
+        // Verify Budgets: amountLimit and amountLimitMinor
+        val budgets = kotlinx.coroutines.runBlocking { dao.getBudgetsSnapshot() }
+        assertEquals(1, budgets.size)
+        assertEquals(100000L, budgets[0].amountLimitMinor)
+        assertEquals(1000.0, budgets[0].amountLimit, 0.001)
+
+        // Verify Savings Goals: targetAmount, currentAmount, etc.
+        val goals = kotlinx.coroutines.runBlocking { dao.getSavingsGoalsSnapshot() }
+        assertEquals(1, goals.size)
+        assertEquals(2000000L, goals[0].targetAmountMinor)
+        assertEquals(20000.0, goals[0].targetAmount, 0.001)
+        assertEquals(500000L, goals[0].currentAmountMinor)
+        assertEquals(5000.0, goals[0].currentAmount, 0.001)
+
+        // Verify Recurring Rules
+        val rules = kotlinx.coroutines.runBlocking { dao.getRecurringRulesSnapshot() }
+        assertEquals(1, rules.size)
+        assertEquals("Netflix", rules[0].title)
+        assertEquals(64900L, rules[0].amountMinor)
+
+        // Verify Reminders
+        val reminders = kotlinx.coroutines.runBlocking { dao.getRemindersSnapshot() }
+        assertEquals(1, reminders.size)
+        assertEquals("Pay Rent", reminders[0].text)
+
+        roomDb.close()
+        context.deleteDatabase(dbName)
     }
 }

@@ -8,6 +8,7 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 const val FINANCE_DB_VERSION = 13
+const val DATABASE_NAME = "finance_database"
 
 @Database(
     entities = [

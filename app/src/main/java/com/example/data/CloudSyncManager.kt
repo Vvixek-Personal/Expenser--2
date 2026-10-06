@@ -69,6 +69,12 @@ class CloudSyncManager private constructor(private val context: Context) {
             val goals = dao.getSavingsGoalsSnapshot()
             data["goals"] = goals.map { it.toMap() }
 
+            val recurringRules = dao.getRecurringRulesSnapshot()
+            data["recurringRules"] = recurringRules.map { it.toMap() }
+
+            val reminders = dao.getRemindersSnapshot()
+            data["reminders"] = reminders.map { it.toMap() }
+
             firestore.collection("users").document(userId)
                 .set(data, SetOptions.merge())
                 .await()
@@ -84,28 +90,60 @@ class CloudSyncManager private constructor(private val context: Context) {
         database: FinanceDatabase,
         currencyCallback: (String, String, String, Double) -> Unit
     ): CloudSyncResult {
-        val user = auth.currentUser ?: return CloudSyncResult.Failure("User not signed in")
+        val user = auth.currentUser ?: return CloudSyncResult.Failure("User not signed in. Please sign in to restore cloud data.")
         val userId = user.uid
         val dao = database.financeDao()
 
         return try {
             val doc = firestore.collection("users").document(userId).get().await()
-            if (!doc.exists()) return CloudSyncResult.Failure("No cloud data found")
+            if (!doc.exists()) return CloudSyncResult.Failure("No cloud data found in your cloud vault.")
 
             val currencyCode = doc.getString("currencyCode") ?: "INR"
             val currencySymbol = doc.getString("currencySymbol") ?: "₹"
             val currencyName = doc.getString("currencyName") ?: "Indian Rupee"
-            val monthlyBudget = doc.getDouble("monthly_budget") ?: 0.0
+            val monthlyBudget = doc.getDouble("monthlyBudget")
+                ?: doc.getDouble("monthly_budget")
+                ?: 0.0
+
+            @Suppress("UNCHECKED_CAST")
+            val rawAccounts = doc.get("accounts") as? List<Map<String, Any?>> ?: emptyList()
+            @Suppress("UNCHECKED_CAST")
+            val rawExpenses = doc.get("expenses") as? List<Map<String, Any?>> ?: emptyList()
+            @Suppress("UNCHECKED_CAST")
+            val rawBudgets = doc.get("budgets") as? List<Map<String, Any?>> ?: emptyList()
+            @Suppress("UNCHECKED_CAST")
+            val rawGoals = doc.get("goals") as? List<Map<String, Any?>> ?: emptyList()
+            @Suppress("UNCHECKED_CAST")
+            val rawRules = doc.get("recurringRules") as? List<Map<String, Any?>> ?: emptyList()
+            @Suppress("UNCHECKED_CAST")
+            val rawReminders = doc.get("reminders") as? List<Map<String, Any?>> ?: emptyList()
+
+            // Parse objects before modifying the database
+            val parsedAccounts = rawAccounts.map { it.toAccount() }
+            val parsedExpenses = rawExpenses.map { it.toExpense() }
+            val parsedBudgets = rawBudgets.map { it.toBudget() }
+            val parsedGoals = rawGoals.map { it.toSavingsGoal() }
+            val parsedRules = rawRules.map { it.toRecurringRule() }
+            val parsedReminders = rawReminders.map { it.toReminderEntity() }
+
+            // Take a pre-restore safety copy of SQLite database file
+            PreMigrationBackup.backupDatabaseBeforeMigration(context, DATABASE_NAME)
 
             database.withTransaction {
                 dao.clearAllData()
-                // ...
+                // Insert accounts first to satisfy foreign key constraints
+                parsedAccounts.forEach { dao.insertAccount(it) }
+                parsedExpenses.forEach { dao.insertExpense(it) }
+                parsedBudgets.forEach { dao.insertBudget(it) }
+                parsedGoals.forEach { dao.insertSavingsGoal(it) }
+                parsedRules.forEach { dao.insertRecurringRule(it) }
+                parsedReminders.forEach { dao.insertReminder(it) }
             }
 
             currencyCallback(currencyCode, currencySymbol, currencyName, monthlyBudget)
             val lastSync = doc.getLong("lastSync") ?: System.currentTimeMillis()
             _lastSyncTimestamp.value = formatTimestamp(lastSync)
-            CloudSyncResult.Success("Cloud Restore Complete")
+            CloudSyncResult.Success("Cloud Restore Complete: Restored ${parsedExpenses.size} transactions, ${parsedAccounts.size} accounts, ${parsedBudgets.size} budgets, and ${parsedGoals.size} goals.")
         } catch (e: Exception) {
             CloudSyncResult.Failure(e.message ?: "Unknown error")
         }

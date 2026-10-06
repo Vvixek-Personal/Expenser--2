@@ -3,6 +3,7 @@ package com.example.ui
 import android.app.Application
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
@@ -277,7 +278,7 @@ class FinanceViewModel(
                 _userProfileImageUri.value = localUri
                 sharedPrefs.edit().putString("user_profile_image_uri", localUri).apply()
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e("FinanceViewModel", "Error saving user profile avatar", e)
                 _userProfileImageUri.value = uri.toString()
                 sharedPrefs.edit().putString("user_profile_image_uri", uri.toString()).apply()
             }
@@ -292,7 +293,7 @@ class FinanceViewModel(
                     file.delete()
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e("FinanceViewModel", "Error deleting user profile avatar", e)
             }
             _userProfileImageUri.value = null
             sharedPrefs.edit().remove("user_profile_image_uri").apply()

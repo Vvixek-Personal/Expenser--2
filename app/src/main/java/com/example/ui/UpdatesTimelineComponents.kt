@@ -172,6 +172,31 @@ fun getAppUpdatesHistory(): List<AppReleaseUpdate> {
                     category = SpecCategory.UI_UX,
                     title = "Standardized Design Tokens (SleekSizes)",
                     description = "Introduced SleekSizes design token system establishing consistent, accessible typography (10sp-22sp), button touch targets (36dp-56dp), and icon scales across tabs, replacing ad-hoc fractional dimensions."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SECURITY,
+                    title = "Complete Cloud Restore & Pre-Restore Auto-Backup Engine",
+                    description = "Completely resolved cloud restore data loss: engineered full bidirectional Firestore deserializers in DataExtensions for accounts, expenses, budgets, savings goals, recurring rules, and reminders. Aligned monthlyBudget field keys between sync and restore, integrated automatic SQLite WAL-checkpointed safety backups prior to restore operations, and gated the Cloud Restore confirmation dialog behind authentication status."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SYSTEM,
+                    title = "End-to-End Migration Test Suite (v3 through v13 & Exact v12 Schema)",
+                    description = "Extended Robolectric database migration test suite to test continuous upgrades from versions 3 through 13. Added dedicated testMigration12To13FromExactV12Schema validating schema layout, dual amount column normalization, and data preservation directly against schemas/12.json."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.PERFORMANCE,
+                    title = "Dashboard Recomposition Performance & Range Memoization",
+                    description = "Eliminated dashboard redraw recalculation bottlenecks in FinanceAppScreen by memoizing month filters and net totals with remember blocks. Replaced per-item Calendar object allocations with precomputed epoch millisecond timestamp range checks."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SYSTEM,
+                    title = "Bidirectional Dual-Amount Column Synchronization",
+                    description = "Guaranteed that Double amount and Long amountMinor columns never drift apart in FinanceRepository across all insert and update flows for Expenses, Accounts, Budgets, and Savings Goals via Money converter synchronization."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.PERFORMANCE,
+                    title = "Code Hygiene & Logging Modernization",
+                    description = "Eliminated printStackTrace invocations across the application, migrating to structured Android Log.e logging across ProfileCropDialog, FinanceViewModel, and ExpenseDetailComponents."
                 )
             )
         ),

@@ -7,6 +7,7 @@ import android.graphics.ImageDecoder
 import android.graphics.Matrix
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
@@ -68,7 +69,7 @@ fun loadFullResolutionBitmap(context: Context, uri: Uri): Bitmap? {
             }
         }
     } catch (e: Exception) {
-        e.printStackTrace()
+        Log.e("ProfileCropDialog", "Failed to load full resolution bitmap", e)
         null
     }
 }
@@ -88,7 +89,7 @@ fun saveBitmapToInternalStorage(context: Context, bitmap: Bitmap, prefix: String
         }
         file.absolutePath
     } catch (e: Exception) {
-        e.printStackTrace()
+        Log.e("ProfileCropDialog", "Failed to save bitmap to internal storage", e)
         null
     }
 }

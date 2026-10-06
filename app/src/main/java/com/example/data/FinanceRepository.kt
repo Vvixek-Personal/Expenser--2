@@ -37,34 +37,20 @@ class FinanceRepository(private val dao: FinanceDao, private val database: Finan
             )
         }
 
-        var toInsert = expense.copy(accountId = targetAccountId)
-        if (toInsert.amount == 0.0 && toInsert.amountMinor != 0L) {
-            toInsert = toInsert.copy(amount = Money.toDouble(toInsert.amountMinor, toInsert.currencyCode))
-        } else if (toInsert.amount != 0.0 && toInsert.amountMinor == 0L) {
-            toInsert = toInsert.copy(amountMinor = Money.fromDouble(toInsert.amount, toInsert.currencyCode))
-        }
+        val toInsert = syncExpenseAmounts(expense.copy(accountId = targetAccountId))
         return dao.insertExpense(toInsert)
     }
-    suspend fun updateExpense(expense: Expense) = dao.updateExpense(expense)
+
+    suspend fun updateExpense(expense: Expense) = dao.updateExpense(syncExpenseAmounts(expense))
     suspend fun deleteExpense(expense: Expense) = dao.deleteExpense(expense)
     suspend fun deleteExpenseById(id: Long) = dao.deleteExpenseById(id)
     suspend fun deleteAllExpenses() = dao.deleteAllExpenses()
 
     suspend fun insertAccount(account: Account): Long {
-        var toInsert = account
-        if (toInsert.openingBalance == 0.0 && toInsert.openingBalanceMinor != 0L) {
-            toInsert = toInsert.copy(openingBalance = Money.toDouble(toInsert.openingBalanceMinor, toInsert.currencyCode))
-        } else if (toInsert.openingBalance != 0.0 && toInsert.openingBalanceMinor == 0L) {
-            toInsert = toInsert.copy(openingBalanceMinor = Money.fromDouble(toInsert.openingBalance, toInsert.currencyCode))
-        }
-        if (toInsert.balance == 0.0 && toInsert.balanceMinor != 0L) {
-            toInsert = toInsert.copy(balance = Money.toDouble(toInsert.balanceMinor, toInsert.currencyCode))
-        } else if (toInsert.balance != 0.0 && toInsert.balanceMinor == 0L) {
-            toInsert = toInsert.copy(balanceMinor = Money.fromDouble(toInsert.balance, toInsert.currencyCode))
-        }
-        return dao.insertAccount(toInsert)
+        return dao.insertAccount(syncAccountAmounts(account))
     }
-    suspend fun updateAccount(account: Account) = dao.updateAccount(account)
+
+    suspend fun updateAccount(account: Account) = dao.updateAccount(syncAccountAmounts(account))
     suspend fun deleteAccount(account: Account) = dao.deleteAccount(account)
     suspend fun getAccountById(id: Long) = dao.getAccountById(id)
 
@@ -85,18 +71,111 @@ class FinanceRepository(private val dao: FinanceDao, private val database: Finan
         return account.openingBalanceMinor + netChange
     }
 
-    suspend fun insertBudget(budget: Budget) = dao.insertBudget(budget)
-    suspend fun updateBudget(budget: Budget) = dao.updateBudget(budget)
+    suspend fun insertBudget(budget: Budget) = dao.insertBudget(syncBudgetAmounts(budget))
+    suspend fun updateBudget(budget: Budget) = dao.updateBudget(syncBudgetAmounts(budget))
     suspend fun deleteBudget(budget: Budget) = dao.deleteBudget(budget)
 
-    suspend fun insertSavingsGoal(goal: SavingsGoal) = dao.insertSavingsGoal(goal)
-    suspend fun updateSavingsGoal(goal: SavingsGoal) = dao.updateSavingsGoal(goal)
+    suspend fun insertSavingsGoal(goal: SavingsGoal) = dao.insertSavingsGoal(syncSavingsGoalAmounts(goal))
+    suspend fun updateSavingsGoal(goal: SavingsGoal) = dao.updateSavingsGoal(syncSavingsGoalAmounts(goal))
     suspend fun deleteSavingsGoal(goal: SavingsGoal) = dao.deleteSavingsGoal(goal)
 
     suspend fun insertRecurringRule(rule: RecurringRule) = dao.insertRecurringRule(rule)
     suspend fun updateRecurringRule(rule: RecurringRule) = dao.updateRecurringRule(rule)
     suspend fun deleteRecurringRule(rule: RecurringRule) = dao.deleteRecurringRule(rule)
     suspend fun getRecurringRuleById(id: Long) = dao.getRecurringRuleById(id)
+
+    private fun syncExpenseAmounts(expense: Expense): Expense {
+        val currency = expense.currencyCode
+        return when {
+            expense.amount != 0.0 && expense.amountMinor == 0L -> {
+                expense.copy(amountMinor = Money.fromDouble(expense.amount, currency))
+            }
+            expense.amount == 0.0 && expense.amountMinor != 0L -> {
+                expense.copy(amount = Money.toDouble(expense.amountMinor, currency))
+            }
+            expense.amount != 0.0 && expense.amountMinor != 0L -> {
+                val expectedMinor = Money.fromDouble(expense.amount, currency)
+                if (expectedMinor != expense.amountMinor) {
+                    expense.copy(amountMinor = expectedMinor)
+                } else {
+                    expense
+                }
+            }
+            else -> expense
+        }
+    }
+
+    private fun syncAccountAmounts(account: Account): Account {
+        val currency = account.currencyCode
+        var acc = account
+        if (acc.openingBalance != 0.0 && acc.openingBalanceMinor == 0L) {
+            acc = acc.copy(openingBalanceMinor = Money.fromDouble(acc.openingBalance, currency))
+        } else if (acc.openingBalance == 0.0 && acc.openingBalanceMinor != 0L) {
+            acc = acc.copy(openingBalance = Money.toDouble(acc.openingBalanceMinor, currency))
+        } else if (acc.openingBalance != 0.0 && acc.openingBalanceMinor != 0L) {
+            val expMinor = Money.fromDouble(acc.openingBalance, currency)
+            if (expMinor != acc.openingBalanceMinor) acc = acc.copy(openingBalanceMinor = expMinor)
+        }
+
+        if (acc.balance != 0.0 && acc.balanceMinor == 0L) {
+            acc = acc.copy(balanceMinor = Money.fromDouble(acc.balance, currency))
+        } else if (acc.balance == 0.0 && acc.balanceMinor != 0L) {
+            acc = acc.copy(balance = Money.toDouble(acc.balanceMinor, currency))
+        } else if (acc.balance != 0.0 && acc.balanceMinor != 0L) {
+            val expMinor = Money.fromDouble(acc.balance, currency)
+            if (expMinor != acc.balanceMinor) acc = acc.copy(balanceMinor = expMinor)
+        }
+        return acc
+    }
+
+    private fun syncBudgetAmounts(budget: Budget): Budget {
+        val currency = budget.currencyCode
+        return when {
+            budget.amountLimit != 0.0 && budget.amountLimitMinor == 0L -> {
+                budget.copy(amountLimitMinor = Money.fromDouble(budget.amountLimit, currency))
+            }
+            budget.amountLimit == 0.0 && budget.amountLimitMinor != 0L -> {
+                budget.copy(amountLimit = Money.toDouble(budget.amountLimitMinor, currency))
+            }
+            budget.amountLimit != 0.0 && budget.amountLimitMinor != 0L -> {
+                val expMinor = Money.fromDouble(budget.amountLimit, currency)
+                if (expMinor != budget.amountLimitMinor) budget.copy(amountLimitMinor = expMinor) else budget
+            }
+            else -> budget
+        }
+    }
+
+    private fun syncSavingsGoalAmounts(goal: SavingsGoal): SavingsGoal {
+        val currency = goal.currencyCode
+        var g = goal
+        if (g.targetAmount != 0.0 && g.targetAmountMinor == 0L) {
+            g = g.copy(targetAmountMinor = Money.fromDouble(g.targetAmount, currency))
+        } else if (g.targetAmount == 0.0 && g.targetAmountMinor != 0L) {
+            g = g.copy(targetAmount = Money.toDouble(g.targetAmountMinor, currency))
+        } else if (g.targetAmount != 0.0 && g.targetAmountMinor != 0L) {
+            val exp = Money.fromDouble(g.targetAmount, currency)
+            if (exp != g.targetAmountMinor) g = g.copy(targetAmountMinor = exp)
+        }
+
+        if (g.currentAmount != 0.0 && g.currentAmountMinor == 0L) {
+            g = g.copy(currentAmountMinor = Money.fromDouble(g.currentAmount, currency))
+        } else if (g.currentAmount == 0.0 && g.currentAmountMinor != 0L) {
+            g = g.copy(currentAmount = Money.toDouble(g.currentAmountMinor, currency))
+        } else if (g.currentAmount != 0.0 && g.currentAmountMinor != 0L) {
+            val exp = Money.fromDouble(g.currentAmount, currency)
+            if (exp != g.currentAmountMinor) g = g.copy(currentAmountMinor = exp)
+        }
+
+        if (g.contributionAmount != 0.0 && g.contributionAmountMinor == 0L) {
+            g = g.copy(contributionAmountMinor = Money.fromDouble(g.contributionAmount, currency))
+        } else if (g.contributionAmount == 0.0 && g.contributionAmountMinor != 0L) {
+            g = g.copy(contributionAmount = Money.toDouble(g.contributionAmountMinor, currency))
+        } else if (g.contributionAmount != 0.0 && g.contributionAmountMinor != 0L) {
+            val exp = Money.fromDouble(g.contributionAmount, currency)
+            if (exp != g.contributionAmountMinor) g = g.copy(contributionAmountMinor = exp)
+        }
+        return g
+    }
 
     suspend fun insertReminder(reminder: ReminderEntity) = dao.insertReminder(reminder)
     suspend fun updateReminder(reminder: ReminderEntity) = dao.updateReminder(reminder)

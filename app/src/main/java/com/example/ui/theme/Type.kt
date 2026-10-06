@@ -147,6 +147,9 @@ object SleekSizes {
     val buttonSmall = 36.dp
     val buttonMedium = 48.dp
     val buttonLarge = 56.dp
+    val buttonHeightSmall = 36.dp
+    val buttonHeightMedium = 48.dp
+    val buttonHeightLarge = 56.dp
 
     // Typography sp scale
     val textMicro = 10.sp

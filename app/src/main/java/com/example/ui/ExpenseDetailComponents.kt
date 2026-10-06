@@ -1043,7 +1043,7 @@ fun ImageEditDialog(
                                 try {
                                     finalBitmap = Bitmap.createBitmap(finalBitmap, startX, startY, xSize, ySize)
                                 } catch (e: Exception) {
-                                    e.printStackTrace()
+                                    android.util.Log.e("ReceiptCrop", "Failed to crop receipt bitmap", e)
                                 }
                             }
 
