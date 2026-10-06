@@ -33,6 +33,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -223,9 +224,11 @@ fun PinLockScreen(
 
                 Text(
                     text = "Welcome Back",
-                    fontSize = 24.sp,
+                    fontSize = SleekSizes.textHeadline,
                     fontWeight = FontWeight.Bold,
-                    color = SleekTextPrimary
+                    color = SleekTextPrimary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
 
                 Text(
@@ -234,10 +237,12 @@ fun PinLockScreen(
                         isErrorState -> errorMessage
                         else -> "Enter 4-digit PIN code to unlock"
                     },
-                    fontSize = 14.sp,
+                    fontSize = SleekSizes.textBody,
                     fontWeight = FontWeight.Medium,
                     color = if (isErrorState || isLockedOut) ExpenseRed else SleekTextSecondary,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
 
                 // 4 PIN Dots
@@ -448,17 +453,17 @@ fun KeypadButton(
                 imageVector = Icons.Default.Backspace,
                 contentDescription = "Delete",
                 tint = SleekTextSecondary,
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(SleekSizes.iconLarge)
             )
             "C" -> Text(
                 text = "CLEAR",
-                fontSize = 12.sp,
+                fontSize = SleekSizes.textBodySmall,
                 fontWeight = FontWeight.Bold,
                 color = SleekTextSecondary
             )
             else -> Text(
                 text = item,
-                fontSize = 24.sp,
+                fontSize = SleekSizes.textHeadline,
                 fontWeight = FontWeight.Bold,
                 color = SleekTextPrimary
             )
@@ -491,7 +496,7 @@ fun FirstRunPinSetupDialog(
             modifier = Modifier
                 .fillMaxWidth(0.92f)
                 .wrapContentHeight(),
-            shape = RoundedCornerShape(28.dp),
+            shape = SleekShapes.xxl,
             color = SleekSurface,
             border = BorderStroke(1.dp, SleekBorder)
         ) {
@@ -518,18 +523,22 @@ fun FirstRunPinSetupDialog(
 
                 Text(
                     text = if (step == 1) "Protect Your App" else "Confirm Passcode",
-                    fontSize = 20.sp,
+                    fontSize = SleekSizes.textTitleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = SleekTextPrimary
+                    color = SleekTextPrimary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
 
                 Text(
                     text = if (errorText.isNotEmpty()) errorText
                     else if (step == 1) "Set a 4-digit PIN to secure your financial records."
                     else "Re-enter your 4-digit PIN to confirm.",
-                    fontSize = 13.sp,
+                    fontSize = SleekSizes.textBodyMedium,
                     color = if (errorText.isNotEmpty()) ExpenseRed else SleekTextSecondary,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
 
                 // 4 PIN Dots
@@ -657,7 +666,7 @@ fun ChangePinDialog(
             modifier = Modifier
                 .fillMaxWidth(0.92f)
                 .wrapContentHeight(),
-            shape = RoundedCornerShape(28.dp),
+            shape = SleekShapes.xxl,
             color = SleekSurface,
             border = BorderStroke(1.dp, SleekBorder)
         ) {
@@ -674,9 +683,11 @@ fun ChangePinDialog(
                 ) {
                     Text(
                         text = if (currentAppPin != null) "Change Passcode" else "Setup Passcode",
-                        fontSize = 18.sp,
+                        fontSize = SleekSizes.textTitle,
                         fontWeight = FontWeight.Bold,
-                        color = SleekTextPrimary
+                        color = SleekTextPrimary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                     IconButton(onClick = onDismiss) {
                         Icon(Icons.Default.Close, contentDescription = "Close", tint = SleekTextSecondary)
@@ -690,9 +701,11 @@ fun ChangePinDialog(
                         2 -> "Enter your new 4-digit passcode."
                         else -> "Re-enter your new 4-digit passcode to confirm."
                     },
-                    fontSize = 13.sp,
+                    fontSize = SleekSizes.textBodyMedium,
                     color = if (errorText.isNotEmpty()) ExpenseRed else SleekTextSecondary,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
 
                 // 4 PIN Dots
@@ -795,7 +808,14 @@ fun ChangePinDialog(
                             }
                         }
                     ) {
-                        Text("Turn Off Passcode Lock", color = Color(0xFFEF4444), fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                        Text(
+                            text = "Turn Off Passcode Lock",
+                            color = Color(0xFFEF4444),
+                            fontSize = SleekSizes.textBodyMedium,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
                     }
                 }
             }

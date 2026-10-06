@@ -162,7 +162,7 @@ fun SavingGoalsFullScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(26.dp))
+                    .clip(SleekShapes.xxl)
                     .background(
                         Brush.linearGradient(
                             colors = listOf(
@@ -182,7 +182,7 @@ fun SavingGoalsFullScreen(
                                 Color.White.copy(alpha = 0.05f)
                             )
                         ),
-                        shape = RoundedCornerShape(26.dp)
+                        shape = SleekShapes.xxl
                     )
                     .padding(22.dp)
             ) {
@@ -207,12 +207,15 @@ fun SavingGoalsFullScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f, fill = false)
+                        ) {
                             Icon(
                                 imageVector = Icons.Rounded.Savings,
                                 contentDescription = null,
                                 tint = Color.White.copy(alpha = 0.95f),
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(SleekSizes.iconSmall)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
@@ -220,9 +223,13 @@ fun SavingGoalsFullScreen(
                                 style = MaterialTheme.typography.labelMedium,
                                 color = Color.White.copy(alpha = 0.9f),
                                 fontWeight = FontWeight.Bold,
-                                letterSpacing = 1.1.sp
+                                letterSpacing = 1.1.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
+
+                        Spacer(modifier = Modifier.width(8.dp))
 
                         // Smart Badge with Active Goals count
                         Surface(
@@ -243,9 +250,11 @@ fun SavingGoalsFullScreen(
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text(
                                     text = "${savingsGoals.size} Goals",
-                                    fontSize = 11.sp,
+                                    fontSize = SleekSizes.textCaption,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color.White
+                                    color = Color.White,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
                                 )
                             }
                         }
@@ -259,7 +268,9 @@ fun SavingGoalsFullScreen(
                         fontSize = 32.sp,
                         fontWeight = FontWeight.Black,
                         color = Color.White,
-                        letterSpacing = (-0.5).sp
+                        letterSpacing = (-0.5).sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
 
                     Spacer(modifier = Modifier.height(14.dp))
@@ -272,15 +283,19 @@ fun SavingGoalsFullScreen(
                     ) {
                         Text(
                             text = "Target: ₹%,.0f".format(totalTargetAll),
-                            fontSize = 12.sp,
+                            fontSize = SleekSizes.textBodySmall,
                             color = Color.White.copy(alpha = 0.8f),
-                            fontWeight = FontWeight.Medium
+                            fontWeight = FontWeight.Medium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                         Text(
                             text = "${(overallProgressRatio * 100).toInt()}% Saved",
-                            fontSize = 12.sp,
+                            fontSize = SleekSizes.textBodySmall,
                             color = Color.White,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
 
@@ -291,14 +306,14 @@ fun SavingGoalsFullScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(6.dp)
-                            .clip(RoundedCornerShape(3.dp))
+                            .clip(SleekShapes.xs)
                             .background(Color.White.copy(alpha = 0.2f))
                     ) {
                         Box(
                             modifier = Modifier
                                 .fillMaxHeight()
                                 .fillMaxWidth(overallProgressRatio)
-                                .clip(RoundedCornerShape(3.dp))
+                                .clip(SleekShapes.xs)
                                 .background(
                                     Brush.horizontalGradient(
                                         colors = listOf(Color(0xFF34D399), Color(0xFF10B981))
@@ -321,7 +336,9 @@ fun SavingGoalsFullScreen(
                     text = "My Saving",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = SleekTextPrimary
+                    color = SleekTextPrimary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
 
                 OutlinedButton(
@@ -329,7 +346,7 @@ fun SavingGoalsFullScreen(
                         haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                         showAddDialog = true
                     },
-                    shape = RoundedCornerShape(20.dp),
+                    shape = SleekShapes.pill,
                     border = BorderStroke(1.dp, SleekPrimary),
                     contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp)
                 ) {
@@ -337,14 +354,16 @@ fun SavingGoalsFullScreen(
                         imageVector = Icons.Rounded.Add,
                         contentDescription = null,
                         tint = SleekPrimary,
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(SleekSizes.iconMicro)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = "Add New",
                         color = SleekPrimary,
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Bold
+                        fontSize = SleekSizes.textBodyMedium,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }
@@ -366,9 +385,9 @@ fun SavingGoalsFullScreen(
 
                     Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(16.dp))
+                            .clip(SleekShapes.lg)
                             .background(bgColor)
-                            .border(1.dp, borderColor, RoundedCornerShape(16.dp))
+                            .border(1.dp, borderColor, SleekShapes.lg)
                             .clickable {
                                 haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                 selectedCategoryFilter = cat
@@ -382,9 +401,11 @@ fun SavingGoalsFullScreen(
                         ) {
                             Text(
                                 text = cat,
-                                fontSize = 13.sp,
+                                fontSize = SleekSizes.textBodyMedium,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                color = textColor
+                                color = textColor,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
 
                             if (isDeletable) {
@@ -418,9 +439,9 @@ fun SavingGoalsFullScreen(
                 item {
                     Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(16.dp))
+                            .clip(SleekShapes.lg)
                             .background(SleekPrimaryContainer.copy(alpha = 0.3f))
-                            .border(1.dp, SleekPrimary.copy(alpha = 0.4f), RoundedCornerShape(16.dp))
+                            .border(1.dp, SleekPrimary.copy(alpha = 0.4f), SleekShapes.lg)
                             .clickable {
                                 haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                 showCreateCategoryDialog = true
@@ -436,13 +457,15 @@ fun SavingGoalsFullScreen(
                                 imageVector = Icons.Rounded.Add,
                                 contentDescription = "Add Category",
                                 tint = SleekPrimary,
-                                modifier = Modifier.size(16.dp)
+                                modifier = Modifier.size(SleekSizes.iconSmall)
                             )
                             Text(
                                 text = "Category",
-                                fontSize = 13.sp,
+                                fontSize = SleekSizes.textBodyMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = SleekPrimary
+                                color = SleekPrimary,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                     }
@@ -572,15 +595,17 @@ fun SavingGoalsFullScreen(
                     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         Text(
                             "Enter a new category name for your goals:",
-                            fontSize = 13.sp,
-                            color = SleekTextSecondary
+                            fontSize = SleekSizes.textBodyMedium,
+                            color = SleekTextSecondary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                         OutlinedTextField(
                             value = newCategoryInput,
                             onValueChange = { newCategoryInput = it },
                             label = { Text("Category Name (e.g. Gadgets, Vacation)") },
                             singleLine = true,
-                            shape = RoundedCornerShape(12.dp),
+                            shape = SleekShapes.md,
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = SleekPrimary,
                                 unfocusedBorderColor = SleekBorder
@@ -601,7 +626,7 @@ fun SavingGoalsFullScreen(
                                 showCreateCategoryDialog = false
                             }
                         },
-                        shape = RoundedCornerShape(12.dp),
+                        shape = SleekShapes.md,
                         colors = ButtonDefaults.buttonColors(containerColor = SleekPrimary)
                     ) {
                         Text("Create", color = Color.White)
@@ -690,7 +715,7 @@ fun SavingGoalCardItem(
     val primaryAccent = getCategoryAccentColor(goal.category)
 
     Card(
-        shape = RoundedCornerShape(22.dp),
+        shape = SleekShapes.xl,
         colors = CardDefaults.cardColors(containerColor = SleekSurface),
         border = BorderStroke(1.dp, SleekBorder),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -743,7 +768,7 @@ fun SavingGoalCardItem(
                             imageVector = getCategoryVectorIcon(goal.category, goal.name),
                             contentDescription = goal.category,
                             tint = primaryAccent,
-                            modifier = Modifier.size(22.dp)
+                            modifier = Modifier.size(SleekSizes.iconMedium)
                         )
                     }
                 }
@@ -752,7 +777,7 @@ fun SavingGoalCardItem(
             // Goal Title
             Text(
                 text = goal.name,
-                fontSize = 15.sp,
+                fontSize = SleekSizes.textBodyLarge,
                 fontWeight = FontWeight.Bold,
                 color = SleekTextPrimary,
                 maxLines = 1,
@@ -762,23 +787,32 @@ fun SavingGoalCardItem(
             // Target Date Subtitle
             Text(
                 text = formattedDate,
-                fontSize = 11.sp,
-                color = SleekTextSecondary
+                fontSize = SleekSizes.textCaption,
+                color = SleekTextSecondary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
 
             // Goal Saved vs Target Amount Row
-            Row(verticalAlignment = Alignment.Bottom) {
+            Row(
+                verticalAlignment = Alignment.Bottom,
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Text(
                     text = "₹%,.0f".format(goal.currentAmount),
-                    fontSize = 14.sp,
+                    fontSize = SleekSizes.textBody,
                     fontWeight = FontWeight.Bold,
-                    color = primaryAccent
+                    color = primaryAccent,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Text(
                     text = " of ₹%,.0f".format(goal.targetAmount),
-                    fontSize = 11.sp,
+                    fontSize = SleekSizes.textCaption,
                     color = SleekTextSecondary,
-                    fontWeight = FontWeight.Normal
+                    fontWeight = FontWeight.Normal,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }
@@ -860,7 +894,7 @@ fun CoinDepositAnimationDialog(
             contentAlignment = Alignment.Center
         ) {
             Card(
-                shape = RoundedCornerShape(28.dp),
+                shape = SleekShapes.xxl,
                 colors = CardDefaults.cardColors(containerColor = SleekSurface),
                 border = BorderStroke(1.dp, SleekBorder),
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
@@ -874,9 +908,11 @@ fun CoinDepositAnimationDialog(
                 ) {
                     Text(
                         text = "Depositing to $goalName",
-                        fontSize = 14.sp,
+                        fontSize = SleekSizes.textBody,
                         fontWeight = FontWeight.Bold,
-                        color = SleekTextSecondary
+                        color = SleekTextSecondary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
 
                     Spacer(modifier = Modifier.height(28.dp))
@@ -911,7 +947,7 @@ fun CoinDepositAnimationDialog(
                                 .scale(cardScale)
                                 .width(180.dp)
                                 .height(105.dp)
-                                .clip(RoundedCornerShape(20.dp))
+                                .clip(SleekShapes.xl)
                                 .background(
                                     Brush.linearGradient(
                                         colors = listOf(Color(0xFF7C3AED), Color(0xFF4C1D95))
@@ -920,7 +956,7 @@ fun CoinDepositAnimationDialog(
                                 .border(
                                     width = 2.dp,
                                     color = Color(0xFFA78BFA).copy(alpha = cardGlowAlpha + 0.4f),
-                                    shape = RoundedCornerShape(20.dp)
+                                    shape = SleekShapes.xl
                                 ),
                             contentAlignment = Alignment.TopCenter
                         ) {
@@ -930,14 +966,14 @@ fun CoinDepositAnimationDialog(
                                     .padding(top = 8.dp)
                                     .width(80.dp)
                                     .height(5.dp)
-                                    .clip(RoundedCornerShape(3.dp))
+                                    .clip(SleekShapes.xs)
                                     .background(Color(0xFF2E1065))
                             )
 
                             // Subtle Card Icon / Brand Tag
                             Text(
                                 text = "FS",
-                                fontSize = 18.sp,
+                                fontSize = SleekSizes.textTitle,
                                 fontWeight = FontWeight.Black,
                                 color = Color.White.copy(alpha = 0.35f),
                                 modifier = Modifier.align(Alignment.Center)
@@ -1047,7 +1083,7 @@ fun AddEditSavingsGoalDialog(
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
-            shape = RoundedCornerShape(24.dp),
+            shape = SleekShapes.xxl,
             colors = CardDefaults.cardColors(containerColor = SleekSurface),
             border = BorderStroke(1.dp, SleekBorder),
             modifier = Modifier.fillMaxWidth()
@@ -1062,7 +1098,9 @@ fun AddEditSavingsGoalDialog(
                     text = if (goalToEdit == null) "Add New Saving Goal" else "Edit Saving Goal",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = SleekTextPrimary
+                    color = SleekTextPrimary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
 
                 // Goal Name Input
@@ -1072,9 +1110,9 @@ fun AddEditSavingsGoalDialog(
                         name = it
                         errorMessage = null
                     },
-                    label = { Text("Goal Name (e.g. Holiday, Laptop)") },
+                    label = { Text("Goal Name (e.g. Holiday, Laptop)", maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     singleLine = true,
-                    shape = RoundedCornerShape(14.dp),
+                    shape = SleekShapes.md,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = SleekPrimary,
                         unfocusedBorderColor = SleekBorder
@@ -1091,11 +1129,11 @@ fun AddEditSavingsGoalDialog(
                         targetStr = it
                         errorMessage = null
                     },
-                    label = { Text("Total Target Money (INR ₹)") },
+                    label = { Text("Total Target Money (INR ₹)", maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     prefix = { Text("₹ ", fontWeight = FontWeight.Bold, color = SleekPrimary) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
-                    shape = RoundedCornerShape(14.dp),
+                    shape = SleekShapes.md,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = SleekPrimary,
                         unfocusedBorderColor = SleekBorder
@@ -1108,9 +1146,11 @@ fun AddEditSavingsGoalDialog(
                 // Category Selection
                 Text(
                     text = "Select Category",
-                    fontSize = 12.sp,
+                    fontSize = SleekSizes.textBodySmall,
                     fontWeight = FontWeight.Bold,
-                    color = SleekTextSecondary
+                    color = SleekTextSecondary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
 
                 FlowRow(
@@ -1133,7 +1173,7 @@ fun AddEditSavingsGoalDialog(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                                 ) {
-                                    Text(cat, fontSize = 12.sp)
+                                    Text(cat, fontSize = SleekSizes.textBodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
                                     if (isDeletable) {
                                         Box(
                                             modifier = Modifier
@@ -1158,7 +1198,7 @@ fun AddEditSavingsGoalDialog(
                                     }
                                 }
                             },
-                            shape = RoundedCornerShape(12.dp)
+                            shape = SleekShapes.md
                         )
                     }
 
@@ -1168,8 +1208,8 @@ fun AddEditSavingsGoalDialog(
                             haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                             showInlineAddCategory = !showInlineAddCategory
                         },
-                        label = { Text("+ New", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = SleekPrimary) },
-                        shape = RoundedCornerShape(12.dp)
+                        label = { Text("+ New", fontSize = SleekSizes.textBodySmall, fontWeight = FontWeight.Bold, color = SleekPrimary) },
+                        shape = SleekShapes.md
                     )
                 }
 
@@ -1184,7 +1224,7 @@ fun AddEditSavingsGoalDialog(
                             onValueChange = { inlineCategoryName = it },
                             placeholder = { Text("Category Name") },
                             singleLine = true,
-                            shape = RoundedCornerShape(12.dp),
+                            shape = SleekShapes.md,
                             modifier = Modifier.weight(1f)
                         )
                         Button(
@@ -1197,10 +1237,10 @@ fun AddEditSavingsGoalDialog(
                                     showInlineAddCategory = false
                                 }
                             },
-                            shape = RoundedCornerShape(12.dp),
+                            shape = SleekShapes.md,
                             colors = ButtonDefaults.buttonColors(containerColor = SleekPrimary)
                         ) {
-                            Text("Add")
+                            Text("Add", fontSize = SleekSizes.textBodySmall)
                         }
                     }
                 }
@@ -1208,9 +1248,11 @@ fun AddEditSavingsGoalDialog(
                 // Target Timeframe Presets
                 Text(
                     text = "Target Timeframe",
-                    fontSize = 12.sp,
+                    fontSize = SleekSizes.textBodySmall,
                     fontWeight = FontWeight.Bold,
-                    color = SleekTextSecondary
+                    color = SleekTextSecondary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
 
                 Row(
@@ -1228,7 +1270,7 @@ fun AddEditSavingsGoalDialog(
                         Box(
                             modifier = Modifier
                                 .weight(1f)
-                                .clip(RoundedCornerShape(12.dp))
+                                .clip(SleekShapes.md)
                                 .background(if (isSel) SleekPrimary else SleekPrimaryContainer.copy(alpha = 0.2f))
                                 .clickable { selectedPresetMonths = months }
                                 .padding(vertical = 8.dp),
@@ -1236,9 +1278,11 @@ fun AddEditSavingsGoalDialog(
                         ) {
                             Text(
                                 text = label,
-                                fontSize = 10.sp,
+                                fontSize = SleekSizes.textMicro,
                                 fontWeight = FontWeight.Bold,
-                                color = if (isSel) Color.White else SleekTextSecondary
+                                color = if (isSel) Color.White else SleekTextSecondary,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                     }
@@ -1247,9 +1291,11 @@ fun AddEditSavingsGoalDialog(
                 // Goal Image Option
                 Text(
                     text = "Goal Image (Optional)",
-                    fontSize = 12.sp,
+                    fontSize = SleekSizes.textBodySmall,
                     fontWeight = FontWeight.Bold,
-                    color = SleekTextSecondary
+                    color = SleekTextSecondary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
 
                 Row(
@@ -1290,30 +1336,32 @@ fun AddEditSavingsGoalDialog(
                                     suppressAutoLock()
                                     imagePickerLauncher.launch("image/*")
                                 },
-                                shape = RoundedCornerShape(12.dp),
+                                shape = SleekShapes.md,
                                 contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
                             ) {
-                                Text("Choose Image", fontSize = 11.sp)
+                                Text("Choose Image", fontSize = SleekSizes.textCaption)
                             }
 
                             if (!imageUriStr.isNullOrBlank()) {
                                 TextButton(
                                     onClick = { imageUriStr = null }
                                 ) {
-                                    Text("Remove", fontSize = 11.sp, color = Color(0xFFEF4444))
+                                    Text("Remove", fontSize = SleekSizes.textCaption, color = Color(0xFFEF4444))
                                 }
                             }
                         }
                         Text(
                             text = if (imageUriStr == null) "A category icon avatar will be created automatically" else "Custom image attached",
-                            fontSize = 10.sp,
-                            color = SleekTextSecondary
+                            fontSize = SleekSizes.textMicro,
+                            color = SleekTextSecondary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
 
                 errorMessage?.let { err ->
-                    Text(err, color = Color(0xFFEF4444), fontSize = 12.sp)
+                    Text(err, color = Color(0xFFEF4444), fontSize = SleekSizes.textBodySmall)
                 }
 
                 // Dialog Buttons
@@ -1323,7 +1371,7 @@ fun AddEditSavingsGoalDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     TextButton(onClick = onDismiss) {
-                        Text("Cancel", color = SleekTextSecondary)
+                        Text("Cancel", color = SleekTextSecondary, fontSize = SleekSizes.textBodyMedium)
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(
@@ -1349,10 +1397,10 @@ fun AddEditSavingsGoalDialog(
                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                             onSave(name.trim(), targetVal, category, imageUriStr, calcDate)
                         },
-                        shape = RoundedCornerShape(14.dp),
+                        shape = SleekShapes.md,
                         colors = ButtonDefaults.buttonColors(containerColor = SleekPrimary)
                     ) {
-                        Text(if (goalToEdit == null) "Save Goal" else "Update", color = Color.White)
+                        Text(if (goalToEdit == null) "Save Goal" else "Update", color = Color.White, fontSize = SleekSizes.textBodyMedium)
                     }
                 }
             }
@@ -1388,7 +1436,7 @@ fun GoalDepositDetailBottomSheet(
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
-            shape = RoundedCornerShape(28.dp),
+            shape = SleekShapes.xxl,
             colors = CardDefaults.cardColors(containerColor = SleekSurface),
             border = BorderStroke(1.dp, SleekBorder),
             modifier = Modifier.fillMaxWidth()
@@ -1408,6 +1456,7 @@ fun GoalDepositDetailBottomSheet(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(
+                        modifier = Modifier.weight(1f, fill = false),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
@@ -1435,17 +1484,21 @@ fun GoalDepositDetailBottomSheet(
                             }
                         }
 
-                        Column {
+                        Column(modifier = Modifier.weight(1f, fill = false)) {
                             Text(
                                 text = goal.name,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = SleekTextPrimary
+                                color = SleekTextPrimary,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                             Text(
                                 text = "Category: ${goal.category}",
-                                fontSize = 12.sp,
-                                color = SleekTextSecondary
+                                fontSize = SleekSizes.textBodySmall,
+                                color = SleekTextSecondary,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                     }
@@ -1462,7 +1515,7 @@ fun GoalDepositDetailBottomSheet(
 
                 // Goal Status Banner
                 Surface(
-                    shape = RoundedCornerShape(18.dp),
+                    shape = SleekShapes.lg,
                     color = primaryAccent.copy(alpha = 0.12f),
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -1473,22 +1526,26 @@ fun GoalDepositDetailBottomSheet(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Column {
-                            Text("Saved so far", fontSize = 11.sp, color = SleekTextSecondary)
+                        Column(modifier = Modifier.weight(1f, fill = false)) {
+                            Text("Saved so far", fontSize = SleekSizes.textCaption, color = SleekTextSecondary, maxLines = 1, overflow = TextOverflow.Ellipsis)
                             Text(
                                 "₹%,.2f".format(goal.currentAmount),
-                                fontSize = 18.sp,
+                                fontSize = SleekSizes.textTitle,
                                 fontWeight = FontWeight.Black,
-                                color = primaryAccent
+                                color = primaryAccent,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
-                        Column(horizontalAlignment = Alignment.End) {
-                            Text("Target Amount", fontSize = 11.sp, color = SleekTextSecondary)
+                        Column(horizontalAlignment = Alignment.End, modifier = Modifier.weight(1f, fill = false)) {
+                            Text("Target Amount", fontSize = SleekSizes.textCaption, color = SleekTextSecondary, maxLines = 1, overflow = TextOverflow.Ellipsis)
                             Text(
                                 "₹%,.2f".format(goal.targetAmount),
-                                fontSize = 14.sp,
+                                fontSize = SleekSizes.textBody,
                                 fontWeight = FontWeight.Bold,
-                                color = SleekTextPrimary
+                                color = SleekTextPrimary,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                     }
@@ -1505,7 +1562,7 @@ fun GoalDepositDetailBottomSheet(
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
-                            .clip(RoundedCornerShape(20.dp))
+                            .clip(SleekShapes.xl)
                             .clickable {
                                 haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                 isDepositMode = true
@@ -1534,9 +1591,11 @@ fun GoalDepositDetailBottomSheet(
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = "Deposit",
-                            fontSize = 12.sp,
+                            fontSize = SleekSizes.textBodySmall,
                             fontWeight = if (isDep) FontWeight.Bold else FontWeight.Medium,
-                            color = if (isDep) Color(0xFF10B981) else SleekTextSecondary
+                            color = if (isDep) Color(0xFF10B981) else SleekTextSecondary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
 
@@ -1545,7 +1604,7 @@ fun GoalDepositDetailBottomSheet(
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
-                            .clip(RoundedCornerShape(20.dp))
+                            .clip(SleekShapes.xl)
                             .clickable {
                                 haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                 isDepositMode = false
@@ -1574,9 +1633,11 @@ fun GoalDepositDetailBottomSheet(
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = "Withdraw",
-                            fontSize = 12.sp,
+                            fontSize = SleekSizes.textBodySmall,
                             fontWeight = if (isWith) FontWeight.Bold else FontWeight.Medium,
-                            color = if (isWith) Color(0xFFEF4444) else SleekTextSecondary
+                            color = if (isWith) Color(0xFFEF4444) else SleekTextSecondary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
@@ -1585,9 +1646,9 @@ fun GoalDepositDetailBottomSheet(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(20.dp))
+                        .clip(SleekShapes.xl)
                         .background(activeSoftBg)
-                        .border(1.dp, activeColor.copy(alpha = 0.4f), RoundedCornerShape(20.dp))
+                        .border(1.dp, activeColor.copy(alpha = 0.4f), SleekShapes.xl)
                         .clickable { isAmountEditing = true }
                         .padding(16.dp),
                     contentAlignment = Alignment.Center
@@ -1600,10 +1661,10 @@ fun GoalDepositDetailBottomSheet(
                             OutlinedTextField(
                                 value = depositInput,
                                 onValueChange = { depositInput = it },
-                                placeholder = { Text("0", fontSize = 26.sp, color = SleekTextSecondary) },
+                                placeholder = { Text("0", fontSize = SleekSizes.textHeadlineLarge, color = SleekTextSecondary) },
                                 singleLine = true,
                                 textStyle = LocalTextStyle.current.copy(
-                                    fontSize = 26.sp,
+                                    fontSize = SleekSizes.textHeadlineLarge,
                                     fontWeight = FontWeight.Bold,
                                     color = activeColor,
                                     textAlign = TextAlign.Center
@@ -1618,16 +1679,20 @@ fun GoalDepositDetailBottomSheet(
                             val formatted = if (enteredAmount > 0) "₹%,.0f".format(enteredAmount) else "₹0"
                             Text(
                                 text = formatted,
-                                fontSize = 30.sp,
+                                fontSize = SleekSizes.textHeadlineLarge,
                                 fontWeight = FontWeight.ExtraBold,
                                 color = activeColor,
-                                textAlign = TextAlign.Center
+                                textAlign = TextAlign.Center,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
                                 text = if (enteredAmount > 0) "Tap to edit amount" else "Tap to enter transaction amount",
-                                fontSize = 11.sp,
-                                color = SleekTextSecondary
+                                fontSize = SleekSizes.textCaption,
+                                color = SleekTextSecondary,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                     }
@@ -1642,9 +1707,9 @@ fun GoalDepositDetailBottomSheet(
                         Box(
                             modifier = Modifier
                                 .weight(1f)
-                                .clip(RoundedCornerShape(12.dp))
+                                .clip(SleekShapes.md)
                                 .background(activeSoftBg)
-                                .border(1.dp, activeColor.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
+                                .border(1.dp, activeColor.copy(alpha = 0.2f), SleekShapes.md)
                                 .clickable {
                                     haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                     val current = depositInput.toDoubleOrNull() ?: 0.0
@@ -1655,9 +1720,11 @@ fun GoalDepositDetailBottomSheet(
                         ) {
                             Text(
                                 text = "+₹%,.0f".format(preset),
-                                fontSize = 11.sp,
+                                fontSize = SleekSizes.textCaption,
                                 fontWeight = FontWeight.Bold,
-                                color = activeColor
+                                color = activeColor,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                     }
@@ -1675,20 +1742,24 @@ fun GoalDepositDetailBottomSheet(
                     ) {
                         Text(
                             text = "Available Net Balance:",
-                            fontSize = 11.sp,
-                            color = SleekTextSecondary
+                            fontSize = SleekSizes.textCaption,
+                            color = SleekTextSecondary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                         Text(
                             text = "₹%,.2f".format(availableNetBalance),
-                            fontSize = 12.sp,
+                            fontSize = SleekSizes.textBodySmall,
                             fontWeight = FontWeight.Bold,
-                            color = if (availableNetBalance > 0) Color(0xFF10B981) else Color(0xFFEF4444)
+                            color = if (availableNetBalance > 0) Color(0xFF10B981) else Color(0xFFEF4444),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
 
                     if (isDepositMode && isExceedingNetBalance) {
                         Surface(
-                            shape = RoundedCornerShape(14.dp),
+                            shape = SleekShapes.md,
                             color = Color(0xFFFEF2F2),
                             border = BorderStroke(1.dp, Color(0xFFFCA5A5)),
                             modifier = Modifier.fillMaxWidth()
@@ -1706,7 +1777,7 @@ fun GoalDepositDetailBottomSheet(
                                 )
                                 Text(
                                     text = "🔒 Total Balance Locked: Deposit of ₹%,.2f exceeds available net balance (₹%,.2f). Add Income first!".format(enteredAmount, availableNetBalance),
-                                    fontSize = 11.sp,
+                                    fontSize = SleekSizes.textCaption,
                                     fontWeight = FontWeight.Bold,
                                     color = Color(0xFF991B1B)
                                 )
@@ -1735,10 +1806,10 @@ fun GoalDepositDetailBottomSheet(
                         containerColor = activeColor,
                         disabledContainerColor = activeColor.copy(alpha = 0.3f)
                     ),
-                    shape = RoundedCornerShape(18.dp),
+                    shape = SleekShapes.lg,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(52.dp)
+                        .height(SleekSizes.buttonHeightLarge)
                 ) {
                     Text(
                         text = if (isDepositMode && isExceedingNetBalance) "🔒 Net Balance Locked"
@@ -1746,8 +1817,10 @@ fun GoalDepositDetailBottomSheet(
                                else if (!isDepositMode && enteredAmount > 0) "Confirm Withdrawal (-₹%,.0f)".format(enteredAmount)
                                else "Enter Amount",
                         color = Color.White,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Bold
+                        fontSize = SleekSizes.textBodyLarge,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }
@@ -1811,21 +1884,23 @@ fun SavingsGoalsSection(
                 text = "Saving Goals",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = SleekTextPrimary
+                color = SleekTextPrimary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
             OutlinedButton(
                 onClick = onAddGoalClick,
-                shape = RoundedCornerShape(20.dp),
+                shape = SleekShapes.xl,
                 border = BorderStroke(1.dp, SleekPrimary)
             ) {
-                Text("+ Add New", fontSize = 12.sp, color = SleekPrimary)
+                Text("+ Add New", fontSize = SleekSizes.textBodySmall, color = SleekPrimary)
             }
         }
 
         Spacer(modifier = Modifier.height(12.dp))
 
         if (savingsGoals.isEmpty()) {
-            Text("No saving goals yet. Tap '+ Add New' to get started!", fontSize = 12.sp, color = SleekTextSecondary)
+            Text("No saving goals yet. Tap '+ Add New' to get started!", fontSize = SleekSizes.textBodySmall, color = SleekTextSecondary)
         } else {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 savingsGoals.forEach { goal ->

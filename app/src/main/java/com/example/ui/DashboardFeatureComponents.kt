@@ -65,7 +65,7 @@ fun DashboardQuickActionHub(
     modifier: Modifier = Modifier
 ) {
     Card(
-        shape = RoundedCornerShape(22.dp),
+        shape = SleekShapes.xl,
         colors = CardDefaults.cardColors(containerColor = SleekSurface),
         border = BorderStroke(1.dp, SleekBorder),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
@@ -155,7 +155,7 @@ private fun QuickActionButton(
                 scaleX = scale
                 scaleY = scale
             }
-            .clip(RoundedCornerShape(14.dp))
+            .clip(SleekShapes.md)
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
@@ -170,25 +170,26 @@ private fun QuickActionButton(
         Box(
             modifier = Modifier
                 .size(46.dp)
-                .clip(RoundedCornerShape(14.dp))
+                .clip(SleekShapes.md)
                 .background(bgBrush)
-                .border(BorderStroke(1.dp, tintColor.copy(alpha = 0.3f)), RoundedCornerShape(14.dp)),
+                .border(BorderStroke(1.dp, tintColor.copy(alpha = 0.3f)), SleekShapes.md),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = label,
                 tint = tintColor,
-                modifier = Modifier.size(22.dp)
+                modifier = Modifier.size(SleekSizes.iconMedium)
             )
         }
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = label,
-            fontSize = 11.sp,
+            fontSize = SleekSizes.textCaption,
             fontWeight = FontWeight.SemiBold,
             color = SleekTextPrimary,
-            maxLines = 1
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }

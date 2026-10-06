@@ -159,17 +159,21 @@ fun SpendingTrendsScreen(
                 Column {
                     Text(
                         text = "Spending Trends",
-                        fontSize = 20.sp,
+                        fontSize = SleekSizes.textTitleLarge,
                         fontWeight = FontWeight.Bold,
-                        color = SleekTextPrimary
+                        color = SleekTextPrimary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                     Text(
                         text = if (selectedTimeframe == TrendTimeframe.WEEKLY)
                             "Weekly trend over last $selectedRangeWeeks weeks"
                         else
                             "Monthly trend over last $selectedRangeMonths months",
-                        fontSize = 12.sp,
-                        color = SleekTextSecondary
+                        fontSize = SleekSizes.textBodySmall,
+                        color = SleekTextSecondary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }
@@ -177,9 +181,9 @@ fun SpendingTrendsScreen(
             // Chart Style Toggle (Spline vs Bar)
             Row(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(12.dp))
+                    .clip(SleekShapes.md)
                     .background(SleekSurface)
-                    .border(1.dp, SleekBorder, RoundedCornerShape(12.dp))
+                    .border(1.dp, SleekBorder, SleekShapes.md)
                     .padding(3.dp),
                 horizontalArrangement = Arrangement.spacedBy(2.dp)
             ) {
@@ -190,14 +194,14 @@ fun SpendingTrendsScreen(
                     },
                     modifier = Modifier
                         .size(32.dp)
-                        .clip(RoundedCornerShape(8.dp))
+                        .clip(SleekShapes.sm)
                         .background(if (selectedChartStyle == TrendChartStyle.CURVE) SleekPrimary else Color.Transparent)
                 ) {
                     Icon(
                         imageVector = Icons.Default.ShowChart,
                         contentDescription = "Spline Curve",
                         tint = if (selectedChartStyle == TrendChartStyle.CURVE) Color.White else SleekTextSecondary,
-                        modifier = Modifier.size(18.dp)
+                        modifier = Modifier.size(SleekSizes.iconSmall)
                     )
                 }
                 IconButton(
@@ -207,14 +211,14 @@ fun SpendingTrendsScreen(
                     },
                     modifier = Modifier
                         .size(32.dp)
-                        .clip(RoundedCornerShape(8.dp))
+                        .clip(SleekShapes.sm)
                         .background(if (selectedChartStyle == TrendChartStyle.BARS) SleekPrimary else Color.Transparent)
                 ) {
                     Icon(
                         imageVector = Icons.Default.BarChart,
                         contentDescription = "Bars",
                         tint = if (selectedChartStyle == TrendChartStyle.BARS) Color.White else SleekTextSecondary,
-                        modifier = Modifier.size(18.dp)
+                        modifier = Modifier.size(SleekSizes.iconSmall)
                     )
                 }
             }
@@ -226,16 +230,16 @@ fun SpendingTrendsScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
+                .clip(SleekShapes.lg)
                 .background(SleekSurface)
-                .border(1.dp, SleekBorder, RoundedCornerShape(16.dp))
+                .border(1.dp, SleekBorder, SleekShapes.lg)
                 .padding(4.dp),
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .clip(RoundedCornerShape(12.dp))
+                    .clip(SleekShapes.md)
                     .background(if (selectedTimeframe == TrendTimeframe.WEEKLY) SleekPrimary else Color.Transparent)
                     .clickable {
                         haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
@@ -252,13 +256,15 @@ fun SpendingTrendsScreen(
                         imageVector = Icons.Default.CalendarViewWeek,
                         contentDescription = null,
                         tint = if (selectedTimeframe == TrendTimeframe.WEEKLY) Color.White else SleekTextSecondary,
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(SleekSizes.iconSmall)
                     )
                     Text(
                         text = "Weekly Trends",
-                        fontSize = 13.sp,
+                        fontSize = SleekSizes.textBodyMedium,
                         fontWeight = if (selectedTimeframe == TrendTimeframe.WEEKLY) FontWeight.Bold else FontWeight.Medium,
-                        color = if (selectedTimeframe == TrendTimeframe.WEEKLY) Color.White else SleekTextSecondary
+                        color = if (selectedTimeframe == TrendTimeframe.WEEKLY) Color.White else SleekTextSecondary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }
@@ -266,7 +272,7 @@ fun SpendingTrendsScreen(
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .clip(RoundedCornerShape(12.dp))
+                    .clip(SleekShapes.md)
                     .background(if (selectedTimeframe == TrendTimeframe.MONTHLY) SleekPrimary else Color.Transparent)
                     .clickable {
                         haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
@@ -283,13 +289,15 @@ fun SpendingTrendsScreen(
                         imageVector = Icons.Default.CalendarMonth,
                         contentDescription = null,
                         tint = if (selectedTimeframe == TrendTimeframe.MONTHLY) Color.White else SleekTextSecondary,
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(SleekSizes.iconSmall)
                     )
                     Text(
                         text = "Monthly Trends",
-                        fontSize = 13.sp,
+                        fontSize = SleekSizes.textBodyMedium,
                         fontWeight = if (selectedTimeframe == TrendTimeframe.MONTHLY) FontWeight.Bold else FontWeight.Medium,
-                        color = if (selectedTimeframe == TrendTimeframe.MONTHLY) Color.White else SleekTextSecondary
+                        color = if (selectedTimeframe == TrendTimeframe.MONTHLY) Color.White else SleekTextSecondary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }
@@ -305,9 +313,11 @@ fun SpendingTrendsScreen(
         ) {
             Text(
                 text = "Window:",
-                fontSize = 12.sp,
+                fontSize = SleekSizes.textBodySmall,
                 fontWeight = FontWeight.Medium,
-                color = SleekTextSecondary
+                color = SleekTextSecondary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
 
             if (selectedTimeframe == TrendTimeframe.WEEKLY) {
@@ -319,7 +329,7 @@ fun SpendingTrendsScreen(
                             haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                             selectedRangeWeeks = weeks
                         },
-                        label = { Text(label, fontSize = 11.sp, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal) },
+                        label = { Text(label, fontSize = SleekSizes.textCaption, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = SleekPrimaryContainer,
                             selectedLabelColor = SleekPrimary,
@@ -331,7 +341,7 @@ fun SpendingTrendsScreen(
                             selected = isSelected,
                             borderColor = if (isSelected) SleekPrimary else SleekBorder
                         ),
-                        shape = RoundedCornerShape(12.dp)
+                        shape = SleekShapes.md
                     )
                 }
             } else {
@@ -343,7 +353,7 @@ fun SpendingTrendsScreen(
                             haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                             selectedRangeMonths = months
                         },
-                        label = { Text(label, fontSize = 11.sp, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal) },
+                        label = { Text(label, fontSize = SleekSizes.textCaption, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = SleekPrimaryContainer,
                             selectedLabelColor = SleekPrimary,
@@ -355,7 +365,7 @@ fun SpendingTrendsScreen(
                             selected = isSelected,
                             borderColor = if (isSelected) SleekPrimary else SleekBorder
                         ),
-                        shape = RoundedCornerShape(12.dp)
+                        shape = SleekShapes.md
                     )
                 }
             }
@@ -367,7 +377,7 @@ fun SpendingTrendsScreen(
         // 📈 MAIN CUSTOM CANVAS CHART CARD
         // ==========================================
         Card(
-            shape = RoundedCornerShape(24.dp),
+            shape = SleekShapes.xxl,
             colors = CardDefaults.cardColors(containerColor = SleekSurface),
             border = BorderStroke(1.dp, SleekBorder),
             modifier = Modifier
@@ -384,12 +394,14 @@ fun SpendingTrendsScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.Top
                     ) {
-                        Column {
+                        Column(modifier = Modifier.weight(1f, fill = false)) {
                             Text(
                                 text = cur.title,
-                                fontSize = 13.sp,
+                                fontSize = SleekSizes.textBodyMedium,
                                 fontWeight = FontWeight.SemiBold,
-                                color = SleekTextSecondary
+                                color = SleekTextSecondary,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                             Spacer(modifier = Modifier.height(2.dp))
                             Row(
@@ -398,9 +410,11 @@ fun SpendingTrendsScreen(
                             ) {
                                 Text(
                                     text = "$currencySymbol%,.2f".format(cur.totalSpent),
-                                    fontSize = 24.sp,
+                                    fontSize = SleekSizes.textHeadline,
                                     fontWeight = FontWeight.Black,
-                                    color = SleekTextPrimary
+                                    color = SleekTextPrimary,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
                                 )
                                 cur.changePercent?.let { pct ->
                                     val isDrop = pct <= 0
@@ -408,7 +422,7 @@ fun SpendingTrendsScreen(
                                     val badgeText = if (isDrop) IncomeGreen else ExpenseRed
                                     Row(
                                         modifier = Modifier
-                                            .clip(RoundedCornerShape(8.dp))
+                                            .clip(SleekShapes.sm)
                                             .background(badgeBg)
                                             .padding(horizontal = 6.dp, vertical = 2.dp),
                                         verticalAlignment = Alignment.CenterVertically,
@@ -418,32 +432,40 @@ fun SpendingTrendsScreen(
                                             imageVector = if (isDrop) Icons.AutoMirrored.Filled.TrendingDown else Icons.AutoMirrored.Filled.TrendingUp,
                                             contentDescription = null,
                                             tint = badgeText,
-                                            modifier = Modifier.size(12.dp)
+                                            modifier = Modifier.size(SleekSizes.iconMicro)
                                         )
                                         Text(
                                             text = "%+.1f%%".format(pct),
-                                            fontSize = 11.sp,
+                                            fontSize = SleekSizes.textCaption,
                                             fontWeight = FontWeight.Bold,
-                                            color = badgeText
+                                            color = badgeText,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
                                         )
                                     }
                                 }
                             }
                         }
 
+                        Spacer(modifier = Modifier.width(8.dp))
+
                         // Average spending indicator pill
                         Column(horizontalAlignment = Alignment.End) {
                             Text(
                                 text = "Avg per ${if (selectedTimeframe == TrendTimeframe.WEEKLY) "week" else "month"}",
-                                fontSize = 11.sp,
-                                color = SleekTextSecondary
+                                fontSize = SleekSizes.textCaption,
+                                color = SleekTextSecondary,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(
                                 text = "$currencySymbol%,.0f".format(avgSpending),
-                                fontSize = 14.sp,
+                                fontSize = SleekSizes.textBody,
                                 fontWeight = FontWeight.Bold,
-                                color = SavingGold
+                                color = SavingGold,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                     }
@@ -457,7 +479,7 @@ fun SpendingTrendsScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(230.dp)
-                            .clip(RoundedCornerShape(16.dp))
+                            .clip(SleekShapes.lg)
                             .background(SleekBg),
                         contentAlignment = Alignment.Center
                     ) {
@@ -567,7 +589,7 @@ fun SpendingTrendsScreen(
         ) {
             // Peak Spending Card
             Card(
-                shape = RoundedCornerShape(18.dp),
+                shape = SleekShapes.xl,
                 colors = CardDefaults.cardColors(containerColor = SleekSurface),
                 border = BorderStroke(1.dp, SleekBorder),
                 modifier = Modifier.weight(1f)
@@ -588,21 +610,23 @@ fun SpendingTrendsScreen(
                                 imageVector = Icons.Default.NorthEast,
                                 contentDescription = null,
                                 tint = ExpenseRed,
-                                modifier = Modifier.size(14.dp)
+                                modifier = Modifier.size(SleekSizes.iconMicro)
                             )
                         }
-                        Text("Peak", fontSize = 11.sp, color = SleekTextSecondary, fontWeight = FontWeight.Medium)
+                        Text("Peak", fontSize = SleekSizes.textCaption, color = SleekTextSecondary, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
                         text = "$currencySymbol%,.0f".format(peakPeriod?.totalSpent ?: 0.0),
-                        fontSize = 15.sp,
+                        fontSize = SleekSizes.textBodyLarge,
                         fontWeight = FontWeight.Bold,
-                        color = SleekTextPrimary
+                        color = SleekTextPrimary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                     Text(
                         text = peakPeriod?.shortLabel ?: "—",
-                        fontSize = 10.sp,
+                        fontSize = SleekSizes.textMicro,
                         color = SleekTextSecondary,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -612,7 +636,7 @@ fun SpendingTrendsScreen(
 
             // Lowest Spending Card
             Card(
-                shape = RoundedCornerShape(18.dp),
+                shape = SleekShapes.xl,
                 colors = CardDefaults.cardColors(containerColor = SleekSurface),
                 border = BorderStroke(1.dp, SleekBorder),
                 modifier = Modifier.weight(1f)
@@ -633,21 +657,23 @@ fun SpendingTrendsScreen(
                                 imageVector = Icons.Default.SouthEast,
                                 contentDescription = null,
                                 tint = IncomeGreen,
-                                modifier = Modifier.size(14.dp)
+                                modifier = Modifier.size(SleekSizes.iconMicro)
                             )
                         }
-                        Text("Frugal", fontSize = 11.sp, color = SleekTextSecondary, fontWeight = FontWeight.Medium)
+                        Text("Frugal", fontSize = SleekSizes.textCaption, color = SleekTextSecondary, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
                         text = "$currencySymbol%,.0f".format(lowestPeriod?.totalSpent ?: 0.0),
-                        fontSize = 15.sp,
+                        fontSize = SleekSizes.textBodyLarge,
                         fontWeight = FontWeight.Bold,
-                        color = SleekTextPrimary
+                        color = SleekTextPrimary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                     Text(
                         text = lowestPeriod?.shortLabel ?: "—",
-                        fontSize = 10.sp,
+                        fontSize = SleekSizes.textMicro,
                         color = SleekTextSecondary,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -657,7 +683,7 @@ fun SpendingTrendsScreen(
 
             // Total Series Spending
             Card(
-                shape = RoundedCornerShape(18.dp),
+                shape = SleekShapes.xl,
                 colors = CardDefaults.cardColors(containerColor = SleekSurface),
                 border = BorderStroke(1.dp, SleekBorder),
                 modifier = Modifier.weight(1f)
@@ -678,22 +704,26 @@ fun SpendingTrendsScreen(
                                 imageVector = Icons.Default.AllInclusive,
                                 contentDescription = null,
                                 tint = SleekPrimary,
-                                modifier = Modifier.size(14.dp)
+                                modifier = Modifier.size(SleekSizes.iconMicro)
                             )
                         }
-                        Text("Total", fontSize = 11.sp, color = SleekTextSecondary, fontWeight = FontWeight.Medium)
+                        Text("Total", fontSize = SleekSizes.textCaption, color = SleekTextSecondary, fontWeight = FontWeight.Medium, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
                         text = "$currencySymbol%,.0f".format(totalPeriodSpent),
-                        fontSize = 15.sp,
+                        fontSize = SleekSizes.textBodyLarge,
                         fontWeight = FontWeight.Bold,
-                        color = SleekTextPrimary
+                        color = SleekTextPrimary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                     Text(
                         text = "${trendData.size} ${if (selectedTimeframe == TrendTimeframe.WEEKLY) "wks" else "mos"}",
-                        fontSize = 10.sp,
-                        color = SleekTextSecondary
+                        fontSize = SleekSizes.textMicro,
+                        color = SleekTextSecondary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }
@@ -706,7 +736,7 @@ fun SpendingTrendsScreen(
         // ==========================================
         selectedPeriod?.let { period ->
             Card(
-                shape = RoundedCornerShape(24.dp),
+                shape = SleekShapes.xxl,
                 colors = CardDefaults.cardColors(containerColor = SleekSurface),
                 border = BorderStroke(1.dp, SleekBorder),
                 modifier = Modifier
@@ -719,30 +749,37 @@ fun SpendingTrendsScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Column {
+                        Column(modifier = Modifier.weight(1f, fill = false)) {
                             Text(
                                 text = "${period.title} Breakdown",
-                                fontSize = 16.sp,
+                                fontSize = SleekSizes.textSubhead,
                                 fontWeight = FontWeight.Bold,
-                                color = SleekTextPrimary
+                                color = SleekTextPrimary,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                             Text(
                                 text = "${period.count} transactions recorded (${period.subLabel})",
-                                fontSize = 12.sp,
-                                color = SleekTextSecondary
+                                fontSize = SleekSizes.textBodySmall,
+                                color = SleekTextSecondary,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
+                        Spacer(modifier = Modifier.width(8.dp))
                         Box(
                             modifier = Modifier
-                                .clip(RoundedCornerShape(10.dp))
+                                .clip(SleekShapes.sm)
                                 .background(SleekPrimary.copy(alpha = 0.12f))
                                 .padding(horizontal = 8.dp, vertical = 4.dp)
                         ) {
                             Text(
                                 text = "$currencySymbol%,.2f".format(period.totalSpent),
-                                fontSize = 13.sp,
+                                fontSize = SleekSizes.textBodyMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = SleekPrimary
+                                color = SleekPrimary,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                     }
@@ -758,8 +795,10 @@ fun SpendingTrendsScreen(
                         ) {
                             Text(
                                 text = "No expense entries for this specific period.",
-                                fontSize = 12.sp,
-                                color = SleekTextSecondary
+                                fontSize = SleekSizes.textBodySmall,
+                                color = SleekTextSecondary,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                     } else {
@@ -779,9 +818,9 @@ fun SpendingTrendsScreen(
                                 val catColor = categoryColors[cat] ?: SleekPrimary
                                 Row(
                                     modifier = Modifier
-                                        .clip(RoundedCornerShape(12.dp))
+                                        .clip(SleekShapes.md)
                                         .background(catColor.copy(alpha = 0.15f))
-                                        .border(1.dp, catColor.copy(alpha = 0.4f), RoundedCornerShape(12.dp))
+                                        .border(1.dp, catColor.copy(alpha = 0.4f), SleekShapes.md)
                                         .padding(horizontal = 10.dp, vertical = 6.dp),
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -794,15 +833,19 @@ fun SpendingTrendsScreen(
                                     )
                                     Text(
                                         text = cat,
-                                        fontSize = 11.sp,
+                                        fontSize = SleekSizes.textCaption,
                                         fontWeight = FontWeight.Medium,
-                                        color = SleekTextPrimary
+                                        color = SleekTextPrimary,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
                                     )
                                     Text(
                                         text = "$currencySymbol%,.0f".format(amount),
-                                        fontSize = 11.sp,
+                                        fontSize = SleekSizes.textCaption,
                                         fontWeight = FontWeight.Bold,
-                                        color = catColor
+                                        color = catColor,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
                                     )
                                 }
                             }
@@ -813,9 +856,11 @@ fun SpendingTrendsScreen(
                         // Transactions List preview (Top 5)
                         Text(
                             text = "Transactions in this period:",
-                            fontSize = 12.sp,
+                            fontSize = SleekSizes.textBodySmall,
                             fontWeight = FontWeight.SemiBold,
-                            color = SleekTextSecondary
+                            color = SleekTextSecondary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
 
                         Spacer(modifier = Modifier.height(8.dp))
@@ -825,7 +870,7 @@ fun SpendingTrendsScreen(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clip(RoundedCornerShape(12.dp))
+                                    .clip(SleekShapes.md)
                                     .clickable { onExpenseClick(exp) }
                                     .padding(vertical = 8.dp, horizontal = 4.dp),
                                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -833,7 +878,8 @@ fun SpendingTrendsScreen(
                             ) {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                    modifier = Modifier.weight(1f, fill = false)
                                 ) {
                                     val catColor = categoryColors[exp.category] ?: SleekPrimary
                                     Box(
@@ -845,7 +891,7 @@ fun SpendingTrendsScreen(
                                     ) {
                                         Text(
                                             text = exp.category.take(1).uppercase(),
-                                            fontSize = 13.sp,
+                                            fontSize = SleekSizes.textBodyMedium,
                                             fontWeight = FontWeight.Bold,
                                             color = catColor
                                         )
@@ -853,7 +899,7 @@ fun SpendingTrendsScreen(
                                     Column {
                                         Text(
                                             text = if (!exp.note.isNullOrBlank()) exp.note else exp.category,
-                                            fontSize = 13.sp,
+                                            fontSize = SleekSizes.textBodyMedium,
                                             fontWeight = FontWeight.Medium,
                                             color = SleekTextPrimary,
                                             maxLines = 1,
@@ -861,17 +907,23 @@ fun SpendingTrendsScreen(
                                         )
                                         Text(
                                             text = "${exp.category} • ${sdf.format(Date(exp.date))}",
-                                            fontSize = 11.sp,
-                                            color = SleekTextSecondary
+                                            fontSize = SleekSizes.textCaption,
+                                            color = SleekTextSecondary,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
                                         )
                                     }
                                 }
 
+                                Spacer(modifier = Modifier.width(8.dp))
+
                                 Text(
                                     text = "-$currencySymbol%,.2f".format(exp.amount),
-                                    fontSize = 13.sp,
+                                    fontSize = SleekSizes.textBodyMedium,
                                     fontWeight = FontWeight.Bold,
-                                    color = ExpenseRed
+                                    color = ExpenseRed,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
                                 )
                             }
                             HorizontalDivider(color = SleekBorder.copy(alpha = 0.5f), thickness = 0.5.dp)
@@ -881,10 +933,12 @@ fun SpendingTrendsScreen(
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
                                 text = "+ ${period.expenses.size - 5} more transactions in this period",
-                                fontSize = 11.sp,
+                                fontSize = SleekSizes.textCaption,
                                 color = SleekPrimary,
                                 fontWeight = FontWeight.Medium,
-                                modifier = Modifier.padding(top = 4.dp)
+                                modifier = Modifier.padding(top = 4.dp),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                     }

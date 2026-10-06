@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ui.theme.*
@@ -128,14 +129,14 @@ fun ExpenseUndoSnackbar(
         modifier = modifier
     ) {
         Surface(
-            shape = RoundedCornerShape(18.dp),
+            shape = SleekShapes.xl,
             color = Color(0xFF1E222D),
             border = BorderStroke(1.dp, Color(0xFF333846)),
             shadowElevation = 8.dp,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp, vertical = 10.dp)
-                .shadow(12.dp, RoundedCornerShape(18.dp))
+                .shadow(12.dp, SleekShapes.xl)
         ) {
             Row(
                 modifier = Modifier
@@ -148,8 +149,12 @@ fun ExpenseUndoSnackbar(
                     text = message,
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.White,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f, fill = false)
                 )
+                Spacer(modifier = Modifier.width(8.dp))
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -161,7 +166,7 @@ fun ExpenseUndoSnackbar(
                         Icon(
                             imageVector = Icons.Rounded.Undo,
                             contentDescription = "Undo",
-                            modifier = Modifier.size(16.dp),
+                            modifier = Modifier.size(SleekSizes.iconSmall),
                             tint = SleekPrimary
                         )
                         Spacer(modifier = Modifier.width(4.dp))
@@ -169,7 +174,9 @@ fun ExpenseUndoSnackbar(
                             text = "UNDO",
                             fontWeight = FontWeight.Bold,
                             color = SleekPrimary,
-                            fontSize = 13.sp
+                            fontSize = SleekSizes.textBodyMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }

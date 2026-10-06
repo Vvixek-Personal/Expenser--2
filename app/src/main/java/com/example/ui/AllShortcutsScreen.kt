@@ -263,7 +263,7 @@ fun AllShortcutsTabScreen(
                 iconTint = Color(0xFFEAB308),
                 gradientColors = listOf(Color(0xFFEAB308), Color(0xFFCA8A04)),
                 category = "Tools",
-                badgeText = "v1.28",
+                badgeText = "v1.29",
                 onClick = { onOpenSettingsSubScreen(SettingsSubScreen.AboutApp) }
             )
         )
@@ -314,12 +314,16 @@ fun AllShortcutsTabScreen(
                                 text = "All Quick Shortcuts",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = SleekTextPrimary
+                                color = SleekTextPrimary,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                             Text(
                                 text = "${allShortcuts.size} one-tap tools available",
                                 style = MaterialTheme.typography.labelSmall,
-                                color = SleekTextSecondary
+                                color = SleekTextSecondary,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
 
@@ -330,10 +334,12 @@ fun AllShortcutsTabScreen(
                         ) {
                             Text(
                                 text = "Launcher",
-                                fontSize = 11.sp,
+                                fontSize = SleekSizes.textCaption,
                                 fontWeight = FontWeight.Bold,
                                 color = SleekPrimary,
-                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                     }
@@ -342,13 +348,13 @@ fun AllShortcutsTabScreen(
                     OutlinedTextField(
                         value = searchQuery,
                         onValueChange = { searchQuery = it },
-                        placeholder = { Text("Search shortcuts (e.g. Split, Goal, Bills)...", fontSize = 13.sp) },
+                        placeholder = { Text("Search shortcuts (e.g. Split, Goal, Bills)...", fontSize = SleekSizes.textBodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                         leadingIcon = {
                             Icon(
                                 Icons.Rounded.Search,
                                 contentDescription = null,
                                 tint = SleekTextSecondary,
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(SleekSizes.iconMedium)
                             )
                         },
                         trailingIcon = {
@@ -358,13 +364,13 @@ fun AllShortcutsTabScreen(
                                         Icons.Rounded.Close,
                                         contentDescription = "Clear",
                                         tint = SleekTextSecondary,
-                                        modifier = Modifier.size(18.dp)
+                                        modifier = Modifier.size(SleekSizes.iconSmall)
                                     )
                                 }
                             }
                         },
                         singleLine = true,
-                        shape = RoundedCornerShape(16.dp),
+                        shape = SleekShapes.lg,
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = SleekPrimary,
                             unfocusedBorderColor = SleekBorder,
@@ -388,7 +394,7 @@ fun AllShortcutsTabScreen(
                             FilterChip(
                                 selected = isSelected,
                                 onClick = { selectedCategory = cat },
-                                label = { Text(cat, fontSize = 12.sp, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal) },
+                                label = { Text(cat, fontSize = SleekSizes.textBodySmall, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = SleekPrimary,
                                     selectedLabelColor = Color.White,
@@ -487,7 +493,7 @@ fun HomeScreenAppIconTile(
                 scaleX = scale
                 scaleY = scale
             }
-            .clip(RoundedCornerShape(16.dp))
+            .clip(SleekShapes.lg)
             .clickable(
                 interactionSource = interactionSource,
                 indication = null
@@ -502,7 +508,7 @@ fun HomeScreenAppIconTile(
             Box(
                 modifier = Modifier
                     .size(60.dp)
-                    .clip(RoundedCornerShape(20.dp))
+                    .clip(SleekShapes.xl)
                     .background(
                         Brush.linearGradient(
                             listOf(
@@ -513,7 +519,7 @@ fun HomeScreenAppIconTile(
                     )
                     .border(
                         BorderStroke(1.5.dp, item.gradientColors.first().copy(alpha = 0.45f)),
-                        RoundedCornerShape(20.dp)
+                        SleekShapes.xl
                     ),
                 contentAlignment = Alignment.Center
             ) {
@@ -521,7 +527,7 @@ fun HomeScreenAppIconTile(
                     imageVector = item.icon,
                     contentDescription = item.title,
                     tint = item.iconTint,
-                    modifier = Modifier.size(28.dp)
+                    modifier = Modifier.size(SleekSizes.iconLarge)
                 )
             }
 
@@ -539,8 +545,10 @@ fun HomeScreenAppIconTile(
                     Text(
                         text = item.badgeText,
                         color = Color.White,
-                        fontSize = 9.sp,
-                        fontWeight = FontWeight.ExtraBold
+                        fontSize = SleekSizes.textMicro,
+                        fontWeight = FontWeight.ExtraBold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }
@@ -550,7 +558,7 @@ fun HomeScreenAppIconTile(
 
         Text(
             text = item.title,
-            fontSize = 11.sp,
+            fontSize = SleekSizes.textCaption,
             color = SleekTextPrimary,
             fontWeight = FontWeight.SemiBold,
             textAlign = TextAlign.Center,
@@ -560,7 +568,7 @@ fun HomeScreenAppIconTile(
 
         Text(
             text = item.subtitle,
-            fontSize = 9.sp,
+            fontSize = SleekSizes.textMicro,
             color = SleekTextSecondary,
             textAlign = TextAlign.Center,
             maxLines = 1,

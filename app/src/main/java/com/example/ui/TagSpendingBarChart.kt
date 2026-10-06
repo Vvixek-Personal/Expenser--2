@@ -48,6 +48,8 @@ import com.example.data.Expense
 import com.example.ui.theme.SleekBorder
 import com.example.ui.theme.SleekPrimary
 import com.example.ui.theme.SleekPrimaryContainer
+import com.example.ui.theme.SleekShapes
+import com.example.ui.theme.SleekSizes
 import com.example.ui.theme.SleekSurface
 import com.example.ui.theme.SleekTextPrimary
 import com.example.ui.theme.SleekTextSecondary
@@ -142,7 +144,7 @@ fun TagSpendingBarChart(
     val axisTextColor = SleekTextSecondary
 
     Card(
-        shape = RoundedCornerShape(24.dp),
+        shape = SleekShapes.xxl,
         colors = CardDefaults.cardColors(containerColor = SleekSurface),
         border = BorderStroke(1.dp, SleekBorder),
         modifier = modifier
@@ -166,26 +168,30 @@ fun TagSpendingBarChart(
                             imageVector = Icons.Default.LocalOffer,
                             contentDescription = null,
                             tint = SleekPrimary,
-                            modifier = Modifier.size(18.dp)
+                            modifier = Modifier.size(SleekSizes.iconSmall)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = "Spending by Tag",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            color = SleekTextPrimary
+                            color = SleekTextPrimary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                     Text(
                         text = "Tag breakdown for $periodLabel",
                         style = MaterialTheme.typography.bodySmall,
-                        color = SleekTextSecondary
+                        color = SleekTextSecondary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
 
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
+                        .clip(SleekShapes.md)
                         .background(SleekPrimaryContainer)
                         .padding(horizontal = 10.dp, vertical = 4.dp)
                 ) {
@@ -193,7 +199,9 @@ fun TagSpendingBarChart(
                         text = "Total: ₹${String.format(Locale.getDefault(), "%,.0f", totalSpending)}",
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
-                        color = SleekPrimary
+                        color = SleekPrimary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }
@@ -206,7 +214,7 @@ fun TagSpendingBarChart(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(chartHeight)
-                        .background(SleekBorder.copy(alpha = 0.2f), RoundedCornerShape(16.dp)),
+                        .background(SleekBorder.copy(alpha = 0.2f), SleekShapes.lg),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -220,7 +228,9 @@ fun TagSpendingBarChart(
                         Text(
                             text = "No tagged expenses for $periodLabel",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = SleekTextSecondary
+                            color = SleekTextSecondary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
@@ -394,8 +404,10 @@ fun TagSpendingBarChart(
                             label = {
                                 Text(
                                     text = item.tag,
-                                    fontSize = 12.sp,
-                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
+                                    fontSize = SleekSizes.textBodySmall,
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
                                 )
                             },
                             leadingIcon = {
@@ -435,7 +447,7 @@ fun TagSpendingBarChart(
                         val pct = if (totalSpending > 0) (activeInfo.amount / totalSpending * 100) else 0.0
 
                         Card(
-                            shape = RoundedCornerShape(16.dp),
+                            shape = SleekShapes.lg,
                             colors = CardDefaults.cardColors(containerColor = color.copy(alpha = 0.12f)),
                             border = BorderStroke(1.dp, color.copy(alpha = 0.4f)),
                             modifier = Modifier
@@ -449,12 +461,15 @@ fun TagSpendingBarChart(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.weight(1f, fill = false)
+                                ) {
                                     Icon(
                                         imageVector = Icons.Default.Label,
                                         contentDescription = null,
                                         tint = color,
-                                        modifier = Modifier.size(20.dp)
+                                        modifier = Modifier.size(SleekSizes.iconMedium)
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Column {
@@ -462,27 +477,35 @@ fun TagSpendingBarChart(
                                             text = activeInfo.tag,
                                             style = MaterialTheme.typography.titleSmall,
                                             fontWeight = FontWeight.Bold,
-                                            color = SleekTextPrimary
+                                            color = SleekTextPrimary,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
                                         )
                                         Text(
                                             text = "${activeInfo.count} transaction(s)",
                                             style = MaterialTheme.typography.bodySmall,
-                                            color = SleekTextSecondary
+                                            color = SleekTextSecondary,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
                                         )
                                     }
                                 }
-
+                                Spacer(modifier = Modifier.width(8.dp))
                                 Column(horizontalAlignment = Alignment.End) {
                                     Text(
                                         text = "₹${String.format(Locale.getDefault(), "%,.2f", activeInfo.amount)}",
                                         style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.Bold,
-                                        color = color
+                                        color = color,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
                                     )
                                     Text(
                                         text = "${String.format(Locale.getDefault(), "%.1f", pct)}% of spending",
                                         style = MaterialTheme.typography.labelSmall,
-                                        color = SleekTextSecondary
+                                        color = SleekTextSecondary,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
                                     )
                                 }
                             }

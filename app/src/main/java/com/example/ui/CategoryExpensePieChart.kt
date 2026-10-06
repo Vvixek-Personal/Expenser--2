@@ -41,6 +41,8 @@ import androidx.compose.ui.unit.sp
 import com.example.ui.theme.SleekBorder
 import com.example.ui.theme.SleekPrimary
 import com.example.ui.theme.SleekPrimaryContainer
+import com.example.ui.theme.SleekShapes
+import com.example.ui.theme.SleekSizes
 import com.example.ui.theme.SleekSurface
 import com.example.ui.theme.SleekTextPrimary
 import com.example.ui.theme.SleekTextSecondary
@@ -134,33 +136,37 @@ fun CategoryExpensePieChart(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column {
+            Column(modifier = Modifier.weight(1f, fill = false)) {
                 Text(
                     text = "Expense Breakdown",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = SleekTextPrimary
+                    color = SleekTextPrimary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Text(
                     text = if (selectedCategory == null) "Tap slice or category to inspect" else "Inspecting $selectedCategory",
                     style = MaterialTheme.typography.bodySmall,
                     color = SleekPrimary,
-                    fontSize = 11.sp
+                    fontSize = SleekSizes.textCaption,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
 
             // Pie vs Donut Style Toggle Pill
             Row(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(20.dp))
+                    .clip(SleekShapes.xl)
                     .background(SleekPrimaryContainer.copy(alpha = 0.2f))
-                    .border(1.dp, SleekBorder, RoundedCornerShape(20.dp))
+                    .border(1.dp, SleekBorder, SleekShapes.xl)
                     .padding(3.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(16.dp))
+                        .clip(SleekShapes.lg)
                         .background(if (!isDonutMode) SleekPrimary else Color.Transparent)
                         .clickable { isDonutMode = false }
                         .padding(horizontal = 10.dp, vertical = 6.dp),
@@ -171,21 +177,23 @@ fun CategoryExpensePieChart(
                             Icons.Default.PieChart,
                             contentDescription = "Pie Chart",
                             tint = if (!isDonutMode) Color.White else SleekTextSecondary,
-                            modifier = Modifier.size(14.dp)
+                            modifier = Modifier.size(SleekSizes.iconMicro)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             "Pie",
-                            fontSize = 11.sp,
+                            fontSize = SleekSizes.textCaption,
                             fontWeight = FontWeight.Bold,
-                            color = if (!isDonutMode) Color.White else SleekTextSecondary
+                            color = if (!isDonutMode) Color.White else SleekTextSecondary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
 
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(16.dp))
+                        .clip(SleekShapes.lg)
                         .background(if (isDonutMode) SleekPrimary else Color.Transparent)
                         .clickable { isDonutMode = true }
                         .padding(horizontal = 10.dp, vertical = 6.dp),
@@ -196,14 +204,16 @@ fun CategoryExpensePieChart(
                             Icons.Default.DonutLarge,
                             contentDescription = "Donut Chart",
                             tint = if (isDonutMode) Color.White else SleekTextSecondary,
-                            modifier = Modifier.size(14.dp)
+                            modifier = Modifier.size(SleekSizes.iconMicro)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             "Donut",
-                            fontSize = 11.sp,
+                            fontSize = SleekSizes.textCaption,
                             fontWeight = FontWeight.Bold,
-                            color = if (isDonutMode) Color.White else SleekTextSecondary
+                            color = if (isDonutMode) Color.White else SleekTextSecondary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
@@ -419,7 +429,7 @@ fun CategoryExpensePieChart(
                     Card(
                         colors = CardDefaults.cardColors(containerColor = catColor.copy(alpha = 0.12f)),
                         border = BorderStroke(1.5.dp, catColor),
-                        shape = RoundedCornerShape(14.dp),
+                        shape = SleekShapes.md,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 12.dp)
@@ -432,7 +442,10 @@ fun CategoryExpensePieChart(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.weight(1f, fill = false)
+                            ) {
                                 Box(
                                     modifier = Modifier
                                         .size(12.dp)
@@ -445,27 +458,36 @@ fun CategoryExpensePieChart(
                                         text = cat,
                                         style = MaterialTheme.typography.bodyMedium,
                                         fontWeight = FontWeight.Bold,
-                                        color = SleekTextPrimary
+                                        color = SleekTextPrimary,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
                                     )
                                     Text(
                                         text = "${String.format(Locale.getDefault(), "%.1f%%", catPct)} of total spending",
                                         style = MaterialTheme.typography.bodySmall,
                                         color = SleekTextSecondary,
-                                        fontSize = 11.sp
+                                        fontSize = SleekSizes.textCaption,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
                                     )
                                 }
                             }
+                            Spacer(modifier = Modifier.width(8.dp))
                             Column(horizontalAlignment = Alignment.End) {
                                 Text(
                                     text = String.format(Locale.getDefault(), "₹%,.2f", catAmount),
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
-                                    color = SleekTextPrimary
+                                    color = SleekTextPrimary,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
                                 )
                                 Text(
                                     text = "Tap to clear",
-                                    fontSize = 10.sp,
-                                    color = catColor
+                                    fontSize = SleekSizes.textMicro,
+                                    color = catColor,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
                                 )
                             }
                         }
@@ -491,7 +513,7 @@ fun CategoryExpensePieChart(
                             width = if (isSelected) 1.5.dp else 1.dp,
                             color = if (isSelected) catColor else SleekBorder
                         ),
-                        shape = RoundedCornerShape(12.dp),
+                        shape = SleekShapes.md,
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
@@ -529,7 +551,7 @@ fun CategoryExpensePieChart(
                                         Icons.Default.CheckCircle,
                                         contentDescription = null,
                                         tint = catColor,
-                                        modifier = Modifier.size(14.dp)
+                                        modifier = Modifier.size(SleekSizes.iconMicro)
                                     )
                                 }
                             }
@@ -542,11 +564,13 @@ fun CategoryExpensePieChart(
                                     text = String.format(Locale.getDefault(), "₹%,.2f", sum),
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = SleekTextPrimary,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
                                 )
                                 Box(
                                     modifier = Modifier
-                                        .clip(RoundedCornerShape(6.dp))
+                                        .clip(SleekShapes.xs)
                                         .background(catColor.copy(alpha = 0.18f))
                                         .padding(horizontal = 6.dp, vertical = 2.dp)
                                 ) {
@@ -555,7 +579,9 @@ fun CategoryExpensePieChart(
                                         style = MaterialTheme.typography.labelSmall,
                                         color = SleekTextPrimary,
                                         fontWeight = FontWeight.Bold,
-                                        fontSize = 11.sp
+                                        fontSize = SleekSizes.textCaption,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
                                     )
                                 }
                             }

@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.FinanceDatabase
@@ -78,7 +79,7 @@ fun LocalRecoveryScreen(
                 Card(
                     colors = CardDefaults.cardColors(containerColor = SleekSurface),
                     border = BorderStroke(1.dp, SleekBorder),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = SleekShapes.lg,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(modifier = Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -87,17 +88,19 @@ fun LocalRecoveryScreen(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text("RECOVERY SYSTEM STATUS", fontWeight = FontWeight.Bold, color = SleekTextPrimary, fontSize = 12.sp)
+                            Text("RECOVERY SYSTEM STATUS", fontWeight = FontWeight.Bold, color = SleekTextPrimary, fontSize = SleekSizes.textBodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
                             Surface(
-                                shape = RoundedCornerShape(8.dp),
+                                shape = SleekShapes.sm,
                                 color = if (statusProtected) Color(0xFFDCFCE7) else Color(0xFFFEF3C7)
                             ) {
                                 Text(
                                     text = if (statusProtected) "Protected" else "Needs Attention",
                                     color = if (statusProtected) Color(0xFF15803D) else Color(0xFFB45309),
                                     fontWeight = FontWeight.Bold,
-                                    fontSize = 11.sp,
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                                    fontSize = SleekSizes.textCaption,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
                                 )
                             }
                         }
@@ -117,11 +120,11 @@ fun LocalRecoveryScreen(
                 Card(
                     colors = CardDefaults.cardColors(containerColor = SleekSurface),
                     border = BorderStroke(1.dp, SleekBorder),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = SleekShapes.lg,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(modifier = Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Text("RECOVERY ACTIONS", fontWeight = FontWeight.Bold, color = SleekTextPrimary, fontSize = 12.sp)
+                        Text("RECOVERY ACTIONS", fontWeight = FontWeight.Bold, color = SleekTextPrimary, fontSize = SleekSizes.textBodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
 
                         Button(
                             onClick = {
@@ -139,13 +142,15 @@ fun LocalRecoveryScreen(
                                 }
                             },
                             enabled = !isWorking,
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = SleekSizes.buttonMedium),
+                            shape = SleekShapes.md,
                             colors = ButtonDefaults.buttonColors(containerColor = SleekPrimary)
                         ) {
-                            Icon(Icons.Default.Backup, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.Backup, contentDescription = null, modifier = Modifier.size(SleekSizes.iconSmall))
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("Create Recovery Snapshot", fontWeight = FontWeight.Bold)
+                            Text("Create Recovery Snapshot", fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         }
 
                         OutlinedButton(
@@ -158,19 +163,21 @@ fun LocalRecoveryScreen(
                                 }
                             },
                             enabled = !isWorking && snapshots.isNotEmpty(),
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = SleekSizes.buttonMedium),
+                            shape = SleekShapes.md
                         ) {
-                            Icon(Icons.Default.Restore, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Icon(Icons.Default.Restore, contentDescription = null, modifier = Modifier.size(SleekSizes.iconSmall))
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("Restore Latest Snapshot")
+                            Text("Restore Latest Snapshot", maxLines = 1, overflow = TextOverflow.Ellipsis)
                         }
                     }
                 }
             }
 
             item {
-                Text("RECOVERY SNAPSHOTS HISTORY", fontWeight = FontWeight.Bold, color = SleekTextSecondary, fontSize = 13.sp)
+                Text("RECOVERY SNAPSHOTS HISTORY", fontWeight = FontWeight.Bold, color = SleekTextSecondary, fontSize = SleekSizes.textBodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
 
             if (snapshots.isEmpty()) {
@@ -267,8 +274,9 @@ fun RecoveryStatRow(label: String, value: String) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(label, style = MaterialTheme.typography.bodyMedium, color = SleekTextSecondary)
-        Text(value, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, color = SleekTextPrimary)
+        Text(label, style = MaterialTheme.typography.bodyMedium, color = SleekTextSecondary, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false))
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(value, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, color = SleekTextPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
 }
 
@@ -281,7 +289,7 @@ fun SnapshotItemCard(
     Card(
         colors = CardDefaults.cardColors(containerColor = SleekSurface),
         border = BorderStroke(1.dp, SleekBorder),
-        shape = RoundedCornerShape(14.dp),
+        shape = SleekShapes.md,
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -294,18 +302,22 @@ fun SnapshotItemCard(
                     text = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault()).format(Date(snapshot.createdAt)),
                     fontWeight = FontWeight.Bold,
                     color = SleekTextPrimary,
-                    fontSize = 14.sp
+                    fontSize = SleekSizes.textBody,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Surface(
-                    shape = RoundedCornerShape(6.dp),
+                    shape = SleekShapes.xs,
                     color = if (snapshot.isValid) Color(0xFFDCFCE7) else Color(0xFFFEE2E2)
                 ) {
                     Text(
                         text = if (snapshot.isValid) "Valid Integrity" else "Corrupted",
                         color = if (snapshot.isValid) Color(0xFF15803D) else Color(0xFFDC2626),
                         fontWeight = FontWeight.Bold,
-                        fontSize = 10.sp,
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        fontSize = SleekSizes.textMicro,
+                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }
@@ -313,7 +325,9 @@ fun SnapshotItemCard(
             Text(
                 text = "${snapshot.accountsCount} accounts • ${snapshot.expensesCount} expenses • ${snapshot.budgetsCount} budgets • ${snapshot.savingsGoalsCount} goals • ${snapshot.remindersCount} reminders",
                 style = MaterialTheme.typography.bodySmall,
-                color = SleekTextSecondary
+                color = SleekTextSecondary,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
             )
 
             Row(
@@ -325,9 +339,9 @@ fun SnapshotItemCard(
                     onClick = onDelete,
                     colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
                 ) {
-                    Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(14.dp))
+                    Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(SleekSizes.iconMicro))
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("Delete", fontSize = 12.sp)
+                    Text("Delete", fontSize = SleekSizes.textBodySmall)
                 }
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -335,13 +349,13 @@ fun SnapshotItemCard(
                 Button(
                     onClick = onRestore,
                     enabled = snapshot.isValid,
-                    shape = RoundedCornerShape(8.dp),
+                    shape = SleekShapes.sm,
                     colors = ButtonDefaults.buttonColors(containerColor = SleekPrimary),
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
                 ) {
-                    Icon(Icons.Default.Restore, contentDescription = null, modifier = Modifier.size(14.dp))
+                    Icon(Icons.Default.Restore, contentDescription = null, modifier = Modifier.size(SleekSizes.iconMicro))
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("Restore", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    Text("Restore", fontSize = SleekSizes.textBodySmall, fontWeight = FontWeight.Bold)
                 }
             }
         }
