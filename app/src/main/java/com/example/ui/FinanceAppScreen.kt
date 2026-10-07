@@ -524,16 +524,18 @@ fun FinanceAppScreen(viewModel: FinanceViewModel) {
                 )
             }
 
-            if (recordedTransactionInfo != null) {
+            val recInfo = recordedTransactionInfo
+            if (recInfo != null) {
                 TransactionSuccessDialog(
-                    info = recordedTransactionInfo!!,
+                    info = recInfo,
                     onDismiss = { recordedTransactionInfo = null }
                 )
             }
 
-            if (editingExpense != null) {
+            val editExp = editingExpense
+            if (editExp != null) {
                 EditExpenseDialog(
-                    expense = editingExpense!!,
+                    expense = editExp,
                     categories = allCategories,
                     expenseCategories = expenseCategories,
                     incomeCategories = incomeCategories,
@@ -552,9 +554,10 @@ fun FinanceAppScreen(viewModel: FinanceViewModel) {
                 )
             }
 
-            if (viewingDetailExpense != null) {
+            val viewExp = viewingDetailExpense
+            if (viewExp != null) {
                 ExpenseDetailDialog(
-                    expense = viewingDetailExpense!!,
+                    expense = viewExp,
                     viewModel = viewModel,
                     onDismiss = { viewingDetailExpense = null },
                     onEditClick = {
@@ -1559,8 +1562,8 @@ fun DashboardTab(
         Spacer(modifier = Modifier.height(90.dp))
     }
 
-    if (showQuickDepositDialog != null) {
-        val targetGoal = showQuickDepositDialog!!
+    val targetGoal = showQuickDepositDialog
+    if (targetGoal != null) {
         QuickGoalDepositDialog(
             goal = targetGoal,
             currencySymbol = currencySymbol,
@@ -2417,7 +2420,7 @@ fun ExpensesTab(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(categories) { cat ->
+                items(categories, key = { it }) { cat ->
                     val selected = selectedCategoryFilter == cat
                     val chipBg = if (selected) SleekPrimary else SleekSurface
                     val chipText = if (selected) Color.White else SleekTextSecondary
@@ -3034,15 +3037,18 @@ fun AnalyticsTab(
     var activeCategoryDrillDown by remember { mutableStateOf<CategoryTrendSummary?>(null) }
 
     val initials = remember(userName) {
-        if (!userName.isNullOrBlank()) {
-            userName!!.trim().split(" ").mapNotNull { it.firstOrNull()?.uppercaseChar() }.joinToString("").take(2)
+        val name = userName?.trim()
+        if (!name.isNullOrBlank()) {
+            name.split(" ").mapNotNull { it.firstOrNull()?.uppercaseChar() }.joinToString("").take(2).ifBlank { "U" }
         } else "U"
     }
 
     // Aligned date range calculation for each filter preset
     val periodDateRange = remember(selectedTimeFilter, allExpenses, customStartDateMs, customEndDateMs) {
-        if (selectedTimeFilter == "Custom" && customStartDateMs != null && customEndDateMs != null) {
-            Pair(customStartDateMs!!, customEndDateMs!!)
+        val customStart = customStartDateMs
+        val customEnd = customEndDateMs
+        if (selectedTimeFilter == "Custom" && customStart != null && customEnd != null) {
+            Pair(customStart, customEnd)
         } else {
             val endCal = Calendar.getInstance().apply {
                 set(Calendar.HOUR_OF_DAY, 23)
@@ -3160,17 +3166,19 @@ fun AnalyticsTab(
         )
     }
 
-    if (inspectionMetric != null) {
+    val metricModalData = inspectionMetric
+    if (metricModalData != null) {
         MetricInspectionModal(
-            data = inspectionMetric!!,
+            data = metricModalData,
             onDismiss = { inspectionMetric = null },
             onExpenseClick = onExpenseClick
         )
     }
 
-    if (activeCategoryDrillDown != null) {
+    val drillDownItem = activeCategoryDrillDown
+    if (drillDownItem != null) {
         CategoryDrillDownDialog(
-            item = activeCategoryDrillDown!!,
+            item = drillDownItem,
             currencySymbol = currencySymbol,
             onDismiss = { activeCategoryDrillDown = null },
             onExpenseClick = onExpenseClick
@@ -4663,7 +4671,8 @@ private fun AddExpenseDialogOld(
                 )
                 Spacer(modifier = Modifier.height(6.dp))
 
-                if (!attachedImagePath.isNullOrBlank() && File(attachedImagePath!!).exists()) {
+                val photoPath = attachedImagePath
+                if (!photoPath.isNullOrBlank() && File(photoPath).exists()) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -4674,7 +4683,7 @@ private fun AddExpenseDialogOld(
                         contentAlignment = Alignment.Center
                     ) {
                         AsyncImage(
-                            model = File(attachedImagePath!!),
+                            model = File(photoPath),
                             contentDescription = "Attached Receipt",
                             contentScale = ContentScale.Fit,
                             modifier = Modifier.fillMaxSize()
@@ -4769,9 +4778,10 @@ private fun AddExpenseDialogOld(
         }
     }
 
-    if (showCropperDialog && editingBitmap != null) {
+    val bmpToEdit = editingBitmap
+    if (showCropperDialog && bmpToEdit != null) {
         ImageEditDialog(
-            initialBitmap = editingBitmap!!,
+            initialBitmap = bmpToEdit,
             onDismiss = { showCropperDialog = false },
             onSave = { savedPath ->
                 showCropperDialog = false
@@ -7153,9 +7163,7 @@ fun SidebarDrawerContent(
         Spacer(modifier = Modifier.height(14.dp))
 
         // 1. User Profile Top Section Hero Card
-        val initials = if (!userName.isNullOrBlank()) {
-            userName!!.split(" ").mapNotNull { it.firstOrNull()?.uppercaseChar() }.joinToString("").take(2)
-        } else "U"
+        val initials = userName?.split(" ")?.mapNotNull { it.firstOrNull()?.uppercaseChar() }?.joinToString("")?.take(2)?.ifBlank { "U" } ?: "U"
 
         Card(
             colors = CardDefaults.cardColors(containerColor = SleekSurface),
@@ -7209,7 +7217,7 @@ fun SidebarDrawerContent(
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = if (!userName.isNullOrBlank()) userName!! else "Aarav Sharma",
+                        text = userName?.takeIf { it.isNotBlank() } ?: "Aarav Sharma",
                         style = MaterialTheme.typography.titleMedium,
                         color = SleekTextPrimary,
                         fontWeight = FontWeight.Bold,
@@ -7725,12 +7733,13 @@ fun FaqAccordion(viewModel: FinanceViewModel) {
                         Text("Ask AI", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 12.sp)
                     }
                 }
-                if (aiAnswer != null) {
+                val answer = aiAnswer
+                if (answer != null) {
                     Spacer(modifier = Modifier.height(16.dp))
                     HorizontalDivider(color = SleekBorder.copy(alpha = 0.5f))
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
-                        text = aiAnswer!!,
+                        text = answer,
                         style = MaterialTheme.typography.bodySmall,
                         color = SleekTextPrimary,
                         lineHeight = 16.sp,

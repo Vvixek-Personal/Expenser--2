@@ -197,6 +197,16 @@ fun getAppUpdatesHistory(): List<AppReleaseUpdate> {
                     category = SpecCategory.PERFORMANCE,
                     title = "Code Hygiene & Logging Modernization",
                     description = "Eliminated printStackTrace invocations across the application, migrating to structured Android Log.e logging across ProfileCropDialog, FinanceViewModel, and ExpenseDetailComponents."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SECURITY,
+                    title = "Complete Elimination of Double-Bang (!!) Operators",
+                    description = "Achieved 100% elimination of double-bang (!!) force-unwrap operators across all UI dialogs, user profile card initials, custom date range pickers, receipt photo attachments, image croppers, category drill-downs, and AI query handlers, completely protecting the runtime against NullPointerExceptions."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.PERFORMANCE,
+                    title = "Universal Lazy List Key Standardization",
+                    description = "Equipped every LazyColumn and LazyRow in the application (languages list, custom categories, tag management, recovery snapshots, shortcuts, and currency selectors) with stable, unique item keys to prevent layout jumps, item thrashing, and unnecessary recompositions."
                 )
             )
         ),
@@ -556,7 +566,7 @@ fun UpdatesTimelineView(
                 .padding(bottom = 14.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(filterCategories) { cat ->
+            items(filterCategories, key = { it }) { cat ->
                 val isSelected = selectedFilter == cat
                 FilterChip(
                     selected = isSelected,

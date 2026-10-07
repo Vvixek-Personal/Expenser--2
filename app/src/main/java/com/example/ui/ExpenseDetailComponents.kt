@@ -641,7 +641,8 @@ fun ExpenseDetailContent(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            if (!currentImagePath.isNullOrBlank() && File(currentImagePath!!).exists()) {
+                            val imgPath = currentImagePath
+                            if (!imgPath.isNullOrBlank() && File(imgPath).exists()) {
                                 // 🌟 Image Attached View
                                 Column(
                                     modifier = Modifier.fillMaxWidth(),
@@ -658,7 +659,7 @@ fun ExpenseDetailContent(
                                         contentAlignment = Alignment.Center
                                     ) {
                                         AsyncImage(
-                                            model = File(currentImagePath!!),
+                                            model = File(imgPath),
                                             contentDescription = "Attached Receipt",
                                             contentScale = ContentScale.Fit,
                                             modifier = Modifier.fillMaxSize()
@@ -697,7 +698,7 @@ fun ExpenseDetailContent(
                                     ) {
                                         OutlinedButton(
                                             onClick = {
-                                                val file = File(currentImagePath!!)
+                                                val file = File(imgPath)
                                                 val bitmap = BitmapFactory.decodeFile(file.absolutePath)
                                                 if (bitmap != null) {
                                                     activeBitmapForEdit = bitmap
@@ -716,7 +717,7 @@ fun ExpenseDetailContent(
 
                                         Button(
                                             onClick = {
-                                                val file = File(currentImagePath!!)
+                                                val file = File(imgPath)
                                                 if (file.exists()) file.delete()
                                                 val updated = expense.copy(imagePath = null)
                                                 viewModel.updateExpense(updated)
@@ -945,12 +946,15 @@ fun ExpenseDetailContent(
                         .clickable { showFullImageViewer = false },
                     contentAlignment = Alignment.Center
                 ) {
-                    AsyncImage(
-                        model = File(currentImagePath!!),
-                        contentDescription = "Full Receipt",
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier.fillMaxSize()
-                    )
+                    val fullImg = currentImagePath
+                    if (!fullImg.isNullOrBlank()) {
+                        AsyncImage(
+                            model = File(fullImg),
+                            contentDescription = "Full Receipt",
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
 
                     IconButton(
                         onClick = { showFullImageViewer = false },
@@ -969,9 +973,10 @@ fun ExpenseDetailContent(
         // ==========================================
         // ✂️ IMAGE EDITOR / CROPPER
         // ==========================================
-        if (showCropper && activeBitmapForEdit != null) {
+        val activeBmp = activeBitmapForEdit
+        if (showCropper && activeBmp != null) {
             ImageEditDialog(
-                initialBitmap = activeBitmapForEdit!!,
+                initialBitmap = activeBmp,
                 onDismiss = { showCropper = false },
                 onSave = { savedPath ->
                     showCropper = false

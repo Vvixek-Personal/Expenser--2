@@ -389,7 +389,7 @@ fun AllShortcutsTabScreen(
                             .padding(horizontal = 16.dp, vertical = 8.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        items(categories) { cat ->
+                        items(categories, key = { it }) { cat ->
                             val isSelected = cat == selectedCategory
                             FilterChip(
                                 selected = isSelected,

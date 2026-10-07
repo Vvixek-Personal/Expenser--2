@@ -1378,7 +1378,7 @@ fun SavingsGoalsMiniCarouselWidget(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             contentPadding = PaddingValues(horizontal = 2.dp)
         ) {
-            items(goals) { goal ->
+            items(goals, key = { it.id }) { goal ->
                 val progress = if (goal.targetAmount > 0) (goal.currentAmount / goal.targetAmount).toFloat().coerceIn(0f, 1f) else 0f
                 val pct = (progress * 100).toInt()
 

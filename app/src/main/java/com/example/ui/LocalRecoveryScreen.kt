@@ -187,7 +187,7 @@ fun LocalRecoveryScreen(
                     }
                 }
             } else {
-                items(snapshots) { snapshot ->
+                items(snapshots, key = { it.fileName }) { snapshot ->
                     SnapshotItemCard(
                         snapshot = snapshot,
                         onRestore = {
@@ -211,8 +211,8 @@ fun LocalRecoveryScreen(
         }
     }
 
-    if (showRestoreConfirmDialog && selectedSnapshotForRestore != null) {
-        val snap = selectedSnapshotForRestore!!
+    val snap = selectedSnapshotForRestore
+    if (showRestoreConfirmDialog && snap != null) {
         AlertDialog(
             onDismissRequest = { showRestoreConfirmDialog = false },
             title = { Text("Restore Recovery Snapshot?", fontWeight = FontWeight.Bold) },

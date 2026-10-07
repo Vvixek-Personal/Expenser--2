@@ -391,7 +391,7 @@ fun TagSpendingBarChart(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(tagData) { item ->
+                    items(tagData, key = { it.tag }) { item ->
                         val index = tagData.indexOf(item)
                         val color = getTagColor(item.tag, index)
                         val isSelected = selectedTag == item.tag

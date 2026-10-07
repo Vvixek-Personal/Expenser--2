@@ -1607,7 +1607,7 @@ fun MetricInspectionModal(
                             .weight(1f),
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        items(data.currentPeriodExpenses.sortedByDescending { it.date }) { exp ->
+                        items(data.currentPeriodExpenses.sortedByDescending { it.date }, key = { it.id }) { exp ->
                             val sdf = SimpleDateFormat("dd MMM, hh:mm a", Locale.getDefault())
                             Surface(
                                 onClick = { onExpenseClick(exp) },
@@ -1756,7 +1756,7 @@ fun CategoryDrillDownDialog(
                         .weight(1f),
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    items(item.transactions) { exp ->
+                    items(item.transactions, key = { it.id }) { exp ->
                         val sdf = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault())
                         Surface(
                             onClick = { onExpenseClick(exp) },

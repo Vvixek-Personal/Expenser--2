@@ -129,8 +129,10 @@ fun PersonalDataScreen(
 
     var nameText by remember { mutableStateOf(currentName ?: "William John Malik") }
     LaunchedEffect(currentName) {
-        if (!currentName.isNullOrBlank()) {
-            nameText = currentName!!
+        currentName?.let {
+            if (it.isNotBlank()) {
+                nameText = it
+            }
         }
     }
     var dobText by remember { mutableStateOf(currentDob) }
@@ -1093,7 +1095,7 @@ fun LanguageScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                items(filteredLangs) { lang ->
+                items(filteredLangs, key = { it.code }) { lang ->
                     val isSelected = selectedLanguage.equals(lang.nativeName, ignoreCase = true) || selectedLanguage.equals(lang.engName, ignoreCase = true)
                     Card(
                         colors = CardDefaults.cardColors(containerColor = if (isSelected) SleekPrimary.copy(alpha = 0.12f) else SleekSurface),
@@ -2185,8 +2187,9 @@ fun CategoriesTagsScreen(
     // ==========================================
 
     // 1. Manage specific Category Type Dialog
-    if (activeCategoryTypeDialog != null) {
-        val type = activeCategoryTypeDialog!!
+    val activeType = activeCategoryTypeDialog
+    if (activeType != null) {
+        val type = activeType
         val categoryList = when (type) {
             "Expense" -> expenseCategories
             "Income" -> incomeCategories
@@ -2373,7 +2376,7 @@ fun CategoriesTagsScreen(
                         modifier = Modifier.heightIn(max = 320.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        items(allCats.size) { idx ->
+                        items(allCats.size, key = { allCats[it] }) { idx ->
                             val cat = allCats[idx]
                             Row(
                                 modifier = Modifier
@@ -2408,8 +2411,9 @@ fun CategoriesTagsScreen(
                             }
                             Button(
                                 onClick = {
-                                    if (newCatName.isNotBlank() && editingCat != null) {
-                                        viewModel.renameAnyCategory(editingCat!!, newCatName)
+                                    val cat = editingCat
+                                    if (newCatName.isNotBlank() && cat != null) {
+                                        viewModel.renameAnyCategory(cat, newCatName)
                                         editingCat = null
                                         Toast.makeText(context, "Renamed category!", Toast.LENGTH_SHORT).show()
                                     }
@@ -2454,7 +2458,7 @@ fun CategoriesTagsScreen(
                         modifier = Modifier.heightIn(max = 320.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        items(allCats.size) { idx ->
+                        items(allCats.size, key = { allCats[it] }) { idx ->
                             val cat = allCats[idx]
                             Row(
                                 modifier = Modifier
@@ -2600,7 +2604,7 @@ fun CategoriesTagsScreen(
                         modifier = Modifier.heightIn(max = 300.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        items(allTags.size) { idx ->
+                        items(allTags.size, key = { allTags[it] }) { idx ->
                             val tag = allTags[idx]
                             Row(
                                 modifier = Modifier
@@ -2635,8 +2639,9 @@ fun CategoriesTagsScreen(
                             }
                             Button(
                                 onClick = {
-                                    if (newTagName.isNotBlank() && editingTag != null) {
-                                        viewModel.renameTag(editingTag!!, newTagName)
+                                    val tag = editingTag
+                                    if (newTagName.isNotBlank() && tag != null) {
+                                        viewModel.renameTag(tag, newTagName)
                                         editingTag = null
                                         Toast.makeText(context, "Renamed tag!", Toast.LENGTH_SHORT).show()
                                     }
@@ -2672,7 +2677,7 @@ fun CategoriesTagsScreen(
                     modifier = Modifier.heightIn(max = 300.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(allTags.size) { idx ->
+                    items(allTags.size, key = { allTags[it] }) { idx ->
                         val tag = allTags[idx]
                         Row(
                             modifier = Modifier
@@ -4484,6 +4489,7 @@ fun BackupRestoreScreen(
                             }
                         }
                     } else {
+                        val code = generatedCode ?: ""
                         // Display Generated Code Box
                         Box(
                             modifier = Modifier
@@ -4494,7 +4500,7 @@ fun BackupRestoreScreen(
                                 .padding(12.dp)
                         ) {
                             Text(
-                                text = generatedCode!!,
+                                text = code,
                                 fontFamily = FontFamily.Monospace,
                                 fontSize = 11.sp,
                                 color = SleekTextPrimary,
@@ -4511,7 +4517,7 @@ fun BackupRestoreScreen(
                         ) {
                             Button(
                                 onClick = {
-                                    clipboardManager.setText(AnnotatedString(generatedCode!!))
+                                    clipboardManager.setText(AnnotatedString(code))
                                     Toast.makeText(context, "Backup code copied to clipboard!", Toast.LENGTH_LONG).show()
                                 },
                                 modifier = Modifier.weight(1f),

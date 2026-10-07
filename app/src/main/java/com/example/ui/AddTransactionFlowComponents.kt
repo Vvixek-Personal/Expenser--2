@@ -665,7 +665,8 @@ fun AddExpenseDialog(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        if (!attachedImagePath.isNullOrBlank() && File(attachedImagePath!!).exists()) {
+                        val receiptPath = attachedImagePath
+                        if (!receiptPath.isNullOrBlank() && File(receiptPath).exists()) {
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -676,7 +677,7 @@ fun AddExpenseDialog(
                                 contentAlignment = Alignment.Center
                             ) {
                                 AsyncImage(
-                                    model = File(attachedImagePath!!),
+                                    model = File(receiptPath),
                                     contentDescription = "Receipt",
                                     contentScale = ContentScale.Fit,
                                     modifier = Modifier.fillMaxSize()
@@ -820,9 +821,10 @@ fun AddExpenseDialog(
         )
     }
 
-    if (showCropperDialog && editingBitmap != null) {
+    val editBmp = editingBitmap
+    if (showCropperDialog && editBmp != null) {
         ImageEditDialog(
-            initialBitmap = editingBitmap!!,
+            initialBitmap = editBmp,
             onDismiss = { showCropperDialog = false },
             onSave = { savedPath ->
                 showCropperDialog = false

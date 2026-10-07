@@ -814,7 +814,7 @@ fun SpendingTrendsScreen(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            items(categorySums) { (cat, amount) ->
+                            items(categorySums, key = { it.first }) { (cat, amount) ->
                                 val catColor = categoryColors[cat] ?: SleekPrimary
                                 Row(
                                     modifier = Modifier
@@ -1408,8 +1408,9 @@ private fun calculateWeeklyTrends(
         val inc = weekIncomes.sumOf { it.amount }
         val topCat = weekExpenses.groupBy { it.category }.maxByOrNull { it.value.sumOf { e -> e.amount } }?.key
 
-        val changePct = if (prevSpent != null && prevSpent!! > 0) {
-            ((spent - prevSpent!!) / prevSpent!!) * 100.0
+        val prevW = prevSpent
+        val changePct = if (prevW != null && prevW > 0) {
+            ((spent - prevW) / prevW) * 100.0
         } else null
         prevSpent = spent
 
@@ -1487,8 +1488,9 @@ private fun calculateMonthlyTrends(
         val inc = monthIncomes.sumOf { it.amount }
         val topCat = monthExpenses.groupBy { it.category }.maxByOrNull { it.value.sumOf { e -> e.amount } }?.key
 
-        val changePct = if (prevSpent != null && prevSpent!! > 0) {
-            ((spent - prevSpent!!) / prevSpent!!) * 100.0
+        val prevM = prevSpent
+        val changePct = if (prevM != null && prevM > 0) {
+            ((spent - prevM) / prevM) * 100.0
         } else null
         prevSpent = spent
 

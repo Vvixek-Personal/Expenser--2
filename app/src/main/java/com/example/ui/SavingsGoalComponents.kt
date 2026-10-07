@@ -550,11 +550,12 @@ fun SavingGoalsFullScreen(
                     editingGoal = null
                 },
                 onSave = { title, target, category, imageUri, targetDate ->
-                    if (editingGoal != null) {
+                    val goalToEdit = editingGoal
+                    if (goalToEdit != null) {
                         viewModel.updateSavingsGoal(
-                            editingGoal!!.copy(
+                            goalToEdit.copy(
                                 name = title,
-                                targetAmountMinor = Money.fromDouble(target, editingGoal!!.currencyCode),
+                                targetAmountMinor = Money.fromDouble(target, goalToEdit.currencyCode),
                                 category = category,
                                 imageUri = imageUri,
                                 targetDate = targetDate

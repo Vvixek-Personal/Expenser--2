@@ -485,8 +485,9 @@ fun CurrencySettingsScreen(
     }
 
     // Option A vs Option B Currency Conversion Dialog (Rule 6)
-    if (pendingCurrencyChange != null) {
-        val target = pendingCurrencyChange!!
+    val pendingChange = pendingCurrencyChange
+    if (pendingChange != null) {
+        val target = pendingChange
         var selectedOption by remember { mutableStateOf("KEEP") } // "KEEP" or "CONVERT"
 
         val currentRate = remember(currentCode, target.code) {
@@ -661,7 +662,7 @@ fun CurrencySettingsScreen(
                     }
 
                     LazyColumn(modifier = Modifier.heightIn(max = 300.dp)) {
-                        items(quickCurrencies) { item ->
+                        items(quickCurrencies, key = { it.code }) { item ->
                             val isSelected = item.code.equals(statsCode, ignoreCase = true)
                             Surface(
                                 shape = RoundedCornerShape(10.dp),
@@ -2135,7 +2136,7 @@ private fun CurrencyPickerDialog(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 LazyColumn(modifier = Modifier.heightIn(max = 320.dp)) {
-                    items(filtered) { item ->
+                    items(filtered, key = { it.code + it.country }) { item ->
                         val isSelected = item.code.equals(selectedCode, ignoreCase = true)
                         Surface(
                             shape = RoundedCornerShape(8.dp),
