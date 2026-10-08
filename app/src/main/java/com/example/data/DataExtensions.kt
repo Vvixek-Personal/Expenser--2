@@ -80,7 +80,7 @@ fun Map<String, Any?>.toExpense(): Expense {
     val currency = this["currencyCode"] as? String ?: "INR"
     val amt = (this["amount"] as? Number)?.toDouble() ?: 0.0
     val amtMinor = (this["amountMinor"] as? Number)?.toLong() ?: Money.fromDouble(amt, currency)
-    val finalAmt = if (amt == 0.0 && amtMinor != 0L) Money.toDouble(amtMinor, currency) else amt
+    val finalAmt = Money.toDouble(amtMinor, currency)
     return Expense(
         id = (this["id"] as? Number)?.toLong() ?: 0L,
         amount = finalAmt,
@@ -109,8 +109,8 @@ fun Map<String, Any?>.toAccount(): Account {
         name = this["name"] as? String ?: "Account",
         type = this["type"] as? String ?: "CASH",
         currencyCode = currency,
-        openingBalance = if (opBal == 0.0 && opBalMinor != 0L) Money.toDouble(opBalMinor, currency) else opBal,
-        balance = if (bal == 0.0 && balMinor != 0L) Money.toDouble(balMinor, currency) else bal,
+        openingBalance = Money.toDouble(opBalMinor, currency),
+        balance = Money.toDouble(balMinor, currency),
         openingBalanceMinor = opBalMinor,
         balanceMinor = balMinor
     )
@@ -123,7 +123,7 @@ fun Map<String, Any?>.toBudget(): Budget {
     return Budget(
         id = (this["id"] as? Number)?.toLong() ?: 0L,
         category = this["category"] as? String ?: "General",
-        amountLimit = if (limit == 0.0 && limitMinor != 0L) Money.toDouble(limitMinor, currency) else limit,
+        amountLimit = Money.toDouble(limitMinor, currency),
         amountLimitMinor = limitMinor,
         monthYear = this["monthYear"] as? String ?: "",
         currencyCode = currency
@@ -141,13 +141,13 @@ fun Map<String, Any?>.toSavingsGoal(): SavingsGoal {
     return SavingsGoal(
         id = (this["id"] as? Number)?.toLong() ?: 0L,
         name = this["name"] as? String ?: "Goal",
-        targetAmount = if (target == 0.0 && targetMinor != 0L) Money.toDouble(targetMinor, currency) else target,
-        currentAmount = if (current == 0.0 && currentMinor != 0L) Money.toDouble(currentMinor, currency) else current,
+        targetAmount = Money.toDouble(targetMinor, currency),
+        currentAmount = Money.toDouble(currentMinor, currency),
         targetAmountMinor = targetMinor,
         currentAmountMinor = currentMinor,
         targetDate = (this["targetDate"] as? Number)?.toLong() ?: 0L,
         frequency = this["frequency"] as? String ?: "WEEKLY",
-        contributionAmount = if (contrib == 0.0 && contribMinor != 0L) Money.toDouble(contribMinor, currency) else contrib,
+        contributionAmount = Money.toDouble(contribMinor, currency),
         contributionAmountMinor = contribMinor,
         isAutoGap = (this["isAutoGap"] as? Boolean) ?: true,
         iconTag = this["iconTag"] as? String ?: "🎮",

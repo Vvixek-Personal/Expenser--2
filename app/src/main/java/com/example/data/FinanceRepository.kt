@@ -52,6 +52,10 @@ class FinanceRepository(private val dao: FinanceDao, private val database: Finan
 
     suspend fun updateAccount(account: Account) = dao.updateAccount(syncAccountAmounts(account))
     suspend fun deleteAccount(account: Account) = dao.deleteAccount(account)
+    suspend fun getExpensesCountForAccount(accountId: Long): Int = dao.getExpensesCountForAccount(accountId)
+    suspend fun reassignExpensesAccount(sourceAccountId: Long, targetAccountId: Long) =
+        dao.reassignExpensesAccount(sourceAccountId, targetAccountId)
+    suspend fun getAccountsSnapshot(): List<Account> = dao.getAccountsSnapshot()
     suspend fun getAccountById(id: Long) = dao.getAccountById(id)
 
     suspend fun getExpenseById(id: Long) = dao.getExpenseById(id)
@@ -71,7 +75,16 @@ class FinanceRepository(private val dao: FinanceDao, private val database: Finan
         return account.openingBalanceMinor + netChange
     }
 
-    suspend fun insertBudget(budget: Budget) = dao.insertBudget(syncBudgetAmounts(budget))
+    suspend fun insertBudget(budget: Budget): Long {
+        val synced = syncBudgetAmounts(budget)
+        val existing = dao.getBudgetByCategoryAndMonth(synced.category, synced.monthYear)
+        return if (existing != null) {
+            dao.updateBudget(synced.copy(id = existing.id))
+            existing.id
+        } else {
+            dao.insertBudget(synced)
+        }
+    }
     suspend fun updateBudget(budget: Budget) = dao.updateBudget(syncBudgetAmounts(budget))
     suspend fun deleteBudget(budget: Budget) = dao.deleteBudget(budget)
 

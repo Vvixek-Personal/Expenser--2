@@ -144,8 +144,8 @@ fun addColumnIfNotExists(db: SupportSQLiteDatabase, tableName: String, columnNam
     }
 }
 
-private const val ZERO_DEC = "('JPY','KRW','CLP','VND','PYG')"
-private const val THREE_DEC = "('KWD','BHD','OMR','JOD','LYD','TND')"
+private const val ZERO_DEC = "('JPY','KRW','CLP','VND','PYG','BIF','DJF','GNF','ISK','KMF','RWF','UGX','VUV','XAF','XOF','XPF')"
+private const val THREE_DEC = "('KWD','BHD','OMR','JOD','LYD','TND','IQD')"
 
 /** SQL: minor units per 1 major unit for the currency column (or literal) [cur]. */
 private fun unit(cur: String) =
@@ -158,6 +158,13 @@ private fun net(accRef: String) =
 private fun tableExists(db: SupportSQLiteDatabase, table: String): Boolean =
     db.query("SELECT name FROM sqlite_master WHERE type='table' AND name='$table'").use { it.moveToFirst() }
 
+private fun queryRowCount(db: SupportSQLiteDatabase, table: String): Int {
+    if (!tableExists(db, table)) return 0
+    return db.query("SELECT COUNT(*) FROM `$table`").use { cursor ->
+        if (cursor.moveToFirst()) cursor.getInt(0) else 0
+    }
+}
+
 private fun columnsOf(db: SupportSQLiteDatabase, table: String): Set<String> {
     val out = mutableSetOf<String>()
     db.query("PRAGMA table_info(`$table`)").use { c ->
@@ -169,7 +176,8 @@ private fun columnsOf(db: SupportSQLiteDatabase, table: String): Set<String> {
 
 /**
  * Rebuilds expenses/accounts/budgets/savings_goals/recurring_rules into exactly the
- * shape of Entities.kt, whatever older layout they were in. Safe to run repeatedly.
+ * shape of Entities.kt, whatever older layout they were in. Safe to run repeatedly,
+ * completely immune to foreign key cascade drops, and validates data row counts.
  */
 fun normalizeLedgerSchema(db: SupportSQLiteDatabase, defaultCurrency: String) {
     val hasTx = tableExists(db, "transactions")
@@ -179,6 +187,10 @@ fun normalizeLedgerSchema(db: SupportSQLiteDatabase, defaultCurrency: String) {
     val hasBud = tableExists(db, "budgets")
     val hasGoal = tableExists(db, "savings_goals")
     val hasRec = tableExists(db, "recurring_rules")
+
+    val initialExpCount = if (hasExp) queryRowCount(db, "expenses") else 0
+    val initialTxCount = if (hasTx) queryRowCount(db, "transactions") else 0
+    val expectedMinExp = initialExpCount + initialTxCount
     
     val e = if (hasExp) columnsOf(db, "expenses") else emptySet()
     val a = if (hasAcc) columnsOf(db, "accounts") else emptySet()
@@ -187,25 +199,32 @@ fun normalizeLedgerSchema(db: SupportSQLiteDatabase, defaultCurrency: String) {
     val r = if (hasRec) columnsOf(db, "recurring_rules") else emptySet()
     val lit = "'" + defaultCurrency.replace("'", "''") + "'"
 
-    // ---------- expenses ----------
-    if (hasExp) {
+    // ---------- intermediate expenses (NO FOREIGN KEY YET to prevent CASCADE deletes) ----------
+    if (hasExp || hasTx) {
         db.execSQL("DROP TABLE IF EXISTS expenses_n")
-        db.execSQL("CREATE TABLE expenses_n (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, amount REAL NOT NULL, amountMinor INTEGER NOT NULL, category TEXT NOT NULL, date INTEGER NOT NULL, note TEXT, imagePath TEXT, type TEXT NOT NULL, currencyCode TEXT NOT NULL, accountId INTEGER NOT NULL, kind TEXT NOT NULL, goalId INTEGER, recurringRuleId INTEGER, FOREIGN KEY(accountId) REFERENCES accounts(id) ON UPDATE NO ACTION ON DELETE CASCADE)")
-        val amountExpr = if ("amount" in e) "amount" else "CAST(amountMinor AS REAL) / ${unit("currencyCode")}"
-        val minorExpr = if ("amountMinor" in e) "amountMinor" else "CAST(ROUND(amount * ${unit("currencyCode")}) AS INTEGER)"
-        val accExpr = if ("accountId" in e) "accountId" else "COALESCE((SELECT MIN(id) FROM accounts), 1)"
-        val kindExpr = if ("kind" in e) "kind" else "'REGULAR'"
-        val goalExpr = if ("goalId" in e) "goalId" else "NULL"
-        val recExpr = if ("recurringRuleId" in e) "recurringRuleId" else "NULL"
-        db.execSQL("INSERT INTO expenses_n (id, amount, amountMinor, category, date, note, imagePath, type, currencyCode, accountId, kind, goalId, recurringRuleId) SELECT id, $amountExpr, $minorExpr, category, date, note, imagePath, type, currencyCode, $accExpr, $kindExpr, $goalExpr, $recExpr FROM expenses")
+        db.execSQL("CREATE TABLE expenses_n (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, amount REAL NOT NULL, amountMinor INTEGER NOT NULL, category TEXT NOT NULL, date INTEGER NOT NULL, note TEXT, imagePath TEXT, type TEXT NOT NULL, currencyCode TEXT NOT NULL, accountId INTEGER NOT NULL, kind TEXT NOT NULL, goalId INTEGER, recurringRuleId INTEGER)")
+        
+        if (hasExp) {
+            val amountExpr = if ("amount" in e) "amount" else "CAST(amountMinor AS REAL) / ${unit("currencyCode")}"
+            val minorExpr = if ("amountMinor" in e) "amountMinor" else "CAST(ROUND(amount * ${unit("currencyCode")}) AS INTEGER)"
+            val accExpr = if ("accountId" in e) "accountId" else "COALESCE((SELECT MIN(id) FROM accounts), 1)"
+            val kindExpr = if ("kind" in e) "kind" else "'REGULAR'"
+            val goalExpr = if ("goalId" in e) "goalId" else "NULL"
+            val recExpr = if ("recurringRuleId" in e) "recurringRuleId" else "NULL"
+            db.execSQL("INSERT INTO expenses_n (id, amount, amountMinor, category, date, note, imagePath, type, currencyCode, accountId, kind, goalId, recurringRuleId) SELECT id, $amountExpr, $minorExpr, category, date, note, imagePath, type, currencyCode, $accExpr, $kindExpr, $goalExpr, $recExpr FROM expenses")
+        }
 
         if (hasTx) {
             val t = columnsOf(db, "transactions")
             val tAmt = if ("amount" in t) "amount" else "CAST(amountMinor AS REAL) / ${unit("currencyCode")}"
             val tMin = if ("amountMinor" in t) "amountMinor" else "CAST(ROUND(amount * ${unit("currencyCode")}) AS INTEGER)"
             db.execSQL("INSERT INTO expenses_n (amount, amountMinor, category, date, note, imagePath, type, currencyCode, accountId, kind) SELECT $tAmt, $tMin, category, timestamp, title || (CASE WHEN note IS NOT NULL THEN ': ' || note ELSE '' END), imagePath, type, currencyCode, accountId, 'REGULAR' FROM transactions")
-            if (!hasLegacy) db.execSQL("ALTER TABLE transactions RENAME TO transactions_legacy")
-            else db.execSQL("DROP TABLE transactions")
+            
+            // Copy transactions_legacy using CREATE TABLE ... AS SELECT (strips foreign keys completely)
+            if (!hasLegacy) {
+                db.execSQL("CREATE TABLE transactions_legacy AS SELECT * FROM transactions")
+            }
+            db.execSQL("DROP TABLE transactions")
         }
     }
 
@@ -266,18 +285,43 @@ fun normalizeLedgerSchema(db: SupportSQLiteDatabase, defaultCurrency: String) {
         db.execSQL("DROP TABLE IF EXISTS recurring_rules_n")
         db.execSQL("CREATE TABLE recurring_rules_n (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT NOT NULL, amountMinor INTEGER NOT NULL, category TEXT NOT NULL, frequency TEXT NOT NULL, startDate INTEGER NOT NULL, nextDueDate INTEGER NOT NULL, isActive INTEGER NOT NULL, currencyCode TEXT NOT NULL, accountId INTEGER NOT NULL, note TEXT)")
         if (r.isNotEmpty()) {
-            db.execSQL("INSERT INTO recurring_rules_n (id, title, amountMinor, category, frequency, startDate, nextDueDate, isActive, currencyCode, accountId, note) SELECT id, title, amountMinor, category, frequency, startDate, nextDueDate, isActive, currencyCode, accountId, note FROM recurring_rules")
+            val recNoteExpr = when {
+                "type" in r && "endDate" in r -> "COALESCE(note, '') || ' [TYPE:' || type || ']' || (CASE WHEN endDate IS NOT NULL THEN ' [END:' || endDate || ']' ELSE '' END)"
+                "type" in r -> "COALESCE(note, '') || ' [TYPE:' || type || ']'"
+                else -> "note"
+            }
+            db.execSQL("INSERT INTO recurring_rules_n (id, title, amountMinor, category, frequency, startDate, nextDueDate, isActive, currencyCode, accountId, note) SELECT id, title, amountMinor, category, frequency, startDate, nextDueDate, isActive, currencyCode, accountId, $recNoteExpr FROM recurring_rules")
         }
     }
 
-    // ---------- swap new tables in ----------
-    for (t in listOf("expenses", "accounts", "budgets", "savings_goals", "recurring_rules")) {
+    // ---------- swap non-child tables first ----------
+    for (t in listOf("accounts", "budgets", "savings_goals", "recurring_rules")) {
         if (tableExists(db, t + "_n")) {
             db.execSQL("DROP TABLE IF EXISTS $t")
             db.execSQL("ALTER TABLE ${t}_n RENAME TO $t")
         }
     }
+
+    // ---------- create final expenses table WITH foreign key last ----------
+    if (tableExists(db, "expenses_n")) {
+        db.execSQL("DROP TABLE IF EXISTS expenses_final")
+        db.execSQL("CREATE TABLE expenses_final (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, amount REAL NOT NULL, amountMinor INTEGER NOT NULL, category TEXT NOT NULL, date INTEGER NOT NULL, note TEXT, imagePath TEXT, type TEXT NOT NULL, currencyCode TEXT NOT NULL, accountId INTEGER NOT NULL, kind TEXT NOT NULL, goalId INTEGER, recurringRuleId INTEGER, FOREIGN KEY(accountId) REFERENCES accounts(id) ON UPDATE NO ACTION ON DELETE CASCADE)")
+        db.execSQL("INSERT INTO expenses_final (id, amount, amountMinor, category, date, note, imagePath, type, currencyCode, accountId, kind, goalId, recurringRuleId) SELECT id, amount, amountMinor, category, date, note, imagePath, type, currencyCode, accountId, kind, goalId, recurringRuleId FROM expenses_n")
+        
+        db.execSQL("DROP TABLE IF EXISTS expenses")
+        db.execSQL("DROP TABLE IF EXISTS expenses_n")
+        db.execSQL("ALTER TABLE expenses_final RENAME TO expenses")
+    }
+
     if (tableExists(db, "expenses") && tableExists(db, "accounts")) {
         db.execSQL("CREATE INDEX IF NOT EXISTS index_expenses_accountId ON expenses(accountId)")
+    }
+
+    // ---------- verification: assert row counts to prevent silent data loss ----------
+    if (expectedMinExp > 0 && tableExists(db, "expenses")) {
+        val finalExpCount = queryRowCount(db, "expenses")
+        if (finalExpCount < expectedMinExp) {
+            throw IllegalStateException("normalizeLedgerSchema data loss detected: expected at least $expectedMinExp expenses, got $finalExpCount rows.")
+        }
     }
 }

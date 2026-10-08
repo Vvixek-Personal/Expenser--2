@@ -37,6 +37,19 @@ class CloudSyncManager private constructor(private val context: Context) {
         return SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault()).format(Date(ts))
     }
 
+    private fun friendlyErrorMessage(e: Exception): String {
+        val msg = e.message ?: ""
+        return when {
+            e is java.net.UnknownHostException || e is java.net.SocketTimeoutException || msg.contains("UNAVAILABLE", ignoreCase = true) ->
+                "Network connection unavailable. Please check your internet connection."
+            msg.contains("PERMISSION_DENIED", ignoreCase = true) ->
+                "Access denied to cloud vault. Please sign in again."
+            msg.contains("UNAUTHENTICATED", ignoreCase = true) ->
+                "Authentication expired. Please sign in again."
+            else -> "Cloud operation could not be completed. Please try again."
+        }
+    }
+
     suspend fun performSync(
         database: FinanceDatabase,
         currencyCode: String,
@@ -44,7 +57,7 @@ class CloudSyncManager private constructor(private val context: Context) {
         currencyName: String,
         monthlyBudget: Double
     ): CloudSyncResult {
-        val user = auth.currentUser ?: return CloudSyncResult.Failure("User not signed in")
+        val user = auth.currentUser ?: return CloudSyncResult.Failure("User not signed in. Please sign in to sync cloud data.")
         val userId = user.uid
         val dao = database.financeDao()
 
@@ -82,7 +95,7 @@ class CloudSyncManager private constructor(private val context: Context) {
             _lastSyncTimestamp.value = formatTimestamp(now)
             CloudSyncResult.Success("Cloud Sync Complete")
         } catch (e: Exception) {
-            CloudSyncResult.Failure(e.message ?: "Unknown error")
+            CloudSyncResult.Failure(friendlyErrorMessage(e))
         }
     }
 
@@ -145,7 +158,7 @@ class CloudSyncManager private constructor(private val context: Context) {
             _lastSyncTimestamp.value = formatTimestamp(lastSync)
             CloudSyncResult.Success("Cloud Restore Complete: Restored ${parsedExpenses.size} transactions, ${parsedAccounts.size} accounts, ${parsedBudgets.size} budgets, and ${parsedGoals.size} goals.")
         } catch (e: Exception) {
-            CloudSyncResult.Failure(e.message ?: "Unknown error")
+            CloudSyncResult.Failure(friendlyErrorMessage(e))
         }
     }
 }

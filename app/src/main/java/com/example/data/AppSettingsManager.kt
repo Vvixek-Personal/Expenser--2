@@ -83,7 +83,7 @@ sealed class AppSettingsIntent {
     data class UpdateAnimationEnabled(val enabled: Boolean) : AppSettingsIntent()
 }
 
-class AppSettingsManager private constructor(context: Context) {
+class AppSettingsManager private constructor(private val context: Context) {
     companion object {
         const val PREFS_NAME = "app_settings_prefs"
         @Volatile
@@ -111,11 +111,14 @@ class AppSettingsManager private constructor(context: Context) {
             rawPin = upgraded
         }
 
+        val initialLockoutWall = prefs.getLong("pin_lockout_until_wall", 0L)
+
         return AppSettingsState(
             hasAiConsent = prefs.getBoolean("ai_consent_enabled", false),
             aiConsentEnabled = prefs.getBoolean("ai_consent_enabled", false),
             appPin = rawPin,
             isAppLocked = !rawPin.isNullOrBlank(),
+            pinLockoutUntil = initialLockoutWall,
             language = prefs.getString("language", "English") ?: "English",
             themeMode = prefs.getString("theme_mode", "SYSTEM") ?: "SYSTEM",
             themeIndex = prefs.getInt("theme_index", 0),
@@ -130,6 +133,73 @@ class AppSettingsManager private constructor(context: Context) {
             aiDailyRequestCount = prefs.getInt("ai_daily_request_count", 0),
             aiLastRequestDate = prefs.getString("ai_last_request_date", "") ?: ""
         )
+    }
+
+    fun getLockoutStatus(): PinSecurityUtils.LockoutStatus {
+        val nowWall = System.currentTimeMillis()
+        val nowElapsed = android.os.SystemClock.elapsedRealtime()
+        val lockoutUntilWall = prefs.getLong("pin_lockout_until_wall", 0L)
+        val lockoutUntilElapsed = prefs.getLong("pin_lockout_until_elapsed", 0L)
+        val lastAttemptWall = prefs.getLong("pin_last_attempt_wall", 0L)
+        val lastLockoutDuration = prefs.getLong("pin_last_lockout_duration", 0L)
+        val savedBootCount = prefs.getInt("pin_saved_boot_count", 0)
+        val currentBootCount = try {
+            android.provider.Settings.Global.getInt(
+                context.contentResolver,
+                android.provider.Settings.Global.BOOT_COUNT,
+                0
+            )
+        } catch (_: Exception) { 0 }
+
+        return PinSecurityUtils.calculateLockoutStatus(
+            nowWall = nowWall,
+            nowElapsed = nowElapsed,
+            currentBootCount = currentBootCount,
+            lockoutUntilWall = lockoutUntilWall,
+            lockoutUntilElapsed = lockoutUntilElapsed,
+            lastAttemptWall = lastAttemptWall,
+            savedBootCount = savedBootCount,
+            lastLockoutDuration = lastLockoutDuration
+        )
+    }
+
+    fun recordFailedPinAttempt(): PinSecurityUtils.LockoutStatus {
+        val currentAttempts = prefs.getInt("pin_failed_attempts", 0) + 1
+        val delayMs = PinSecurityUtils.lockoutDelayMs(currentAttempts)
+        val nowWall = System.currentTimeMillis()
+        val nowElapsed = android.os.SystemClock.elapsedRealtime()
+        val currentBootCount = try {
+            android.provider.Settings.Global.getInt(
+                context.contentResolver,
+                android.provider.Settings.Global.BOOT_COUNT,
+                0
+            )
+        } catch (_: Exception) { 0 }
+
+        val lockoutUntilWall = if (delayMs > 0) nowWall + delayMs else 0L
+        val lockoutUntilElapsed = if (delayMs > 0) nowElapsed + delayMs else 0L
+
+        prefs.edit()
+            .putInt("pin_failed_attempts", currentAttempts)
+            .putLong("pin_lockout_until_wall", lockoutUntilWall)
+            .putLong("pin_lockout_until_elapsed", lockoutUntilElapsed)
+            .putLong("pin_last_attempt_wall", nowWall)
+            .putLong("pin_last_lockout_duration", delayMs)
+            .putInt("pin_saved_boot_count", currentBootCount)
+            .commit()
+
+        _state.value = _state.value.copy(pinLockoutUntil = lockoutUntilWall)
+        return getLockoutStatus()
+    }
+
+    fun resetPinLockoutAndAttempts() {
+        prefs.edit()
+            .putInt("pin_failed_attempts", 0)
+            .putLong("pin_lockout_until_wall", 0L)
+            .putLong("pin_lockout_until_elapsed", 0L)
+            .putLong("pin_last_lockout_duration", 0L)
+            .commit()
+        _state.value = _state.value.copy(pinLockoutUntil = 0L)
     }
 
     fun reloadStateAfterWipe() {

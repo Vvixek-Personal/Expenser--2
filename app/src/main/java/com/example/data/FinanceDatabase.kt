@@ -29,14 +29,45 @@ abstract class FinanceDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: FinanceDatabase? = null
 
-        fun getDatabase(context: Context, defaultCurrency: String = "INR"): FinanceDatabase {
+        fun getDatabase(context: Context, defaultCurrency: String? = null): FinanceDatabase {
             return INSTANCE ?: synchronized(this) {
+                val appContext = context.applicationContext
+                val effectiveCurrency = defaultCurrency ?: try {
+                    appContext.getSharedPreferences(AppSettingsManager.PREFS_NAME, Context.MODE_PRIVATE)
+                        .getString("currency_code", "INR") ?: "INR"
+                } catch (_: Exception) {
+                    "INR"
+                }
+
+                // Pre-migration safety backup: version-guarded before Room.databaseBuilder
+                try {
+                    val dbFile = appContext.getDatabasePath(DATABASE_NAME)
+                    if (dbFile.exists()) {
+                        var existingVersion = 0
+                        try {
+                            val helperDb = android.database.sqlite.SQLiteDatabase.openDatabase(
+                                dbFile.path,
+                                null,
+                                android.database.sqlite.SQLiteDatabase.OPEN_READONLY
+                            )
+                            existingVersion = helperDb.version
+                            helperDb.close()
+                        } catch (_: Exception) {}
+
+                        if (existingVersion in 1 until FINANCE_DB_VERSION) {
+                            PreMigrationBackup.backupDatabaseBeforeMigration(appContext, DATABASE_NAME)
+                        }
+                    }
+                } catch (e: Exception) {
+                    android.util.Log.w("FinanceDatabase", "Pre-migration backup check failed: ${e.message}")
+                }
+
                 val instance = Room.databaseBuilder(
-                    context.applicationContext,
+                    appContext,
                     FinanceDatabase::class.java,
-                    "finance_database"
+                    DATABASE_NAME
                 )
-                .addMigrations(*getFinanceDbMigrations(defaultCurrency))
+                .addMigrations(*getFinanceDbMigrations(effectiveCurrency))
                 .build()
                 INSTANCE = instance
                 instance

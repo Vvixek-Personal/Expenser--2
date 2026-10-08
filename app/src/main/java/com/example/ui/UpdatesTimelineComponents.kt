@@ -100,34 +100,74 @@ fun getAppUpdatesHistory(): List<AppReleaseUpdate> {
     return listOf(
         AppReleaseUpdate(
             version = "V1.30",
-            releaseTag = "REFACTOR",
-            releaseDate = "7th Oct - Architecture Audit & Refactor Verification",
+            releaseTag = "SECURITY & STABILITY",
+            releaseDate = "7th Oct - Hardened Migrations, PIN Lockout & Security Patch",
             relativeTime = "Today",
             timestamp = tsV130,
             startDate = "7th Oct",
             endDate = "7th Oct",
-            headline = "Comprehensive Architecture Verification, Full LazyColumn Key Enforcement, Zero Force-Unwrap (!!) Audit, and Safe Room Migration Guarantee",
+            headline = "Zero-Data-Loss Migration Engine, Pre-Migration Auto-Backups, 210,000 Iteration PBKDF2 & Keystore HMAC PIN Security, Brute-Force Lockout, Firebase Wipe Sign-Out, and Accounting Guardrails",
             isLatest = true,
             specifications = listOf(
                 UpdateSpecification(
-                    category = SpecCategory.SECURITY,
-                    title = "Complete Zero Force-Unwrap (!!) Enforcement",
-                    description = "Audited entire codebase and successfully verified 100% elimination of all force-unwrap (!!) operators across ViewModels, repositories, and UI screens, ensuring complete runtime safety against NullPointerExceptions."
-                ),
-                UpdateSpecification(
-                    category = SpecCategory.PERFORMANCE,
-                    title = "Universal Lazy List Key Standardization",
-                    description = "Confirmed and verified every LazyColumn and LazyRow items call across all 20+ screens includes explicit stable item keys (e.g., it.id, it.code, it.fileName) to eliminate recomposition thrashing."
+                    category = SpecCategory.SYSTEM,
+                    title = "Cascade-Proof Database Normalizer & Row-Count Safety Check",
+                    description = "Eliminated the risk of silent expense deletion during schema normalization: intermediate tables are now created without foreign key constraints, transactions_legacy is copied via CREATE TABLE AS SELECT, parent accounts are migrated before child tables, the final expenses table is linked last, and strict row-count verification throws an exception if any record is lost."
                 ),
                 UpdateSpecification(
                     category = SpecCategory.SYSTEM,
-                    title = "Room Database Migration Safety Guarantee",
-                    description = "Verified that Room database builder correctly configures explicit multi-step migrations (.addMigrations) from version 3 through version 13 without relying on risky destructive fallbacks (.fallbackToDestructiveMigration)."
+                    title = "Automatic Pre-Upgrade Safety Backup (Version-Guarded)",
+                    description = "Integrated automated pre-migration backups before Room.databaseBuilder initializes. If an existing SQLite database file has a version lower than FINANCE_DB_VERSION (13), a WAL-checkpointed backup copy is saved in files/db_backups."
                 ),
                 UpdateSpecification(
-                    category = SpecCategory.PERFORMANCE,
-                    title = "Rigorous Build & Compilation Verification",
-                    description = "Executed successful clean applet compilation verifying zero syntax errors, missing imports, or build warnings."
+                    category = SpecCategory.SECURITY,
+                    title = "PIN Brute-Force Lockout & Keystore HMAC Verification",
+                    description = "Wired calculateLockoutStatus and lockoutDelayMs directly into unlockAppWithPin: failed attempts are counted and synchronously committed to prevent evasion, escalating lockout delays are strictly enforced, PBKDF2 iterations are raised to 210,000, AndroidKeyStore HMAC signing is restored, and cross-version compatibility verifies both Keystore HMAC and legacy hashes."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SECURITY,
+                    title = "Forgot PIN Cloud Backdoor Elimination",
+                    description = "Secured data wipe: resetAppLockAndWipeData now explicitly signs out of Firebase Auth to ensure unauthorized cloud restores cannot be performed after a wipe. All file deletions and WorkManager cancellations are structured and logged, eliminating hidden exceptions."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SYSTEM,
+                    title = "Recurring Rules Type & End-Date Preservation",
+                    description = "Preserved rule type (INCOME vs EXPENSE) and endDate through migrations. RecurringProcessor now dynamically inspects rule metadata so recurring income (such as salaries or investments) is properly credited as INCOME rather than debited as an expense."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SYSTEM,
+                    title = "Minor Units as the Single Source of Truth",
+                    description = "Standardized amountMinor, balanceMinor, and limitMinor as the authoritative single source of truth across all 4 entity tables during Cloud Restore and local persistence, eliminating drifted currency amounts."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SECURITY,
+                    title = "Account Deletion Protection & Entry Reassignment",
+                    description = "Prevented accidental cascade deletion of transactions when an account is removed: account deletion now checks existing entry counts and safely moves transactions to a designated fallback account."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SYSTEM,
+                    title = "Saved Currency Migration Alignment",
+                    description = "FinanceDatabase.getDatabase now automatically retrieves the user's saved currency from settings rather than defaulting to INR for database migrations."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SYSTEM,
+                    title = "Complete Zero-Decimal & Three-Decimal Currency Scaling",
+                    description = "Expanded SQLite migration currency scales to include XOF, XAF, XPF, ISK, UGX, RWF, BIF, DJF, GNF, KMF, VUV (zero-decimal) and IQD (three-decimal), preventing 100x scaling discrepancies."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SYSTEM,
+                    title = "Duplicate Budget Prevention",
+                    description = "Added category and monthYear uniqueness guards in FinanceRepository, converting inserts into updates for existing monthly budget categories."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SECURITY,
+                    title = "Release Hardening, Path Confinement & Cache Pruning",
+                    description = "Confined FileProvider in provider_paths.xml to specific subfolders (reports/, receipts/, images/), excluded *.jks and *.keystore in .gitignore, and added automatic pruning of temporary exports in cache/reports."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SECURITY,
+                    title = "Zero-Trust Cloud Firestore Security Rules",
+                    description = "Authored and included firestore.rules in repository root enforcing zero-trust per-user document isolation requiring authenticated user ID matching."
                 )
             )
         ),

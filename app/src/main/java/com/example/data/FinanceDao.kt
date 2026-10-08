@@ -51,6 +51,12 @@ interface FinanceDao {
     @Delete
     suspend fun deleteAccount(account: Account)
 
+    @Query("SELECT COUNT(*) FROM expenses WHERE accountId = :accountId")
+    suspend fun getExpensesCountForAccount(accountId: Long): Int
+
+    @Query("UPDATE expenses SET accountId = :targetAccountId WHERE accountId = :sourceAccountId")
+    suspend fun reassignExpensesAccount(sourceAccountId: Long, targetAccountId: Long)
+
     @Query("DELETE FROM accounts")
     suspend fun deleteAllAccounts()
 
@@ -60,6 +66,9 @@ interface FinanceDao {
 
     @Query("SELECT * FROM budgets")
     suspend fun getBudgetsSnapshot(): List<Budget>
+
+    @Query("SELECT * FROM budgets WHERE category = :category AND monthYear = :monthYear LIMIT 1")
+    suspend fun getBudgetByCategoryAndMonth(category: String, monthYear: String): Budget?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBudget(budget: Budget): Long

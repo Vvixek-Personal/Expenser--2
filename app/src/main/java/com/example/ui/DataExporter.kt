@@ -310,6 +310,7 @@ object DataExporter {
 
         pdfDocument.finishPage(page)
 
+        cleanOldReports(context)
         val cachePath = File(context.cacheDir, "reports")
         cachePath.mkdirs()
         val pdfFile = File(cachePath, "finance_statement.pdf")
@@ -346,6 +347,7 @@ object DataExporter {
         }
         val csvContent = csvHeader + csvRows
 
+        cleanOldReports(context)
         val cachePath = File(context.cacheDir, "reports")
         cachePath.mkdirs()
         val csvFile = File(cachePath, "finance_statement.csv")
@@ -593,6 +595,7 @@ object DataExporter {
         // Footer
         canvas.drawText("Generated with Personal Finance App", 50f, 1160f, subTitlePaint)
 
+        cleanOldReports(context)
         val cachePath = File(context.cacheDir, "reports")
         cachePath.mkdirs()
         val imageFile = File(cachePath, "finance_statement.jpg")
@@ -609,5 +612,20 @@ object DataExporter {
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
         context.startActivity(Intent.createChooser(intent, "Share Image Statement"))
+    }
+
+    private fun cleanOldReports(context: Context) {
+        try {
+            val cachePath = File(context.cacheDir, "reports")
+            if (cachePath.exists()) {
+                val now = System.currentTimeMillis()
+                cachePath.listFiles()?.forEach { file ->
+                    // Delete files older than 1 hour to prevent accumulation
+                    if (now - file.lastModified() > 3600_000L) {
+                        file.delete()
+                    }
+                }
+            }
+        } catch (_: Exception) {}
     }
 }

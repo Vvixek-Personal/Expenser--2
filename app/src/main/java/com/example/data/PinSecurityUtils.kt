@@ -10,14 +10,46 @@ object PinSecurityUtils {
     private const val KEY_LENGTH = 256
     private const val SALT_LENGTH = 16
     private const val CURRENT_VERSION = "v3"
-    private const val DEFAULT_ITERATIONS = 20000
+    private const val DEFAULT_ITERATIONS = 210000
+    private const val KEYSTORE_ALIAS = "financer_pin_keystore_hmac"
+    private const val ANDROID_KEYSTORE = "AndroidKeyStore"
+
+    private fun signWithKeystoreHmac(data: ByteArray): ByteArray? {
+        return try {
+            val keyStore = java.security.KeyStore.getInstance(ANDROID_KEYSTORE)
+            keyStore.load(null)
+            if (!keyStore.containsAlias(KEYSTORE_ALIAS)) {
+                val keyGenerator = javax.crypto.KeyGenerator.getInstance(
+                    android.security.keystore.KeyProperties.KEY_ALGORITHM_HMAC_SHA256,
+                    ANDROID_KEYSTORE
+                )
+                val spec = android.security.keystore.KeyGenParameterSpec.Builder(
+                    KEYSTORE_ALIAS,
+                    android.security.keystore.KeyProperties.PURPOSE_SIGN
+                ).build()
+                keyGenerator.init(spec)
+                keyGenerator.generateKey()
+            }
+            val secretKey = keyStore.getKey(KEYSTORE_ALIAS, null) as? javax.crypto.SecretKey
+            if (secretKey != null) {
+                val mac = javax.crypto.Mac.getInstance("HmacSHA256")
+                mac.init(secretKey)
+                mac.doFinal(data)
+            } else {
+                null
+            }
+        } catch (_: Throwable) {
+            null
+        }
+    }
 
     fun hashPin(pin: String, iterations: Int = DEFAULT_ITERATIONS): String {
         if (pin.isBlank()) return ""
         val salt = ByteArray(SALT_LENGTH)
         SecureRandom().nextBytes(salt)
-        val hash = pbkdf2(pin.toCharArray(), salt, iterations)
-        return "$CURRENT_VERSION:$iterations:${encodeBase64(salt)}:${encodeBase64(hash)}"
+        val pbkdf2Hash = pbkdf2(pin.toCharArray(), salt, iterations)
+        val finalHash = signWithKeystoreHmac(pbkdf2Hash) ?: pbkdf2Hash
+        return "$CURRENT_VERSION:$iterations:${encodeBase64(salt)}:${encodeBase64(finalHash)}"
     }
 
     fun verifyPin(pin: String, storedHash: String): Boolean {
@@ -38,9 +70,16 @@ object PinSecurityUtils {
                 4 -> { // Modern version:iterations:salt:hash
                     val iterations = parts[1].toInt()
                     val salt = decodeBase64(parts[2])
-                    val hash = decodeBase64(parts[3])
-                    val testHash = pbkdf2(pin.toCharArray(), salt, iterations)
-                    return hash.contentEquals(testHash)
+                    val expectedHash = decodeBase64(parts[3])
+                    val testPbkdf2 = pbkdf2(pin.toCharArray(), salt, iterations)
+
+                    // Verify against Keystore HMAC first if available
+                    val testHmac = signWithKeystoreHmac(testPbkdf2)
+                    if (testHmac != null && expectedHash.contentEquals(testHmac)) {
+                        return true
+                    }
+                    // Fallback to plain PBKDF2 verification for cross-version compatibility
+                    return expectedHash.contentEquals(testPbkdf2)
                 }
                 else -> return false
             }

@@ -346,14 +346,22 @@ class FinanceViewModel(
     }
 
     fun unlockAppWithPin(enteredPin: String): Boolean {
+        val lockoutStatus = appSettingsManager.getLockoutStatus()
+        if (lockoutStatus.isLocked) {
+            return false
+        }
+
         val storedHash = appSettingsManager.state.value.appPin ?: ""
         val success = PinSecurityUtils.verifyPin(enteredPin, storedHash)
         if (success) {
+            appSettingsManager.resetPinLockoutAndAttempts()
             _isAppLocked.value = false
             if (PinSecurityUtils.needsRehash(storedHash)) {
                 val upgradedHash = PinSecurityUtils.hashPin(enteredPin)
                 setAppPin(upgradedHash)
             }
+        } else {
+            appSettingsManager.recordFailedPinAttempt()
         }
         return success
     }
@@ -362,39 +370,61 @@ class FinanceViewModel(
         val ctx = targetContext ?: getApplication<Application>()
         viewModelScope.launch(Dispatchers.IO) {
             // 1. Wipe Room Database completely in one transaction
-            repository.clearAllData()
+            try {
+                repository.clearAllData()
+            } catch (e: Throwable) {
+                android.util.Log.e("FinanceWipe", "Failed to clear database during wipe", e)
+            }
 
-            // 2. Cancel any scheduled reminders or background work
+            // 2. Sign out of Firebase to eliminate the cloud backdoor
+            try {
+                com.google.firebase.auth.FirebaseAuth.getInstance().signOut()
+            } catch (e: Throwable) {
+                android.util.Log.e("FinanceWipe", "Failed to sign out of Firebase during wipe", e)
+            }
+
+            // 3. Cancel any scheduled reminders or background work
             try {
                 androidx.work.WorkManager.getInstance(ctx).cancelAllWork()
-            } catch (_: Throwable) {}
+            } catch (e: Throwable) {
+                android.util.Log.e("FinanceWipe", "Failed to cancel background work during wipe", e)
+            }
 
-            // 3. Delete files inside filesDir (receipts, avatar, local_recovery, db_pre_migration)
+            // 4. Delete files inside filesDir (receipts, avatar, local_recovery, db_pre_migration)
             try {
                 ctx.filesDir?.listFiles()?.forEach { file ->
                     file.deleteRecursively()
                 }
-            } catch (_: Throwable) {}
+            } catch (e: Throwable) {
+                android.util.Log.e("FinanceWipe", "Failed to delete filesDir contents during wipe", e)
+            }
 
-            // 4. Delete files inside cacheDir
+            // 5. Delete files inside cacheDir
             try {
                 ctx.cacheDir?.listFiles()?.forEach { file ->
                     file.deleteRecursively()
                 }
-            } catch (_: Throwable) {}
+            } catch (e: Throwable) {
+                android.util.Log.e("FinanceWipe", "Failed to delete cacheDir contents during wipe", e)
+            }
 
-            // 5. Clear both SharedPreferences files
-            val financePrefs = ctx.getSharedPreferences("finance_prefs", Context.MODE_PRIVATE)
-            financePrefs.edit().clear().commit()
+            // 6. Clear both SharedPreferences files
+            try {
+                val financePrefs = ctx.getSharedPreferences("finance_prefs", Context.MODE_PRIVATE)
+                financePrefs.edit().clear().commit()
 
-            val appSettingsPrefs = ctx.getSharedPreferences("app_settings_prefs", Context.MODE_PRIVATE)
-            appSettingsPrefs.edit().clear().commit()
+                val appSettingsPrefs = ctx.getSharedPreferences("app_settings_prefs", Context.MODE_PRIVATE)
+                appSettingsPrefs.edit().clear().commit()
+            } catch (e: Throwable) {
+                android.util.Log.e("FinanceWipe", "Failed to clear SharedPreferences during wipe", e)
+            }
 
-            // 6. Reload AppSettingsManager state and remove PIN last
+            // 7. Reload AppSettingsManager state and reset lockout
             appSettingsManager.reloadStateAfterWipe()
+            appSettingsManager.resetPinLockoutAndAttempts()
+
             withContext(Dispatchers.Main) {
                 _isAppLocked.value = false
-                appSettingsManager.dispatch(AppSettingsIntent.ResetPinLockout(0))
                 _toastMessage.value = "App lock and all data securely wiped"
             }
         }
@@ -1949,9 +1979,29 @@ class FinanceViewModel(
         }
     }
 
-    fun deleteAccount(account: Account) {
+    fun deleteAccount(account: Account, targetAccountId: Long? = null, onResult: ((Boolean, String) -> Unit)? = null) {
         viewModelScope.launch {
-            repository.deleteAccount(account)
+            val count = repository.getExpensesCountForAccount(account.id)
+            if (count > 0) {
+                if (targetAccountId != null) {
+                    repository.reassignExpensesAccount(account.id, targetAccountId)
+                    repository.deleteAccount(account)
+                    onResult?.invoke(true, "Moved $count entries and deleted account")
+                } else {
+                    val fallback = repository.getAccountsSnapshot().firstOrNull { it.id != account.id }
+                    if (fallback != null) {
+                        repository.reassignExpensesAccount(account.id, fallback.id)
+                        repository.deleteAccount(account)
+                        onResult?.invoke(true, "Moved $count entries to ${fallback.name} and deleted account")
+                    } else {
+                        onResult?.invoke(false, "Cannot delete account with existing entries. Move entries first.")
+                        _toastMessage.value = "Cannot delete account with $count entries. Move entries first."
+                    }
+                }
+            } else {
+                repository.deleteAccount(account)
+                onResult?.invoke(true, "Account deleted")
+            }
         }
     }
 

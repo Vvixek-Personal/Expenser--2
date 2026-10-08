@@ -711,4 +711,53 @@ class FinanceDatabaseMigrationTest {
         roomDb.close()
         context.deleteDatabase(dbName)
     }
+
+    @Test
+    fun normalizeLedgerSchema_withForeignKeysEnabled_preservesAllExpensesAndAccounts() {
+        val helper = FrameworkSQLiteOpenHelperFactory().create(
+            androidx.sqlite.db.SupportSQLiteOpenHelper.Configuration.builder(context)
+                .name("test_fk_on_migration.db")
+                .callback(object : androidx.sqlite.db.SupportSQLiteOpenHelper.Callback(9) {
+                    override fun onCreate(db: SupportSQLiteDatabase) {
+                        db.execSQL("PRAGMA foreign_keys = ON")
+                        db.execSQL("CREATE TABLE IF NOT EXISTS `accounts` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `type` TEXT NOT NULL, `balance` REAL NOT NULL DEFAULT 0.0)")
+                        db.execSQL("CREATE TABLE IF NOT EXISTS `expenses` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `amount` REAL NOT NULL, `category` TEXT NOT NULL, `date` INTEGER NOT NULL, `note` TEXT, `imagePath` TEXT, `type` TEXT NOT NULL DEFAULT 'EXPENSE', `currencyCode` TEXT NOT NULL DEFAULT 'INR', `accountId` INTEGER NOT NULL, FOREIGN KEY(`accountId`) REFERENCES `accounts`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE)")
+                        db.execSQL("CREATE TABLE IF NOT EXISTS `transactions` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `amount` REAL NOT NULL, `type` TEXT NOT NULL, `category` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, `accountId` INTEGER NOT NULL, `currencyCode` TEXT NOT NULL DEFAULT 'INR', `note` TEXT, `imagePath` TEXT)")
+
+                        db.execSQL("INSERT INTO `accounts` (`id`, `name`, `type`, `balance`) VALUES (1, 'Main Bank', 'BANK', 5000.0)")
+                        db.execSQL("INSERT INTO `expenses` (`id`, `amount`, `category`, `date`, `note`, `type`, `currencyCode`, `accountId`) VALUES (10, 250.0, 'Dining', 1700000000000, 'Dinner', 'EXPENSE', 'INR', 1)")
+                        db.execSQL("INSERT INTO `expenses` (`id`, `amount`, `category`, `date`, `note`, `type`, `currencyCode`, `accountId`) VALUES (11, 100.0, 'Groceries', 1700000001000, 'Apples', 'EXPENSE', 'INR', 1)")
+                        db.execSQL("INSERT INTO `transactions` (`id`, `title`, `amount`, `type`, `category`, `timestamp`, `accountId`, `currencyCode`) VALUES (20, 'Coffee', 50.0, 'EXPENSE', 'Food', 1700000002000, 1, 'INR')")
+                    }
+                    override fun onUpgrade(db: SupportSQLiteDatabase, oldVersion: Int, newVersion: Int) {}
+                })
+                .build()
+        )
+
+        val db = helper.writableDatabase
+        db.execSQL("PRAGMA foreign_keys = ON")
+
+        // Run normalizeLedgerSchema with foreign keys explicitly ON
+        normalizeLedgerSchema(db, "INR")
+
+        // Verify expenses survived (2 initial expenses + 1 migrated transaction = 3 total)
+        val cursor = db.query("SELECT COUNT(*) FROM expenses")
+        var count = 0
+        cursor.use {
+            if (it.moveToFirst()) count = it.getInt(0)
+        }
+        assertEquals("All expenses and transactions must survive migration with foreign_keys = ON", 3, count)
+
+        // Verify accounts survived
+        val accCursor = db.query("SELECT COUNT(*) FROM accounts")
+        var accCount = 0
+        accCursor.use {
+            if (it.moveToFirst()) accCount = it.getInt(0)
+        }
+        assertEquals("Account must survive migration with foreign_keys = ON", 1, accCount)
+
+        db.close()
+        helper.close()
+        context.deleteDatabase("test_fk_on_migration.db")
+    }
 }
