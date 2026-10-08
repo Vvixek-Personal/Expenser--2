@@ -5537,9 +5537,9 @@ fun AboutAppScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("Privacy Guarantee", fontWeight = FontWeight.Bold, color = SleekTextPrimary)
+                        Text("Privacy Guarantee & Data Safety", fontWeight = FontWeight.Bold, color = SleekTextPrimary)
                         Text(
-                            "This application operates 100% locally on your device. None of your financial transactions, account balances, bills, or personal notes ever leave your hardware.",
+                            "Financer defaults to 100% offline local storage on your device. When you explicitly enable Online Cloud Sync (Google Firebase Firestore) or use the AI Financial Advisor (Google Gemini), your financial records and queries are transmitted securely via encrypted HTTPS to Google Cloud Services under your authenticated account. Data is encrypted in transit and at rest, never sold, and never used for advertising.",
                             style = MaterialTheme.typography.bodySmall,
                             color = SleekTextSecondary,
                             lineHeight = 18.sp
