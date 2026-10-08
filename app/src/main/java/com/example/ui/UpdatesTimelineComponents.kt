@@ -90,29 +90,33 @@ private fun relativeLabel(releaseTimestamp: Long, now: Long = System.currentTime
 }
 
 fun getAppUpdatesHistory(): List<AppReleaseUpdate> {
-    val tsV130 = epochDay(2026, 10, 7)
-    val tsV129 = epochDay(2026, 10, 4)
-    val tsV128 = epochDay(2026, 9, 29)
+    val tsV129 = epochDay(2026, 10, 7)
+    val tsV128 = epochDay(2026, 10, 5)
     val tsV127 = epochDay(2026, 9, 28)
     val tsV126 = epochDay(2026, 9, 16)
     val tsV125 = epochDay(2026, 8, 15)
 
     return listOf(
         AppReleaseUpdate(
-            version = "V1.30",
+            version = "V1.29",
             releaseTag = "SECURITY & STABILITY",
             releaseDate = "7th Oct - Hardened Migrations, PIN Lockout & Security Patch",
             relativeTime = "Today",
-            timestamp = tsV130,
+            timestamp = tsV129,
             startDate = "7th Oct",
             endDate = "7th Oct",
-            headline = "Zero-Data-Loss Migration Engine, Pre-Migration Auto-Backups, 210,000 Iteration PBKDF2 & Keystore HMAC PIN Security, Brute-Force Lockout, Firebase Wipe Sign-Out, and Accounting Guardrails",
+            headline = "Zero-Data-Loss Universal Migration Engine (v13), Pre-Migration Auto-Backups, 210,000 Iteration PBKDF2 & Keystore HMAC PIN Security, Brute-Force Lockout, Firebase Wipe Sign-Out, Schema Normalization, and Accounting Guardrails",
             isLatest = true,
             specifications = listOf(
                 UpdateSpecification(
                     category = SpecCategory.SYSTEM,
                     title = "Cascade-Proof Database Normalizer & Row-Count Safety Check",
                     description = "Eliminated the risk of silent expense deletion during schema normalization: intermediate tables are now created without foreign key constraints, transactions_legacy is copied via CREATE TABLE AS SELECT, parent accounts are migrated before child tables, the final expenses table is linked last, and strict row-count verification throws an exception if any record is lost."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SYSTEM,
+                    title = "Universal Schema Normalizer",
+                    description = "Engineered a robust SQL-based table normalizer that dynamically inspects table existence and columns via PRAGMA table_info. Rebuilds and normalizes expenses, accounts, budgets, savings goals, and recurring rules into the exact Room Entities structure from any legacy database layout (v9, v10, v11, v12) without data loss."
                 ),
                 UpdateSpecification(
                     category = SpecCategory.SYSTEM,
@@ -168,24 +172,6 @@ fun getAppUpdatesHistory(): List<AppReleaseUpdate> {
                     category = SpecCategory.SECURITY,
                     title = "Zero-Trust Cloud Firestore Security Rules",
                     description = "Authored and included firestore.rules in repository root enforcing zero-trust per-user document isolation requiring authenticated user ID matching."
-                )
-            )
-        ),
-        AppReleaseUpdate(
-            version = "V1.29",
-            releaseTag = "UPGRADE",
-            releaseDate = "4th Oct - Normalizer & Fixes",
-            relativeTime = "3 days ago",
-            timestamp = tsV129,
-            startDate = "4th Oct",
-            endDate = "4th Oct",
-            headline = "Universal Database Normalizer (v13), Safe Migration Engine, Schema Alignment, and Stability Fixes",
-            isLatest = false,
-            specifications = listOf(
-                UpdateSpecification(
-                    category = SpecCategory.SYSTEM,
-                    title = "Universal Schema Normalizer",
-                    description = "Engineered a robust SQL-based table normalizer that dynamically inspects table existence and columns via PRAGMA table_info. Rebuilds and normalizes expenses, accounts, budgets, savings goals, and recurring rules into the exact Room Entities structure from any legacy database layout (v9, v10, v11, v12) without data loss."
                 ),
                 UpdateSpecification(
                     category = SpecCategory.SYSTEM,
@@ -196,11 +182,6 @@ fun getAppUpdatesHistory(): List<AppReleaseUpdate> {
                     category = SpecCategory.SYSTEM,
                     title = "Atomic Account Balance & Opening Balance Computation",
                     description = "Opening balances and current balances are atomically recomputed using net transactions from the unified ledger during migration, ensuring absolute balance fidelity even if legacy records were desynchronized."
-                ),
-                UpdateSpecification(
-                    category = SpecCategory.SYSTEM,
-                    title = "Zero-Decimal & Three-Decimal SQL Currency Scaling",
-                    description = "Embedded specialized unit calculation expressions directly in SQLite queries to handle zero-decimal currencies (JPY, KRW, CLP, VND, PYG) and three-decimal currencies (KWD, BHD, OMR, JOD, LYD, TND) accurately."
                 ),
                 UpdateSpecification(
                     category = SpecCategory.SYSTEM,
@@ -286,15 +267,20 @@ fun getAppUpdatesHistory(): List<AppReleaseUpdate> {
         ),
         AppReleaseUpdate(
             version = "V1.28",
-            releaseTag = "CONTINUE",
-            releaseDate = "29th Sept - Continue",
-            relativeTime = "Yesterday",
+            releaseTag = "STABLE RELEASE",
+            releaseDate = "29th Sept - 5th Oct",
+            relativeTime = "3 days ago",
             timestamp = tsV128,
             startDate = "29th Sept",
-            endDate = "Continue",
-            headline = "Local Only vs Online Cloud Sync Architecture, Proper Sync Now Action Engine, Exact Long Minor Units, Unified Single-Ledger Architecture, WorkManager Bill Reminders, Cryptographic PIN Storage, Full-App UI Animations, 3D Isometric Logo, Swipe-to-Fullscreen Sidebar, Delivery Truck Loader, Preference Persistence & Lock Isolation Fixes",
+            endDate = "5th Oct",
+            headline = "Local Only vs Online Cloud Sync Architecture, Proper Sync Now Action Engine, Exact Long Minor Units, Unified Single-Ledger Architecture, Adaptive Dark/Light Mode Icon Suite, WorkManager Bill Reminders, Cryptographic PIN Storage, Full-App UI Animations, 3D Isometric Logo, Swipe-to-Fullscreen Sidebar, Delivery Truck Loader, Preference Persistence & Lock Isolation Fixes",
             isLatest = false,
             specifications = listOf(
+                UpdateSpecification(
+                    category = SpecCategory.UI_UX,
+                    title = "Universal Adaptive Icon System (Dark & Light Mode)",
+                    description = "Engineered a cohesive, high-fidelity icon suite (FinancerIcons & FinancerBadgeIcon) across all application surfaces: Bottom Navigation (Home, Transactions, Analytics, Calendar/More), Sidebar Navigation, Dashboard Badges (Balance, Income, Expense, Savings), Transaction Controls, Categories, Budget & Goals, and Action Badges. Features radiant luminescence and deep navy glass styling in Dark Mode, crisp soft pastel surfaces in Light Mode, and tactile 0.95 scale tap physics on press (80-150ms spring animation), while preserving the custom CSS-style delivery truck loading component."
+                ),
                 UpdateSpecification(
                     category = SpecCategory.FEATURE,
                     title = "Local Only vs Online Cloud Sync Architecture (Privacy & Cloud Invariant)",
