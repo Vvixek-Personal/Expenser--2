@@ -250,12 +250,12 @@ fun TagSpendingBarChart(
                                     val width = size.width.toFloat()
                                     val leftPadding = 100f
                                     val rightPadding = 30f
-                                    val usableWidth = width - leftPadding - rightPadding
-                                    val count = tagData.size
+                                    val usableWidth = (width - leftPadding - rightPadding).coerceAtLeast(1f)
+                                    val count = tagData.size.coerceAtLeast(1)
                                     val slotWidth = usableWidth / count
 
-                                    if (tapOffset.x >= leftPadding && tapOffset.x <= width - rightPadding) {
-                                        val index = ((tapOffset.x - leftPadding) / slotWidth).toInt().coerceIn(0, count - 1)
+                                    if (tagData.isNotEmpty() && tapOffset.x >= leftPadding && tapOffset.x <= width - rightPadding) {
+                                        val index = ((tapOffset.x - leftPadding) / slotWidth).toInt().coerceIn(0, tagData.size - 1)
                                         val tappedTag = tagData[index].tag
                                         selectedTag = if (selectedTag == tappedTag) null else tappedTag
                                     }
@@ -270,8 +270,8 @@ fun TagSpendingBarChart(
                         val topMargin = 40f
                         val rightMargin = 30f
 
-                        val chartWidth = canvasWidth - leftMargin - rightMargin
-                        val chartHeightPx = canvasHeight - topMargin - bottomMargin
+                        val chartWidth = (canvasWidth - leftMargin - rightMargin).coerceAtLeast(1f)
+                        val chartHeightPx = (canvasHeight - topMargin - bottomMargin).coerceAtLeast(1f)
 
                         // 1. Draw horizontal background grid lines (0%, 50%, 100%)
                         val gridLevels = listOf(0f, 0.5f, 1f)
@@ -309,7 +309,7 @@ fun TagSpendingBarChart(
                         }
 
                         // 2. Draw Bars for each tag
-                        val barCount = tagData.size
+                        val barCount = tagData.size.coerceAtLeast(1)
                         val slotWidth = chartWidth / barCount
                         val barWidth = (slotWidth * 0.52f).coerceAtMost(56f)
 

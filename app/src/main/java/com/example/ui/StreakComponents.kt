@@ -70,9 +70,10 @@ fun StreakFlameLogo(
     val cornerRadius = if (isLarge) 28.dp else 14.dp
 
     // Subtle idle breathing & floating flicker animation
-    val idleScale = rememberLoopFloat(1.0f, 1.05f, 1400, "idle_scale", FastOutSlowInEasing, reverse = true)
-    val glowAlpha = rememberLoopFloat(0.35f, 0.75f, 1200, "glow_alpha", FastOutSlowInEasing, reverse = true, rest = 0.55f)
-    val shimmerOffset = rememberLoopFloat(-50f, 150f, 2800, "shimmer_offset")
+    val idleScale = rememberLoopFloat(1.0f, 1.06f, 1200, "idle_scale", FastOutSlowInEasing, reverse = true)
+    val glowAlpha = rememberLoopFloat(0.40f, 0.85f, 1000, "glow_alpha", FastOutSlowInEasing, reverse = true, rest = 0.55f)
+    val flameFlickerX = rememberLoopFloat(-2.5f, 2.5f, 850, "flame_flicker_x", FastOutSlowInEasing, reverse = true, rest = 0f)
+    val shimmerOffset = rememberLoopFloat(-50f, 180f, 2200, "shimmer_offset")
 
     // Interactive press scale animation
     var isPressed by remember { mutableStateOf(false) }
@@ -183,12 +184,12 @@ fun StreakFlameLogo(
 
                 // Outer Flame Body
                 val outerFlame = Path().apply {
-                    val tipX = 0.52f * w
+                    val tipX = 0.52f * w + flameFlickerX
                     val tipY = 0.22f * h
                     moveTo(tipX, tipY)
                     // Left contour swooping down to notch
                     cubicTo(
-                        0.45f * w, 0.28f * h,
+                        0.45f * w + flameFlickerX * 0.5f, 0.28f * h,
                         0.36f * w, 0.35f * h,
                         0.34f * w, 0.42f * h
                     )
@@ -234,7 +235,7 @@ fun StreakFlameLogo(
 
                 // Inner Flame Core
                 val innerFlame = Path().apply {
-                    val tipX = 0.51f * w
+                    val tipX = 0.51f * w + flameFlickerX * 0.7f
                     val tipY = 0.53f * h
                     moveTo(tipX, tipY)
                     cubicTo(

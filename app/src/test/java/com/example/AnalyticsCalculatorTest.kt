@@ -69,4 +69,62 @@ class AnalyticsCalculatorTest {
         assertEquals(500.0, perf[0].limit, 0.001)
         assertFalse(perf[0].isOverBudget)
     }
+
+    @Test
+    fun testSingleTransactionSpendingPatterns() {
+        val singleExpense = listOf(
+            Expense(
+                id = 42L,
+                amountMinor = 120000L,
+                amount = 1200.0,
+                category = "Groceries",
+                date = 1700000000000L,
+                type = "EXPENSE",
+                currencyCode = "INR"
+            )
+        )
+        val pattern = AnalyticsCalculator.computeSpendingPatterns(singleExpense, "INR")
+        assertNotNull(pattern)
+        assertTrue(pattern.peakDayTotal > 0.0)
+        assertEquals(100.0, pattern.peakDayPercentage, 0.01)
+        assertEquals(1200.0, pattern.peakDayTotal, 0.01)
+        assertFalse(pattern.dayAverages.isEmpty())
+    }
+
+    @Test
+    fun testNonInrStatsCurrencyNormalization() {
+        val expenseUsd = Expense(
+            id = 101L,
+            amountMinor = 5000L, // $50.00
+            amount = 50.0,
+            category = "Software",
+            date = 1700000000000L,
+            type = "EXPENSE",
+            currencyCode = "USD"
+        )
+        // Normalize against USD and EUR
+        val normalizedUsd = AnalyticsCalculator.normalize(expenseUsd, "USD")
+        assertEquals(50.0, normalizedUsd, 0.01)
+
+        val patterns = AnalyticsCalculator.computeSpendingPatterns(listOf(expenseUsd), "USD")
+        assertEquals(50.0, patterns.peakDayTotal, 0.01)
+    }
+
+    @Test
+    fun testLargeDatasetPerformanceAndStability() {
+        val largeList = (1..1000).map { i ->
+            Expense(
+                id = i.toLong(),
+                amountMinor = (i * 100).toLong(),
+                amount = i.toDouble(),
+                category = if (i % 2 == 0) "Food" else "Shopping",
+                date = 1700000000000L + (i * 3600000L),
+                type = if (i % 5 == 0) "INCOME" else "EXPENSE",
+                currencyCode = "INR"
+            )
+        }
+        val pattern = AnalyticsCalculator.computeSpendingPatterns(largeList, "INR")
+        assertNotNull(pattern)
+        assertTrue(pattern.peakDayTotal > 0.0)
+    }
 }

@@ -209,17 +209,37 @@ fun PinLockScreen(
                 Box(
                     modifier = Modifier
                         .size(80.dp)
-                        .clip(CircleShape)
-                        .background(SleekPrimary.copy(alpha = 0.15f))
-                        .border(2.dp, SleekPrimary.copy(alpha = 0.5f), CircleShape),
+                        .clip(RoundedCornerShape(24.dp))
+                        .background(SleekPrimary.copy(alpha = 0.12f))
+                        .border(BorderStroke(1.5.dp, SleekPrimary.copy(alpha = 0.45f)), RoundedCornerShape(24.dp)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = AppIcons.Lock,
-                        contentDescription = "App Locked",
-                        tint = SleekPrimary,
-                        modifier = Modifier.size(38.dp)
+                    androidx.compose.foundation.Image(
+                        painter = androidx.compose.ui.res.painterResource(id = com.example.R.drawable.app_logo_modern),
+                        contentDescription = "App Logo",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(24.dp)),
+                        contentScale = androidx.compose.ui.layout.ContentScale.Crop
                     )
+                    // Small lock badge at bottom right corner
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .offset(x = 4.dp, y = 4.dp)
+                            .size(26.dp)
+                            .clip(CircleShape)
+                            .background(SleekPrimary)
+                            .border(1.5.dp, MaterialTheme.colorScheme.surface, CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = AppIcons.Lock,
+                            contentDescription = "App Locked",
+                            tint = Color.White,
+                            modifier = Modifier.size(13.dp)
+                        )
+                    }
                 }
 
                 Text(

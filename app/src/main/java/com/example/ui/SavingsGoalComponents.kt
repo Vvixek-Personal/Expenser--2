@@ -729,48 +729,53 @@ fun SavingGoalCardItem(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            // Circular Avatar Badge with surrounding Progress Ring Arc
-            Box(
-                modifier = Modifier.size(52.dp),
-                contentAlignment = Alignment.Center
+            // Circular Avatar Badge with surrounding Progress Ring Arc and Celebration Pulse
+            SavingsGoalCelebrationPulse(
+                isCompleted = progressRatio >= 1f,
+                accentColor = primaryAccent
             ) {
-                // Background Track Ring
-                Canvas(modifier = Modifier.fillMaxSize()) {
-                    drawCircle(
-                        color = primaryAccent.copy(alpha = 0.15f),
-                        style = Stroke(width = 4.dp.toPx())
-                    )
-                    drawArc(
-                        color = primaryAccent,
-                        startAngle = -90f,
-                        sweepAngle = 360f * animatedProgress,
-                        useCenter = false,
-                        style = Stroke(width = 4.dp.toPx(), cap = StrokeCap.Round)
-                    )
-                }
-
-                // Inner Avatar Image or Category Icon
                 Box(
-                    modifier = Modifier
-                        .size(42.dp)
-                        .clip(CircleShape)
-                        .background(primaryAccent.copy(alpha = 0.12f)),
+                    modifier = Modifier.size(52.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    if (!goal.imageUri.isNullOrBlank()) {
-                        AsyncImage(
-                            model = goal.imageUri,
-                            contentDescription = goal.name,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize()
+                    // Background Track Ring
+                    Canvas(modifier = Modifier.fillMaxSize()) {
+                        drawCircle(
+                            color = primaryAccent.copy(alpha = 0.15f),
+                            style = Stroke(width = 4.dp.toPx())
                         )
-                    } else {
-                        Icon(
-                            imageVector = getCategoryVectorIcon(goal.category, goal.name),
-                            contentDescription = goal.category,
-                            tint = primaryAccent,
-                            modifier = Modifier.size(SleekSizes.iconMedium)
+                        drawArc(
+                            color = primaryAccent,
+                            startAngle = -90f,
+                            sweepAngle = 360f * animatedProgress,
+                            useCenter = false,
+                            style = Stroke(width = 4.dp.toPx(), cap = StrokeCap.Round)
                         )
+                    }
+
+                    // Inner Avatar Image or Category Icon
+                    Box(
+                        modifier = Modifier
+                            .size(42.dp)
+                            .clip(CircleShape)
+                            .background(primaryAccent.copy(alpha = 0.12f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (!goal.imageUri.isNullOrBlank()) {
+                            AsyncImage(
+                                model = goal.imageUri,
+                                contentDescription = goal.name,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        } else {
+                            Icon(
+                                imageVector = getCategoryVectorIcon(goal.category, goal.name),
+                                contentDescription = goal.category,
+                                tint = primaryAccent,
+                                modifier = Modifier.size(SleekSizes.iconMedium)
+                            )
+                        }
                     }
                 }
             }

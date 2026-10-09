@@ -105,9 +105,24 @@ fun getAppUpdatesHistory(): List<AppReleaseUpdate> {
             timestamp = tsV129,
             startDate = "7th Oct",
             endDate = "7th Oct",
-            headline = "Zero-Data-Loss Universal Migration Engine (v13), Pre-Migration Auto-Backups, 210,000 Iteration PBKDF2 & Keystore HMAC PIN Security, Brute-Force Lockout, Firebase Wipe Sign-Out, Claude-Style Unified Outlined Icon Architecture, and Accounting Guardrails",
+            headline = "Zero-Data-Loss Universal Migration Engine (v13), Pre-Migration Auto-Backups, Animated Money Suite, Deep Insights Crash Guards, Enhanced Streak Flame Physics & 3D Branded Logos, 210,000 Iteration PBKDF2 PIN Security, Claude-Style Outlined Icon Architecture",
             isLatest = true,
             specifications = listOf(
+                UpdateSpecification(
+                    category = SpecCategory.UI_UX,
+                    title = "Animated Financial Component Suite (AnimatedMoneyComponents)",
+                    description = "Delivered dedicated animated monetary components: smooth odometer count-up numbers (AnimatedMoneyText), spring-animated progress meters for budgets (AnimatedProgressBar), and dynamic radiant celebration pulses for completed savings goals (SavingsGoalCelebrationPulse) respecting system animation toggles."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SYSTEM,
+                    title = "Deep Insights & Analytics Hardening (Zero & Single Transaction Guards)",
+                    description = "Fortified TagSpendingBarChart and AnalyticsCalculator against single-transaction, zero-transaction, and multi-currency edge cases. Added safe boundary clamps, positive width guarantees on Canvas layouts, and unit tests covering empty, single, and 1,000+ item transaction datasets."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.UI_UX,
+                    title = "Enhanced Streak Flame Dynamics & High-Fidelity App Logos",
+                    description = "Elevated StreakFlameLogo with natural oscillating flame flicker physics, enhanced ambient glow breathing cycles, responsive haptic pulses, and upgraded PIN lock screen with the official 3D isometric fintech logo badge."
+                ),
                 UpdateSpecification(
                     category = SpecCategory.UI_UX,
                     title = "Claude-Style Unified Outlined Icon Architecture (AppIcons)",
