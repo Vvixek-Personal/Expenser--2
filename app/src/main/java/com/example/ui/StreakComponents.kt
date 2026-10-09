@@ -566,19 +566,19 @@ fun DailyStreakCelebrationDialog(
                 ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(24.dp)
+                        modifier = Modifier.padding(horizontal = 22.dp, vertical = 24.dp)
                     ) {
                         // Tier Badge Ribbon
                         Surface(
-                            shape = SleekShapes.md,
-                            color = tierColor.copy(alpha = 0.15f),
-                            border = BorderStroke(1.dp, tierColor.copy(alpha = 0.4f)),
-                            modifier = Modifier.padding(bottom = 12.dp)
+                            shape = RoundedCornerShape(12.dp),
+                            color = tierColor.copy(alpha = 0.14f),
+                            border = BorderStroke(1.dp, tierColor.copy(alpha = 0.45f)),
+                            modifier = Modifier.padding(bottom = 14.dp)
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp)
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
                             ) {
                                 Box(
                                     modifier = Modifier
@@ -587,10 +587,11 @@ fun DailyStreakCelebrationDialog(
                                         .background(tierColor)
                                 )
                                 Text(
-                                    text = "$tierBadge TIER • $milestoneTitle",
-                                    fontSize = SleekSizes.textCaption,
+                                    text = "$tierBadge • $milestoneTitle",
+                                    fontSize = 11.5.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = tierColor,
+                                    letterSpacing = 0.3.sp,
                                     maxLines = 1,
                                     overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                                 )
@@ -604,51 +605,54 @@ fun DailyStreakCelebrationDialog(
                             fontWeight = FontWeight.ExtraBold,
                             color = SleekTextPrimary,
                             textAlign = TextAlign.Center,
+                            letterSpacing = 0.2.sp,
                             maxLines = 2,
                             overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                         )
 
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
 
                         Text(
                             text = if (streakCount == 1)
-                                "Welcome to your financial journey! Open and log daily to build wealth discipline."
+                                "Great start! Check in daily to track expenses and build healthy money habits."
                             else
-                                "Phenomenal consistency! You've maintained your financial check-in for $streakCount days in a row.",
-                            fontSize = SleekSizes.textBodySmall,
+                                "Keep the fire going! You've logged your finances for $streakCount days in a row.",
+                            fontSize = 13.sp,
                             color = SleekTextSecondary,
                             textAlign = TextAlign.Center,
                             lineHeight = 19.sp,
+                            letterSpacing = 0.15.sp,
                             maxLines = 3,
                             overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                         )
 
-                        Spacer(modifier = Modifier.height(20.dp))
+                        Spacer(modifier = Modifier.height(22.dp))
 
                         // Next Milestone Tracker
                         Surface(
-                            shape = SleekShapes.lg,
-                            color = SleekBg,
+                            shape = RoundedCornerShape(16.dp),
+                            color = if (isDarkModeActive) Color(0xFF161822) else Color(0xFFF8FAFC),
                             border = BorderStroke(1.dp, SleekBorder),
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Column(modifier = Modifier.padding(14.dp)) {
+                            Column(modifier = Modifier.padding(16.dp)) {
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
-                                        text = "Next Milestone",
-                                        fontSize = SleekSizes.textCaption,
+                                        text = "Next Target",
+                                        fontSize = 12.sp,
                                         fontWeight = FontWeight.SemiBold,
                                         color = SleekTextSecondary,
+                                        letterSpacing = 0.2.sp,
                                         maxLines = 1,
                                         overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                                     )
                                     Text(
                                         text = "$streakCount / $nextMilestone Days",
-                                        fontSize = SleekSizes.textCaption,
+                                        fontSize = 12.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = tierColor,
                                         maxLines = 1,
@@ -656,7 +660,7 @@ fun DailyStreakCelebrationDialog(
                                     )
                                 }
 
-                                Spacer(modifier = Modifier.height(8.dp))
+                                Spacer(modifier = Modifier.height(10.dp))
 
                                 val milestoneProgress = (streakCount.toFloat() / nextMilestone.toFloat()).coerceIn(0.05f, 1f)
                                 val animatedMilestoneProgress by animateFloatAsState(
@@ -668,15 +672,15 @@ fun DailyStreakCelebrationDialog(
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .height(8.dp)
-                                        .clip(SleekShapes.xs)
+                                        .height(10.dp)
+                                        .clip(RoundedCornerShape(5.dp))
                                         .background(if (isDarkModeActive) Color(0xFF1E2235) else Color(0xFFE2E8F0))
                                 ) {
                                     Box(
                                         modifier = Modifier
                                             .fillMaxWidth(animatedMilestoneProgress)
                                             .fillMaxHeight()
-                                            .clip(SleekShapes.xs)
+                                            .clip(RoundedCornerShape(5.dp))
                                             .background(
                                                 Brush.horizontalGradient(
                                                     listOf(tierColor, Color(0xFFFFB703))
@@ -685,12 +689,13 @@ fun DailyStreakCelebrationDialog(
                                     )
                                 }
 
-                                Spacer(modifier = Modifier.height(6.dp))
+                                Spacer(modifier = Modifier.height(8.dp))
 
                                 val daysRemaining = (nextMilestone - streakCount).coerceAtLeast(1)
                                 Text(
-                                    text = "$daysRemaining more day${if (daysRemaining > 1) "s" else ""} to level up!",
-                                    fontSize = SleekSizes.textMicro,
+                                    text = "$daysRemaining day${if (daysRemaining > 1) "s" else ""} until next badge",
+                                    fontSize = 11.5.sp,
+                                    fontWeight = FontWeight.Medium,
                                     color = SleekTextSecondary,
                                     modifier = Modifier.align(Alignment.End),
                                     maxLines = 1,

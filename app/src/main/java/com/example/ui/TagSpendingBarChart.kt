@@ -163,50 +163,63 @@ fun TagSpendingBarChart(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = AppIcons.LocalOffer,
-                            contentDescription = null,
-                            tint = SleekPrimary,
-                            modifier = Modifier.size(SleekSizes.iconSmall)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(28.dp)
+                                .clip(CircleShape)
+                                .background(SleekPrimary.copy(alpha = 0.12f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = AppIcons.LocalOffer,
+                                contentDescription = null,
+                                tint = SleekPrimary,
+                                modifier = Modifier.size(15.dp)
+                            )
+                        }
                         Text(
                             text = "Spending by Tag",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = SleekTextPrimary,
+                            letterSpacing = 0.2.sp,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                     }
+                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = "Tag breakdown for $periodLabel",
+                        text = "Breakdown for $periodLabel",
                         style = MaterialTheme.typography.bodySmall,
                         color = SleekTextSecondary,
+                        fontSize = 12.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                 }
 
-                Box(
-                    modifier = Modifier
-                        .clip(SleekShapes.md)
-                        .background(SleekPrimaryContainer)
-                        .padding(horizontal = 10.dp, vertical = 4.dp)
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = SleekPrimaryContainer,
+                    border = BorderStroke(1.dp, SleekPrimary.copy(alpha = 0.2f))
                 ) {
                     Text(
                         text = "Total: ₹${String.format(Locale.getDefault(), "%,.0f", totalSpending)}",
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
                         color = SleekPrimary,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(18.dp))
 
             if (tagData.isEmpty()) {
                 // Empty state view

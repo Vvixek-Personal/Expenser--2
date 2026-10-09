@@ -1321,170 +1321,275 @@ fun SpendingPatternDetectionSection(
         border = BorderStroke(1.dp, SleekBorder),
         modifier = modifier.fillMaxWidth()
     ) {
-        Column(modifier = Modifier.padding(18.dp)) {
+        Column(modifier = Modifier.padding(20.dp)) {
+            // Header Row
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Spending Habits & Spike Alerts",
+                        text = "Weekly Spending Rhythm",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = SleekTextPrimary
+                        color = SleekTextPrimary,
+                        letterSpacing = 0.2.sp
                     )
+                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = "Smart anomaly detection & weekly rhythm",
+                        text = "Daily habits and peak expense activity",
                         style = MaterialTheme.typography.bodySmall,
                         color = SleekTextSecondary,
-                        fontSize = 11.5.sp
+                        fontSize = 12.sp,
+                        lineHeight = 16.sp
                     )
                 }
                 Box(
                     modifier = Modifier
-                        .size(32.dp)
+                        .size(36.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFFEA580C).copy(alpha = 0.15f)),
+                        .background(Color(0xFFEA580C).copy(alpha = 0.12f)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(AppIcons.Whatshot, contentDescription = null, tint = Color(0xFFEA580C), modifier = Modifier.size(18.dp))
+                    Icon(
+                        imageVector = AppIcons.Whatshot,
+                        contentDescription = null,
+                        tint = Color(0xFFEA580C),
+                        modifier = Modifier.size(18.dp)
+                    )
                 }
             }
 
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             val hasAnySpending = pattern.dayAverages.values.sum() > 0.0 && pattern.peakDayTotal > 0.0
             if (!hasAnySpending) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 24.dp),
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(SleekBorder.copy(alpha = 0.25f))
+                        .padding(vertical = 28.dp, horizontal = 16.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(
                             imageVector = AppIcons.Timeline,
                             contentDescription = null,
-                            tint = SleekTextSecondary.copy(alpha = 0.5f),
-                            modifier = Modifier.size(36.dp)
+                            tint = SleekTextSecondary.copy(alpha = 0.6f),
+                            modifier = Modifier.size(34.dp)
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
                         Text(
-                            text = "No spending recorded in this period yet",
+                            text = "No expenses recorded this period yet",
                             style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Medium,
                             color = SleekTextSecondary
                         )
                     }
                 }
             } else {
                 // Peak Spend Day Highlight Box
+                val isDark = isDarkModeActive
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(Color(0xFFFFF7ED))
-                        .border(1.dp, Color(0xFFF97316).copy(alpha = 0.35f), RoundedCornerShape(16.dp))
-                        .padding(12.dp)
+                        .clip(RoundedCornerShape(18.dp))
+                        .background(
+                            if (isDark) Color(0xFF261914) else Color(0xFFFFF7ED)
+                        )
+                        .border(
+                            1.dp,
+                            if (isDark) Color(0xFFEA580C).copy(alpha = 0.35f) else Color(0xFFF97316).copy(alpha = 0.30f),
+                            RoundedCornerShape(18.dp)
+                        )
+                        .padding(horizontal = 16.dp, vertical = 14.dp)
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        horizontalArrangement = Arrangement.spacedBy(14.dp)
                     ) {
-                        Text("🔥", fontSize = 20.sp)
-                        Column {
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clip(CircleShape)
+                                .background(Color(0xFFEA580C).copy(alpha = 0.18f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("🔥", fontSize = 20.sp)
+                        }
+                        Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "Peak Spending Day: ${pattern.peakDayName}",
+                                text = "Highest Day: ${pattern.peakDayName}",
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 13.sp,
-                                color = Color(0xFFC2410C)
+                                fontSize = 14.sp,
+                                color = if (isDark) Color(0xFFFFB088) else Color(0xFFC2410C),
+                                letterSpacing = 0.15.sp
                             )
+                            Spacer(modifier = Modifier.height(2.dp))
                             val formattedPeakTotal = String.format(Locale.getDefault(), "%,.0f", pattern.peakDayTotal)
                             Text(
-                                text = "${pattern.peakDayName} represents ${pattern.peakDayPercentage.roundToInt()}% of your active period expenses ($currencySymbol$formattedPeakTotal total).",
-                                fontSize = 11.sp,
-                                color = Color(0xFF9A3412)
+                                text = "${pattern.peakDayPercentage.roundToInt()}% of spending ($currencySymbol$formattedPeakTotal) happens on ${pattern.peakDayName}.",
+                                fontSize = 12.sp,
+                                color = if (isDark) Color(0xFFE2D6D0) else Color(0xFF9A3412),
+                                lineHeight = 16.sp
                             )
                         }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(18.dp))
 
-                // Day of Week Distribution Bars
-                Text("Day of Week Distribution", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = SleekTextPrimary)
-                Spacer(modifier = Modifier.height(8.dp))
-
-                val maxDayVal = pattern.dayAverages.values.maxOrNull()?.coerceAtLeast(1.0) ?: 1.0
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Bottom
+                // Day of Week Distribution Bars Container
+                Surface(
+                    shape = RoundedCornerShape(18.dp),
+                    color = if (isDark) Color(0xFF161822) else Color(0xFFF8FAFC),
+                    border = BorderStroke(1.dp, SleekBorder.copy(alpha = 0.6f)),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    pattern.dayAverages.forEach { (day, amount) ->
-                        val ratio = (amount / maxDayVal).toFloat().coerceIn(0.08f, 1f)
-                        val isPeak = day == pattern.peakDayName
-
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.weight(1f)
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = if (amount > 0) String.format(Locale.getDefault(), "%s%,.0f", currencySymbol, amount) else "-",
-                                fontSize = 9.sp,
-                                color = if (isPeak) Color(0xFFF97316) else SleekTextSecondary,
-                                fontWeight = if (isPeak) FontWeight.Bold else FontWeight.Normal,
-                                maxLines = 1
+                                text = "Daily Distribution",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = SleekTextPrimary,
+                                letterSpacing = 0.3.sp
                             )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Box(
-                                modifier = Modifier
-                                    .width(18.dp)
-                                    .height((60 * ratio).dp)
-                                    .clip(RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp))
-                                    .background(if (isPeak) Color(0xFFF97316) else SleekPrimary.copy(alpha = 0.4f))
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
                             Text(
-                                text = day,
+                                text = "Mon – Sun",
                                 fontSize = 11.sp,
-                                fontWeight = if (isPeak) FontWeight.Bold else FontWeight.Medium,
-                                color = if (isPeak) Color(0xFFF97316) else SleekTextSecondary
+                                color = SleekTextSecondary
                             )
+                        }
+
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        val maxDayVal = pattern.dayAverages.values.maxOrNull()?.coerceAtLeast(1.0) ?: 1.0
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(95.dp),
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            verticalAlignment = Alignment.Bottom
+                        ) {
+                            pattern.dayAverages.forEach { (day, amount) ->
+                                val ratio = (amount / maxDayVal).toFloat().coerceIn(0.08f, 1f)
+                                val isPeak = day == pattern.peakDayName
+
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Bottom,
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text(
+                                        text = if (amount > 0) String.format(Locale.getDefault(), "%s%,.0f", currencySymbol, amount) else "-",
+                                        fontSize = 9.sp,
+                                        color = if (isPeak) Color(0xFFF97316) else SleekTextSecondary,
+                                        fontWeight = if (isPeak) FontWeight.Bold else FontWeight.Normal,
+                                        maxLines = 1
+                                    )
+                                    Spacer(modifier = Modifier.height(6.dp))
+                                    Box(
+                                        modifier = Modifier
+                                            .width(22.dp)
+                                            .height((56 * ratio).dp)
+                                            .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
+                                            .background(
+                                                if (isPeak) Brush.verticalGradient(
+                                                    listOf(Color(0xFFFB923C), Color(0xFFEA580C))
+                                                ) else Brush.verticalGradient(
+                                                    listOf(SleekPrimary.copy(alpha = 0.45f), SleekPrimary.copy(alpha = 0.25f))
+                                                )
+                                            )
+                                    )
+                                    Spacer(modifier = Modifier.height(6.dp))
+                                    Text(
+                                        text = day,
+                                        fontSize = 11.sp,
+                                        fontWeight = if (isPeak) FontWeight.Bold else FontWeight.Medium,
+                                        color = if (isPeak) Color(0xFFEA580C) else SleekTextSecondary
+                                    )
+                                }
+                            }
                         }
                     }
                 }
 
                 // Anomaly / Spike alert cards if any
                 if (pattern.unusualSpikes.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text("⚠️ Unusually High Expense Spikes", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color(0xFFEF4444))
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(18.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .clip(CircleShape)
+                                .background(Color(0xFFEF4444))
+                        )
+                        Text(
+                            text = "Unusually Large Expenses",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = SleekTextPrimary,
+                            letterSpacing = 0.2.sp
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     pattern.unusualSpikes.take(3).forEach { spike ->
                         val sdf = SimpleDateFormat("MMM d", Locale.getDefault())
-                        Row(
+                        val isDarkSpike = isDarkModeActive
+                        Surface(
+                            shape = RoundedCornerShape(14.dp),
+                            color = if (isDarkSpike) Color(0xFF241518) else Color(0xFFFFF1F2),
+                            border = BorderStroke(
+                                1.dp,
+                                if (isDarkSpike) Color(0xFFEF4444).copy(alpha = 0.25f) else Color(0xFFFECDD3)
+                            ),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(Color(0xFFFEF2F2))
-                                .padding(horizontal = 10.dp, vertical = 8.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                                .padding(vertical = 3.dp)
                         ) {
-                            Column {
-                                Text(spike.note ?: spike.category, fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Color(0xFF991B1B))
-                                Text("${spike.category} • ${sdf.format(Date(spike.date))}", fontSize = 11.sp, color = Color(0xFFB91C1C))
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 14.dp, vertical = 10.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = spike.note?.takeIf { it.isNotBlank() } ?: spike.category,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 13.sp,
+                                        color = if (isDarkSpike) Color(0xFFFFB4AB) else Color(0xFF991B1B),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                    Spacer(modifier = Modifier.height(2.dp))
+                                    Text(
+                                        text = "${spike.category} • ${sdf.format(Date(spike.date))}",
+                                        fontSize = 11.5.sp,
+                                        color = if (isDarkSpike) Color(0xFFE2C4C4) else Color(0xFFB91C1C)
+                                    )
+                                }
+                                Text(
+                                    text = String.format(Locale.getDefault(), "%s%,.2f", currencySymbol, spike.amount),
+                                    fontWeight = FontWeight.ExtraBold,
+                                    fontSize = 13.5.sp,
+                                    color = if (isDarkSpike) Color(0xFFFF897D) else Color(0xFFDC2626)
+                                )
                             }
-                            Text(
-                                text = String.format(Locale.getDefault(), "%s%,.2f", currencySymbol, spike.amount),
-                                fontWeight = FontWeight.Black,
-                                fontSize = 13.sp,
-                                color = Color(0xFFDC2626)
-                            )
                         }
-                        Spacer(modifier = Modifier.height(4.dp))
                     }
                 }
             }
