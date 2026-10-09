@@ -28,7 +28,7 @@ fun AiConsentDialog(
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.AutoAwesome,
+                    imageVector = AppIcons.AutoAwesome,
                     contentDescription = "AI",
                     tint = SleekPrimary,
                     modifier = Modifier.size(24.dp)

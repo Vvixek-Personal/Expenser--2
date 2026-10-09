@@ -94,10 +94,10 @@ import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
-    object Dashboard : Screen("dashboard", "Dashboard", Icons.Default.Dashboard)
-    object Expenses : Screen("expenses", "Finance", Icons.Default.ReceiptLong)
-    object Analytics : Screen("analytics", "Analytics", Icons.Default.PieChart)
-    object Calendar : Screen("calendar", "Calendar", Icons.Default.CalendarMonth)
+    object Dashboard : Screen("dashboard", "Dashboard", AppIcons.Dashboard)
+    object Expenses : Screen("expenses", "Finance", AppIcons.ReceiptLong)
+    object Analytics : Screen("analytics", "Analytics", AppIcons.PieChart)
+    object Calendar : Screen("calendar", "Calendar", AppIcons.CalendarMonth)
 }
 
 fun getCategoryEmoji(category: String, customMap: Map<String, String> = emptyMap()): String {
@@ -160,35 +160,35 @@ val categoryColors = mapOf(
 fun getCategoryIcon(category: String, customMap: Map<String, String> = emptyMap()): ImageVector {
     val resolved = customMap[category] ?: category
     return when (resolved) {
-        "Food", "Restaurant" -> Icons.Default.Restaurant
-        "Travel", "DirectionsCar" -> Icons.Default.DirectionsCar
-        "Rent", "Home" -> Icons.Default.Home
-        "Utilities", "Bolt", "ElectricBolt" -> Icons.Default.Bolt
-        "Entertainment", "Movie" -> Icons.Default.Movie
-        "Shopping", "ShoppingCart" -> Icons.Default.ShoppingCart
-        "Persons", "Person" -> Icons.Default.Person
-        "LocalHospital", "Healing" -> Icons.Default.LocalHospital
-        "School" -> Icons.Default.School
-        "Work" -> Icons.Default.Work
-        "Flight", "FlightTakeoff" -> Icons.Default.Flight
-        "SportsEsports" -> Icons.Default.SportsEsports
-        "CardGiftcard" -> Icons.Default.CardGiftcard
-        "MonetizationOn" -> Icons.Default.MonetizationOn
-        "Settings" -> Icons.Default.Settings
-        "Pets" -> Icons.Default.Pets
-        "Star" -> Icons.Default.Star
-        "Construction" -> Icons.Default.Construction
-        "Fastfood" -> Icons.Default.Fastfood
-        "Coffee" -> Icons.Default.Coffee
-        "WaterDrop" -> Icons.Default.WaterDrop
-        "Checkroom" -> Icons.Default.Checkroom
-        "DirectionsBus" -> Icons.Default.DirectionsBus
-        "LocalGasStation" -> Icons.Default.LocalGasStation
-        "FitnessCenter" -> Icons.Default.FitnessCenter
-        "Event" -> Icons.Default.Event
-        "Spa" -> Icons.Default.Spa
-        "Pending" -> Icons.Default.Pending
-        else -> Icons.Default.Category
+        "Food", "Restaurant" -> AppIcons.Restaurant
+        "Travel", "DirectionsCar" -> AppIcons.DirectionsCar
+        "Rent", "Home" -> AppIcons.Home
+        "Utilities", "Bolt", "ElectricBolt" -> AppIcons.Bolt
+        "Entertainment", "Movie" -> AppIcons.Movie
+        "Shopping", "ShoppingCart" -> AppIcons.ShoppingCart
+        "Persons", "Person" -> AppIcons.Person
+        "LocalHospital", "Healing" -> AppIcons.LocalHospital
+        "School" -> AppIcons.School
+        "Work" -> AppIcons.Work
+        "Flight", "FlightTakeoff" -> AppIcons.Flight
+        "SportsEsports" -> AppIcons.SportsEsports
+        "CardGiftcard" -> AppIcons.CardGiftcard
+        "MonetizationOn" -> AppIcons.MonetizationOn
+        "Settings" -> AppIcons.Settings
+        "Pets" -> AppIcons.Pets
+        "Star" -> AppIcons.Star
+        "Construction" -> AppIcons.Construction
+        "Fastfood" -> AppIcons.Fastfood
+        "Coffee" -> AppIcons.Coffee
+        "WaterDrop" -> AppIcons.WaterDrop
+        "Checkroom" -> AppIcons.Checkroom
+        "DirectionsBus" -> AppIcons.DirectionsBus
+        "LocalGasStation" -> AppIcons.LocalGasStation
+        "FitnessCenter" -> AppIcons.FitnessCenter
+        "Event" -> AppIcons.Event
+        "Spa" -> AppIcons.Spa
+        "Pending" -> AppIcons.Pending
+        else -> AppIcons.Category
     }
 }
 
@@ -1104,7 +1104,7 @@ fun DashboardTab(
                         .testTag("dashboard_add_expense_fab")
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Add,
+                        imageVector = AppIcons.Add,
                         contentDescription = "Add Expense",
                         tint = Color.White
                     )
@@ -1166,7 +1166,7 @@ fun DashboardTab(
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                imageVector = Icons.Default.AccountBalance,
+                                imageVector = AppIcons.AccountBalance,
                                 contentDescription = null,
                                 tint = Color.White,
                                 modifier = Modifier.size(16.dp)
@@ -1185,7 +1185,7 @@ fun DashboardTab(
                                 modifier = Modifier.size(24.dp)
                             ) {
                                 Icon(
-                                    imageVector = if (shouldHideBalance) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                                    imageVector = if (shouldHideBalance) AppIcons.VisibilityOff else AppIcons.Visibility,
                                     contentDescription = "Toggle privacy reveal",
                                     tint = Color.White.copy(alpha = 0.85f),
                                     modifier = Modifier.size(16.dp)
@@ -1240,7 +1240,7 @@ fun DashboardTab(
                             .padding(horizontal = 10.dp, vertical = 3.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Savings,
+                            imageVector = AppIcons.Savings,
                             contentDescription = null,
                             tint = Color(0xFFFBBF24),
                             modifier = Modifier.size(14.dp)
@@ -1280,7 +1280,7 @@ fun DashboardTab(
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                imageVector = Icons.Default.TrendingUp,
+                                imageVector = AppIcons.TrendingUp,
                                 contentDescription = null,
                                 tint = Color(0xFF34D399),
                                 modifier = Modifier.size(18.dp)
@@ -1324,7 +1324,7 @@ fun DashboardTab(
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                imageVector = Icons.Default.TrendingDown,
+                                imageVector = AppIcons.TrendingDown,
                                 contentDescription = null,
                                 tint = Color(0xFFF87171),
                                 modifier = Modifier.size(18.dp)
@@ -1774,7 +1774,7 @@ fun QuickServicesCategorySection(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Rounded.Bolt,
+                        imageVector = AppIcons.Bolt,
                         contentDescription = null,
                         tint = SleekPrimary,
                         modifier = Modifier.size(20.dp)
@@ -1799,7 +1799,7 @@ fun QuickServicesCategorySection(
                     )
                     Spacer(modifier = Modifier.width(2.dp))
                     Icon(
-                        imageVector = Icons.Rounded.ChevronRight,
+                        imageVector = AppIcons.ChevronRight,
                         contentDescription = null,
                         tint = SleekPrimary,
                         modifier = Modifier.size(16.dp)
@@ -1812,7 +1812,7 @@ fun QuickServicesCategorySection(
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 CategoryFeedTile(
-                    icon = Icons.Rounded.TrendingDown,
+                    icon = AppIcons.TrendingDown,
                     label = "+ Expense",
                     tileColor = Color(0xFFEF4444),
                     onClick = onAddExpense,
@@ -1820,7 +1820,7 @@ fun QuickServicesCategorySection(
                 )
 
                 CategoryFeedTile(
-                    icon = Icons.Rounded.TrendingUp,
+                    icon = AppIcons.TrendingUp,
                     label = "+ Income",
                     tileColor = Color(0xFF10B981),
                     onClick = onAddIncome,
@@ -1828,7 +1828,7 @@ fun QuickServicesCategorySection(
                 )
 
                 CategoryFeedTile(
-                    icon = Icons.Rounded.CallSplit,
+                    icon = AppIcons.CallSplit,
                     label = "Split Bill",
                     tileColor = Color(0xFF6366F1),
                     onClick = onQuickSplit,
@@ -1836,7 +1836,7 @@ fun QuickServicesCategorySection(
                 )
 
                 CategoryFeedTile(
-                    icon = Icons.Rounded.CurrencyExchange,
+                    icon = AppIcons.CurrencyExchange,
                     label = "Convert",
                     tileColor = Color(0xFF0EA5E9),
                     onClick = onQuickConvert,
@@ -1844,7 +1844,7 @@ fun QuickServicesCategorySection(
                 )
 
                 CategoryFeedTile(
-                    icon = Icons.Rounded.GridView,
+                    icon = AppIcons.GridView,
                     label = "More",
                     tileColor = Color(0xFFF59E0B),
                     onClick = onMoreClick,
@@ -1975,7 +1975,7 @@ fun MonthlyBudgetSnapshotCard(
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            imageVector = Icons.Default.PieChart,
+                            imageVector = AppIcons.PieChart,
                             contentDescription = null,
                             tint = SleekPrimary,
                             modifier = Modifier.size(20.dp)
@@ -2098,7 +2098,7 @@ fun MonthlyBudgetSnapshotCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Info,
+                        imageVector = AppIcons.Info,
                         contentDescription = null,
                         tint = SleekTextSecondary,
                         modifier = Modifier.size(16.dp)
@@ -2347,7 +2347,7 @@ fun ExpensesTab(
                         .background(SleekSurface.copy(alpha = 0.8f))
                 ) {
                     Icon(
-                        imageVector = Icons.Default.ArrowBack,
+                        imageVector = AppIcons.ArrowBack,
                         contentDescription = "Back",
                         tint = SleekTextPrimary,
                         modifier = Modifier.size(20.dp)
@@ -2370,7 +2370,7 @@ fun ExpensesTab(
                         .background(SleekSurface.copy(alpha = 0.8f))
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Search,
+                        imageVector = AppIcons.Search,
                         contentDescription = "Search Transactions",
                         tint = SleekTextPrimary,
                         modifier = Modifier.size(20.dp)
@@ -2391,11 +2391,11 @@ fun ExpensesTab(
                         value = searchQuery,
                         onValueChange = { searchQuery = it },
                         placeholder = { Text("Search merchant, recipient, or category...", color = SleekTextSecondary) },
-                        leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = SleekTextSecondary) },
+                        leadingIcon = { Icon(AppIcons.Search, contentDescription = null, tint = SleekTextSecondary) },
                         trailingIcon = {
                             if (searchQuery.isNotEmpty()) {
                                 IconButton(onClick = { searchQuery = "" }) {
-                                    Icon(Icons.Default.Close, contentDescription = "Clear", tint = SleekTextSecondary)
+                                    Icon(AppIcons.Close, contentDescription = "Clear", tint = SleekTextSecondary)
                                 }
                             }
                         },
@@ -2554,7 +2554,7 @@ fun ExpensesTab(
                                         .size(36.dp)
                                         .background(Color.White.copy(alpha = 0.2f), CircleShape)
                                 ) {
-                                    Icon(Icons.Default.Edit, contentDescription = "Edit", tint = Color.White, modifier = Modifier.size(16.dp))
+                                    Icon(AppIcons.Edit, contentDescription = "Edit", tint = Color.White, modifier = Modifier.size(16.dp))
                                 }
                             }
                             IconButton(
@@ -2566,7 +2566,7 @@ fun ExpensesTab(
                                     .size(36.dp)
                                     .background(ExpenseRed.copy(alpha = 0.2f), CircleShape)
                             ) {
-                                Icon(Icons.Default.Delete, contentDescription = "Delete Selected", tint = ExpenseRed, modifier = Modifier.size(16.dp))
+                                Icon(AppIcons.Delete, contentDescription = "Delete Selected", tint = ExpenseRed, modifier = Modifier.size(16.dp))
                             }
                             IconButton(
                                 onClick = { selectedExpenseIds = emptySet() },
@@ -2574,7 +2574,7 @@ fun ExpensesTab(
                                     .size(36.dp)
                                     .background(Color.White.copy(alpha = 0.2f), CircleShape)
                             ) {
-                                Icon(Icons.Default.Close, contentDescription = "Deselect All", tint = Color.White, modifier = Modifier.size(16.dp))
+                                Icon(AppIcons.Close, contentDescription = "Deselect All", tint = Color.White, modifier = Modifier.size(16.dp))
                             }
                         }
                     }
@@ -2686,7 +2686,7 @@ fun Image1TransactionRow(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Icon(
-                        imageVector = Icons.Default.Schedule,
+                        imageVector = AppIcons.Schedule,
                         contentDescription = null,
                         tint = SleekTextSecondary,
                         modifier = Modifier.size(13.dp)
@@ -2839,7 +2839,7 @@ fun DateRangePickerDialog(
                             }
                             startCalendar = newCal
                         }) {
-                            Icon(Icons.Default.ChevronLeft, contentDescription = "Prev Day", tint = SleekPrimary)
+                            Icon(AppIcons.ChevronLeft, contentDescription = "Prev Day", tint = SleekPrimary)
                         }
                         Text(
                             text = sFormatter.format(Date(startCalendar.timeInMillis)),
@@ -2854,7 +2854,7 @@ fun DateRangePickerDialog(
                             }
                             startCalendar = newCal
                         }) {
-                            Icon(Icons.Default.ChevronRight, contentDescription = "Next Day", tint = SleekPrimary)
+                            Icon(AppIcons.ChevronRight, contentDescription = "Next Day", tint = SleekPrimary)
                         }
                     }
                 }
@@ -2875,7 +2875,7 @@ fun DateRangePickerDialog(
                             }
                             endCalendar = newCal
                         }) {
-                            Icon(Icons.Default.ChevronLeft, contentDescription = "Prev Day", tint = SleekPrimary)
+                            Icon(AppIcons.ChevronLeft, contentDescription = "Prev Day", tint = SleekPrimary)
                         }
                         Text(
                             text = sFormatter.format(Date(endCalendar.timeInMillis)),
@@ -2890,7 +2890,7 @@ fun DateRangePickerDialog(
                             }
                             endCalendar = newCal
                         }) {
-                            Icon(Icons.Default.ChevronRight, contentDescription = "Next Day", tint = SleekPrimary)
+                            Icon(AppIcons.ChevronRight, contentDescription = "Next Day", tint = SleekPrimary)
                         }
                     }
                 }
@@ -3213,12 +3213,12 @@ fun AnalyticsTab(
                                     .background(SleekPrimary.copy(alpha = 0.15f)),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Icon(Icons.Default.FileDownload, contentDescription = null, tint = SleekPrimary, modifier = Modifier.size(20.dp))
+                                Icon(AppIcons.FileDownload, contentDescription = null, tint = SleekPrimary, modifier = Modifier.size(20.dp))
                             }
                             Text("Export Report", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = SleekTextPrimary)
                         }
                         IconButton(onClick = { showExportDialog = false }, modifier = Modifier.size(28.dp)) {
-                            Icon(Icons.Default.Close, contentDescription = "Close", tint = SleekTextSecondary, modifier = Modifier.size(18.dp))
+                            Icon(AppIcons.Close, contentDescription = "Close", tint = SleekTextSecondary, modifier = Modifier.size(18.dp))
                         }
                     }
 
@@ -3242,7 +3242,7 @@ fun AnalyticsTab(
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Icon(Icons.Default.PictureAsPdf, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Icon(AppIcons.PictureAsPdf, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(8.dp))
                         Text("Export PDF Document", color = Color.White, fontWeight = FontWeight.Bold)
                     }
@@ -3262,7 +3262,7 @@ fun AnalyticsTab(
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Icon(Icons.Default.TableChart, contentDescription = null, tint = SleekPrimary, modifier = Modifier.size(18.dp))
+                        Icon(AppIcons.TableChart, contentDescription = null, tint = SleekPrimary, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(8.dp))
                         Text("Export CSV Spreadsheet", color = SleekPrimary, fontWeight = FontWeight.Bold)
                     }
@@ -3282,7 +3282,7 @@ fun AnalyticsTab(
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Icon(Icons.Default.Code, contentDescription = null, tint = Color(0xFF8B5CF6), modifier = Modifier.size(18.dp))
+                        Icon(AppIcons.Code, contentDescription = null, tint = Color(0xFF8B5CF6), modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(8.dp))
                         Text("Export JSON Document", color = Color(0xFF8B5CF6), fontWeight = FontWeight.Bold)
                     }
@@ -3302,7 +3302,7 @@ fun AnalyticsTab(
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Icon(Icons.Default.Photo, contentDescription = null, tint = SleekTextPrimary, modifier = Modifier.size(18.dp))
+                        Icon(AppIcons.Photo, contentDescription = null, tint = SleekTextPrimary, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(8.dp))
                         Text("Export Graphic Summary", color = SleekTextPrimary, fontWeight = FontWeight.Bold)
                     }
@@ -3368,7 +3368,7 @@ fun AnalyticsTab(
                     .border(1.dp, SleekBorder, RoundedCornerShape(12.dp))
             ) {
                 Icon(
-                    imageVector = Icons.Default.FileDownload,
+                    imageVector = AppIcons.FileDownload,
                     contentDescription = "Export Report",
                     tint = SleekTextPrimary,
                     modifier = Modifier.size(20.dp)
@@ -3409,7 +3409,7 @@ fun AnalyticsTab(
                 horizontalArrangement = Arrangement.spacedBy(5.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.DateRange,
+                    imageVector = AppIcons.DateRange,
                     contentDescription = null,
                     tint = SleekPrimary,
                     modifier = Modifier.size(13.dp)
@@ -3447,7 +3447,7 @@ fun AnalyticsTab(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    Icon(Icons.Default.CurrencyExchange, contentDescription = null, tint = SleekPrimary, modifier = Modifier.size(14.dp))
+                    Icon(AppIcons.CurrencyExchange, contentDescription = null, tint = SleekPrimary, modifier = Modifier.size(14.dp))
                     Text(
                         text = "💱 Multi-currency values converted & normalized to $statsCurrencyCode for exact calculations.",
                         fontSize = 10.5.sp,
@@ -3910,7 +3910,7 @@ fun NetWorthOverTimeChartCard(
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            imageVector = Icons.Default.TrendingUp,
+                            imageVector = AppIcons.TrendingUp,
                             contentDescription = null,
                             tint = Color(0xFF10B981),
                             modifier = Modifier.size(20.dp)
@@ -3943,7 +3943,7 @@ fun NetWorthOverTimeChartCard(
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Icon(
-                            imageVector = if (changeAmount >= 0) Icons.Default.ArrowUpward else Icons.Default.ArrowDownward,
+                            imageVector = if (changeAmount >= 0) AppIcons.ArrowUpward else AppIcons.ArrowDownward,
                             contentDescription = null,
                             tint = if (changeAmount >= 0) Color(0xFF10B981) else Color(0xFFEF4444),
                             modifier = Modifier.size(12.dp)
@@ -4182,7 +4182,7 @@ fun CategorySelectorGrid(
                     
                     if (!isDefault && isSelected) {
                         Icon(
-                            imageVector = Icons.Default.Edit,
+                            imageVector = AppIcons.Edit,
                             contentDescription = "Edit Category",
                             tint = SleekTextSecondary,
                             modifier = Modifier
@@ -4228,7 +4228,7 @@ fun CategorySelectorGrid(
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Add,
+                        imageVector = AppIcons.Add,
                         contentDescription = "Add Custom Category",
                         tint = SleekPrimary,
                         modifier = Modifier.size(16.dp)
@@ -4581,7 +4581,7 @@ private fun AddExpenseDialogOld(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.Warning,
+                                    imageVector = AppIcons.Warning,
                                     contentDescription = null,
                                     tint = ExpenseRed,
                                     modifier = Modifier.size(16.dp)
@@ -4696,7 +4696,7 @@ private fun AddExpenseDialogOld(
                                 .background(Color.Black.copy(alpha = 0.6f), CircleShape)
                                 .size(28.dp)
                         ) {
-                            Icon(Icons.Default.Close, contentDescription = "Clear Image", tint = Color.White, modifier = Modifier.size(16.dp))
+                            Icon(AppIcons.Close, contentDescription = "Clear Image", tint = Color.White, modifier = Modifier.size(16.dp))
                         }
                     }
                 } else {
@@ -4714,7 +4714,7 @@ private fun AddExpenseDialogOld(
                             colors = ButtonDefaults.buttonColors(containerColor = SleekPrimaryContainer),
                             shape = RoundedCornerShape(10.dp)
                         ) {
-                            Icon(Icons.Default.PhotoCamera, contentDescription = null, tint = SleekPrimary, modifier = Modifier.size(14.dp))
+                            Icon(AppIcons.PhotoCamera, contentDescription = null, tint = SleekPrimary, modifier = Modifier.size(14.dp))
                             Spacer(modifier = Modifier.width(4.dp))
                             Text("Camera", color = SleekPrimary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                         }
@@ -4728,7 +4728,7 @@ private fun AddExpenseDialogOld(
                             colors = ButtonDefaults.buttonColors(containerColor = SleekPrimaryContainer),
                             shape = RoundedCornerShape(10.dp)
                         ) {
-                            Icon(Icons.Default.Photo, contentDescription = null, tint = SleekPrimary, modifier = Modifier.size(14.dp))
+                            Icon(AppIcons.Photo, contentDescription = null, tint = SleekPrimary, modifier = Modifier.size(14.dp))
                             Spacer(modifier = Modifier.width(4.dp))
                             Text("Gallery", color = SleekPrimary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                         }
@@ -4990,7 +4990,7 @@ fun EditExpenseDialog(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.Warning,
+                                    imageVector = AppIcons.Warning,
                                     contentDescription = null,
                                     tint = ExpenseRed,
                                     modifier = Modifier.size(16.dp)
@@ -5248,7 +5248,7 @@ fun CalendarTab(
                             }
                         }
                     ) {
-                        Icon(Icons.Default.ChevronLeft, contentDescription = "Prev Month", tint = SleekPrimary)
+                        Icon(AppIcons.ChevronLeft, contentDescription = "Prev Month", tint = SleekPrimary)
                     }
                     val currentDisplayCal = remember(activeYear, activeMonth) {
                         Calendar.getInstance().apply {
@@ -5275,7 +5275,7 @@ fun CalendarTab(
                         enabled = canGoForward
                     ) {
                         Icon(
-                            imageVector = Icons.Default.ChevronRight,
+                            imageVector = AppIcons.ChevronRight,
                             contentDescription = "Next Month",
                             tint = if (canGoForward) SleekPrimary else SleekTextSecondary.copy(alpha = 0.5f)
                         )
@@ -5444,7 +5444,7 @@ fun CalendarTab(
                 contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
                 modifier = Modifier.height(32.dp)
             ) {
-                Icon(Icons.Default.Add, contentDescription = null, tint = Color.White, modifier = Modifier.size(14.dp))
+                Icon(AppIcons.Add, contentDescription = null, tint = Color.White, modifier = Modifier.size(14.dp))
                 Spacer(modifier = Modifier.width(4.dp))
                 Text("Add", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
             }
@@ -5536,7 +5536,7 @@ fun CalendarTab(
                             modifier = Modifier.size(24.dp)
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Delete,
+                                imageVector = AppIcons.Delete,
                                 contentDescription = "Delete",
                                 tint = ExpenseRed.copy(alpha = 0.7f),
                                 modifier = Modifier.size(16.dp)
@@ -5581,7 +5581,7 @@ fun OnboardingNameDialog(
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        imageVector = Icons.Rounded.Person,
+                        imageVector = AppIcons.Person,
                         contentDescription = "Welcome User",
                         tint = SleekPrimary,
                         modifier = Modifier.size(36.dp)
@@ -5863,7 +5863,7 @@ fun BillsFullScreen(
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Icon(Icons.Default.DateRange, contentDescription = null, tint = SleekPrimary)
+                        Icon(AppIcons.DateRange, contentDescription = null, tint = SleekPrimary)
                         Spacer(modifier = Modifier.width(8.dp))
                         Text("Due Date: $billDueDate", color = SleekTextPrimary)
                     }
@@ -5929,7 +5929,7 @@ fun BillsFullScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = SleekTextPrimary)
+                        Icon(AppIcons.ArrowBack, contentDescription = "Back", tint = SleekTextPrimary)
                     }
                     Text(
                         text = "Bills & Utilities",
@@ -5947,7 +5947,7 @@ fun BillsFullScreen(
                         showAddEditDialog = true
                     }
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = "Add Bill", tint = SleekPrimary)
+                    Icon(AppIcons.Add, contentDescription = "Add Bill", tint = SleekPrimary)
                 }
             }
 
@@ -5964,11 +5964,11 @@ fun BillsFullScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Icon(Icons.Default.Warning, contentDescription = null, tint = Color(0xFFDC2626), modifier = Modifier.size(20.dp))
+                            Icon(AppIcons.Warning, contentDescription = null, tint = Color(0xFFDC2626), modifier = Modifier.size(20.dp))
                             Text(msg, color = Color(0xFF991B1B), fontSize = 12.sp, fontWeight = FontWeight.Medium)
                         }
                         IconButton(onClick = { billErrorMessage = null }, modifier = Modifier.size(24.dp)) {
-                            Icon(Icons.Default.Close, contentDescription = "Close", tint = Color(0xFF991B1B), modifier = Modifier.size(16.dp))
+                            Icon(AppIcons.Close, contentDescription = "Close", tint = Color(0xFF991B1B), modifier = Modifier.size(16.dp))
                         }
                     }
                 }
@@ -5991,7 +5991,7 @@ fun BillsFullScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Icon(Icons.Default.ReceiptLong, contentDescription = null, tint = SleekTextSecondary, modifier = Modifier.size(48.dp))
+                        Icon(AppIcons.ReceiptLong, contentDescription = null, tint = SleekTextSecondary, modifier = Modifier.size(48.dp))
                         Text("No upcoming bills", fontWeight = FontWeight.Bold, color = SleekTextPrimary, fontSize = 16.sp)
                         Text("Tap + to add a bill", color = SleekTextSecondary, fontSize = 13.sp)
                     }
@@ -6059,7 +6059,7 @@ fun BillsFullScreen(
                                         },
                                         modifier = Modifier.size(32.dp)
                                     ) {
-                                        Icon(Icons.Default.Edit, contentDescription = "Edit", tint = SleekPrimary, modifier = Modifier.size(18.dp))
+                                        Icon(AppIcons.Edit, contentDescription = "Edit", tint = SleekPrimary, modifier = Modifier.size(18.dp))
                                     }
 
                                     IconButton(
@@ -6069,7 +6069,7 @@ fun BillsFullScreen(
                                         },
                                         modifier = Modifier.size(32.dp)
                                     ) {
-                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color(0xFFEF4444), modifier = Modifier.size(18.dp))
+                                        Icon(AppIcons.Delete, contentDescription = "Delete", tint = Color(0xFFEF4444), modifier = Modifier.size(18.dp))
                                     }
                                 }
                             }
@@ -6150,7 +6150,7 @@ fun RemindersFullScreen(
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Icon(Icons.Default.DateRange, contentDescription = null, tint = SleekPrimary)
+                        Icon(AppIcons.DateRange, contentDescription = null, tint = SleekPrimary)
                         Spacer(modifier = Modifier.width(8.dp))
                         Text("Due Date: $reminderDueDate", color = SleekTextPrimary)
                     }
@@ -6215,7 +6215,7 @@ fun RemindersFullScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = SleekTextPrimary)
+                        Icon(AppIcons.ArrowBack, contentDescription = "Back", tint = SleekTextPrimary)
                     }
                     Text(
                         text = "Payment Reminders",
@@ -6232,7 +6232,7 @@ fun RemindersFullScreen(
                         showAddEditDialog = true
                     }
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = "Add Reminder", tint = SleekPrimary)
+                    Icon(AppIcons.Add, contentDescription = "Add Reminder", tint = SleekPrimary)
                 }
             }
 
@@ -6253,7 +6253,7 @@ fun RemindersFullScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Icon(Icons.Default.NotificationsNone, contentDescription = null, tint = SleekTextSecondary, modifier = Modifier.size(48.dp))
+                        Icon(AppIcons.NotificationsNone, contentDescription = null, tint = SleekTextSecondary, modifier = Modifier.size(48.dp))
                         Text("No active reminders", fontWeight = FontWeight.Bold, color = SleekTextPrimary, fontSize = 16.sp)
                         Text("Tap + to add a reminder", color = SleekTextSecondary, fontSize = 13.sp)
                     }
@@ -6277,7 +6277,7 @@ fun RemindersFullScreen(
                                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Icon(Icons.Rounded.NotificationsActive, contentDescription = null, tint = if (rem.isEnabled) Color(0xFFEC4899) else SleekTextSecondary, modifier = Modifier.size(22.dp))
+                                Icon(AppIcons.NotificationsActive, contentDescription = null, tint = if (rem.isEnabled) Color(0xFFEC4899) else SleekTextSecondary, modifier = Modifier.size(22.dp))
 
                                 Column(modifier = Modifier.weight(1f)) {
                                     Text(rem.text, fontSize = 14.sp, color = SleekTextPrimary, fontWeight = FontWeight.Medium)
@@ -6307,7 +6307,7 @@ fun RemindersFullScreen(
                                         },
                                         modifier = Modifier.size(32.dp)
                                     ) {
-                                        Icon(Icons.Default.CheckCircle, contentDescription = "Complete", tint = Color(0xFF10B981), modifier = Modifier.size(20.dp))
+                                        Icon(AppIcons.CheckCircle, contentDescription = "Complete", tint = Color(0xFF10B981), modifier = Modifier.size(20.dp))
                                     }
 
                                     IconButton(
@@ -6319,7 +6319,7 @@ fun RemindersFullScreen(
                                         },
                                         modifier = Modifier.size(32.dp)
                                     ) {
-                                        Icon(Icons.Default.Edit, contentDescription = "Edit", tint = SleekPrimary, modifier = Modifier.size(18.dp))
+                                        Icon(AppIcons.Edit, contentDescription = "Edit", tint = SleekPrimary, modifier = Modifier.size(18.dp))
                                     }
 
                                     IconButton(
@@ -6329,7 +6329,7 @@ fun RemindersFullScreen(
                                         },
                                         modifier = Modifier.size(32.dp)
                                     ) {
-                                        Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color(0xFFEF4444), modifier = Modifier.size(18.dp))
+                                        Icon(AppIcons.Delete, contentDescription = "Delete", tint = Color(0xFFEF4444), modifier = Modifier.size(18.dp))
                                     }
                                 }
                             }
@@ -6455,7 +6455,7 @@ fun DateRangeReportModalDialog(
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                Icons.Default.DateRange,
+                                AppIcons.DateRange,
                                 contentDescription = null,
                                 tint = SleekPrimary,
                                 modifier = Modifier.size(22.dp)
@@ -6478,7 +6478,7 @@ fun DateRangeReportModalDialog(
                         }
                     }
                     IconButton(onClick = onDismiss, modifier = Modifier.size(28.dp)) {
-                        Icon(Icons.Default.Close, contentDescription = "Close", tint = SleekTextSecondary)
+                        Icon(AppIcons.Close, contentDescription = "Close", tint = SleekTextSecondary)
                     }
                 }
 
@@ -6523,7 +6523,7 @@ fun DateRangeReportModalDialog(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.CalendarMonth, contentDescription = null, tint = SleekPrimary, modifier = Modifier.size(18.dp))
+                            Icon(AppIcons.CalendarMonth, contentDescription = null, tint = SleekPrimary, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(10.dp))
                             Text(
                                 text = if (startDate == 0L) "All Time / Beginning" else dateSdf.format(Date(startDate)),
@@ -6577,7 +6577,7 @@ fun DateRangeReportModalDialog(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.CalendarMonth, contentDescription = null, tint = SleekPrimary, modifier = Modifier.size(18.dp))
+                            Icon(AppIcons.CalendarMonth, contentDescription = null, tint = SleekPrimary, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(10.dp))
                             Text(
                                 text = dateSdf.format(Date(endDate)),
@@ -6722,7 +6722,7 @@ fun SidebarSettingsTile(
                 )
             }
             Icon(
-                imageVector = Icons.Default.ChevronRight,
+                imageVector = AppIcons.ChevronRight,
                 contentDescription = null,
                 tint = SleekTextSecondary,
                 modifier = Modifier.size(18.dp)
@@ -6838,7 +6838,7 @@ fun SidebarGroupCard(
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                imageVector = Icons.Default.ChevronRight,
+                                imageVector = AppIcons.ChevronRight,
                                 contentDescription = null,
                                 tint = SleekTextSecondary,
                                 modifier = Modifier.size(16.dp)
@@ -6879,7 +6879,7 @@ fun SidebarDrawerContent(
         listOf(
             "ACCOUNT & PROFILE" to listOf(
                 SidebarMenuItemData(
-                    icon = Icons.Default.Person,
+                    icon = AppIcons.Person,
                     iconColor = Color(0xFF2563EB),
                     iconBgColor = Color(0xFFEFF6FF),
                     titleKey = "Profile",
@@ -6890,7 +6890,7 @@ fun SidebarDrawerContent(
                     }
                 ),
                 SidebarMenuItemData(
-                    icon = Icons.Default.Star,
+                    icon = AppIcons.Star,
                     iconColor = Color(0xFFEA580C),
                     iconBgColor = Color(0xFFFFEDD5),
                     titleKey = "Badges and Milestone",
@@ -6903,7 +6903,7 @@ fun SidebarDrawerContent(
             ),
             "PREFERENCES & APPEARANCE" to listOf(
                 SidebarMenuItemData(
-                    icon = Icons.Default.Palette,
+                    icon = AppIcons.Palette,
                     iconColor = Color(0xFF8B5CF6),
                     iconBgColor = Color(0xFFF3E8FF),
                     titleKey = "Appearance & Theme",
@@ -6914,7 +6914,7 @@ fun SidebarDrawerContent(
                     }
                 ),
                 SidebarMenuItemData(
-                    icon = Icons.Default.Translate,
+                    icon = AppIcons.Translate,
                     iconColor = Color(0xFF2563EB),
                     iconBgColor = Color(0xFFEFF6FF),
                     titleKey = "Language",
@@ -6925,7 +6925,7 @@ fun SidebarDrawerContent(
                     }
                 ),
                 SidebarMenuItemData(
-                    icon = Icons.Default.Payments,
+                    icon = AppIcons.Payments,
                     iconColor = Color(0xFF10B981),
                     iconBgColor = Color(0xFFD1FAE5),
                     titleKey = "Currency & Rates",
@@ -6936,7 +6936,7 @@ fun SidebarDrawerContent(
                     }
                 ),
                 SidebarMenuItemData(
-                    icon = Icons.Default.Receipt,
+                    icon = AppIcons.Receipt,
                     iconColor = Color(0xFF0D9488),
                     iconBgColor = Color(0xFFCCFBF1),
                     titleKey = "Transaction Preferences",
@@ -6949,7 +6949,7 @@ fun SidebarDrawerContent(
             ),
             "FINANCIAL MANAGEMENT" to listOf(
                 SidebarMenuItemData(
-                    icon = Icons.Default.ReceiptLong,
+                    icon = AppIcons.ReceiptLong,
                     iconColor = Color(0xFFD97706),
                     iconBgColor = Color(0xFFFEF3C7),
                     titleKey = "Bills & Reminders",
@@ -6960,7 +6960,7 @@ fun SidebarDrawerContent(
                     }
                 ),
                 SidebarMenuItemData(
-                    icon = Icons.Default.PieChart,
+                    icon = AppIcons.PieChart,
                     iconColor = Color(0xFF0284C7),
                     iconBgColor = Color(0xFFE0F2FE),
                     titleKey = "Budgets",
@@ -6971,7 +6971,7 @@ fun SidebarDrawerContent(
                     }
                 ),
                 SidebarMenuItemData(
-                    icon = Icons.Default.Savings,
+                    icon = AppIcons.Savings,
                     iconColor = Color(0xFFF59E0B),
                     iconBgColor = Color(0xFFFEF3C7),
                     titleKey = "Savings Goals",
@@ -6982,7 +6982,7 @@ fun SidebarDrawerContent(
                     }
                 ),
                 SidebarMenuItemData(
-                    icon = Icons.Default.Calculate,
+                    icon = AppIcons.Calculate,
                     iconColor = Color(0xFF6366F1),
                     iconBgColor = Color(0xFFEEF2FF),
                     titleKey = "Financial Calculators",
@@ -6995,7 +6995,7 @@ fun SidebarDrawerContent(
             ),
             "CATEGORIES & DATA" to listOf(
                 SidebarMenuItemData(
-                    icon = Icons.Default.Category,
+                    icon = AppIcons.Category,
                     iconColor = Color(0xFF16A34A),
                     iconBgColor = Color(0xFFDCFCE7),
                     titleKey = "Categories & Tags",
@@ -7006,7 +7006,7 @@ fun SidebarDrawerContent(
                     }
                 ),
                 SidebarMenuItemData(
-                    icon = Icons.Default.FileDownload,
+                    icon = AppIcons.FileDownload,
                     iconColor = Color(0xFF0284C7),
                     iconBgColor = Color(0xFFE0F2FE),
                     titleKey = "Export Statements",
@@ -7017,7 +7017,7 @@ fun SidebarDrawerContent(
                     }
                 ),
                 SidebarMenuItemData(
-                    icon = Icons.Default.Storage,
+                    icon = AppIcons.Storage,
                     iconColor = Color(0xFF10B981),
                     iconBgColor = Color(0xFFD1FAE5),
                     titleKey = "Data Management",
@@ -7028,7 +7028,7 @@ fun SidebarDrawerContent(
                     }
                 ),
                 SidebarMenuItemData(
-                    icon = Icons.Default.CloudSync,
+                    icon = AppIcons.CloudSync,
                     iconColor = Color(0xFF0284C7),
                     iconBgColor = Color(0xFFE0F2FE),
                     titleKey = "Backup & Restore",
@@ -7041,7 +7041,7 @@ fun SidebarDrawerContent(
             ),
             "SECURITY & ABOUT" to listOf(
                 SidebarMenuItemData(
-                    icon = Icons.Default.Lock,
+                    icon = AppIcons.Lock,
                     iconColor = Color(0xFF8B5CF6),
                     iconBgColor = Color(0xFFF3E8FF),
                     titleKey = "Password & Security",
@@ -7052,7 +7052,7 @@ fun SidebarDrawerContent(
                     }
                 ),
                 SidebarMenuItemData(
-                    icon = Icons.Default.VisibilityOff,
+                    icon = AppIcons.VisibilityOff,
                     iconColor = Color(0xFF6366F1),
                     iconBgColor = Color(0xFFE0E7FF),
                     titleKey = "Privacy Settings",
@@ -7063,7 +7063,7 @@ fun SidebarDrawerContent(
                     }
                 ),
                 SidebarMenuItemData(
-                    icon = Icons.Default.Help,
+                    icon = AppIcons.Help,
                     iconColor = Color(0xFF0284C7),
                     iconBgColor = Color(0xFFE0F2FE),
                     titleKey = "Help & Support FAQ",
@@ -7074,7 +7074,7 @@ fun SidebarDrawerContent(
                     }
                 ),
                 SidebarMenuItemData(
-                    icon = Icons.Default.Info,
+                    icon = AppIcons.Info,
                     iconColor = Color(0xFFDB2777),
                     iconBgColor = Color(0xFFFCE7F3),
                     titleKey = "What's New & About",
@@ -7152,7 +7152,7 @@ fun SidebarDrawerContent(
                     .bouncyPress()
             ) {
                 Icon(
-                    imageVector = Icons.Default.Close,
+                    imageVector = AppIcons.Close,
                     contentDescription = "Close Drawer",
                     tint = SleekTextPrimary,
                     modifier = Modifier.size(18.dp)
@@ -7270,7 +7270,7 @@ fun SidebarDrawerContent(
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        imageVector = Icons.Default.ChevronRight,
+                        imageVector = AppIcons.ChevronRight,
                         contentDescription = "View Profile Page",
                         tint = SleekTextSecondary,
                         modifier = Modifier.size(18.dp)
@@ -7294,7 +7294,7 @@ fun SidebarDrawerContent(
             },
             leadingIcon = {
                 Icon(
-                    imageVector = Icons.Default.Search,
+                    imageVector = AppIcons.Search,
                     contentDescription = null,
                     tint = SleekTextSecondary,
                     modifier = Modifier.size(18.dp)
@@ -7304,7 +7304,7 @@ fun SidebarDrawerContent(
                 if (searchQuery.isNotBlank()) {
                     IconButton(onClick = { searchQuery = "" }) {
                         Icon(
-                            imageVector = Icons.Default.Close,
+                            imageVector = AppIcons.Close,
                             contentDescription = "Clear",
                             tint = SleekTextSecondary,
                             modifier = Modifier.size(16.dp)
@@ -7354,7 +7354,7 @@ fun SidebarDrawerContent(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    Icon(Icons.Default.Payments, contentDescription = null, tint = Color(0xFF10B981), modifier = Modifier.size(16.dp))
+                    Icon(AppIcons.Payments, contentDescription = null, tint = Color(0xFF10B981), modifier = Modifier.size(16.dp))
                     Text(LanguageManager.tr("Currency", selectedLanguage), style = MaterialTheme.typography.labelMedium, color = SleekTextPrimary)
                 }
             }
@@ -7372,7 +7372,7 @@ fun SidebarDrawerContent(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    Icon(Icons.Default.FileDownload, contentDescription = null, tint = Color(0xFF0284C7), modifier = Modifier.size(16.dp))
+                    Icon(AppIcons.FileDownload, contentDescription = null, tint = Color(0xFF0284C7), modifier = Modifier.size(16.dp))
                     Text(LanguageManager.tr("Export", selectedLanguage), style = MaterialTheme.typography.labelMedium, color = SleekTextPrimary)
                 }
             }
@@ -7390,7 +7390,7 @@ fun SidebarDrawerContent(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    Icon(Icons.Default.Lock, contentDescription = null, tint = Color(0xFF8B5CF6), modifier = Modifier.size(16.dp))
+                    Icon(AppIcons.Lock, contentDescription = null, tint = Color(0xFF8B5CF6), modifier = Modifier.size(16.dp))
                     Text(LanguageManager.tr("Security", selectedLanguage), style = MaterialTheme.typography.labelMedium, color = SleekTextPrimary)
                 }
             }
@@ -7408,7 +7408,7 @@ fun SidebarDrawerContent(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    Icon(Icons.Default.Calculate, contentDescription = null, tint = Color(0xFF6366F1), modifier = Modifier.size(16.dp))
+                    Icon(AppIcons.Calculate, contentDescription = null, tint = Color(0xFF6366F1), modifier = Modifier.size(16.dp))
                     Text(LanguageManager.tr("Calculators", selectedLanguage), style = MaterialTheme.typography.labelMedium, color = SleekTextPrimary)
                 }
             }
@@ -7462,7 +7462,7 @@ fun SidebarDrawerContent(
                     color = SleekTextSecondary
                 )
                 Icon(
-                    imageVector = Icons.Default.Favorite,
+                    imageVector = AppIcons.Favorite,
                     contentDescription = "Love",
                     tint = Color(0xFFE11D48),
                     modifier = Modifier.size(14.dp)
@@ -7549,7 +7549,7 @@ fun ColorThemeGrid(
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
-                                    imageVector = Icons.Rounded.Colorize,
+                                    imageVector = AppIcons.Colorize,
                                     contentDescription = "Custom Theme",
                                     tint = SleekPrimary,
                                     modifier = Modifier.size(18.dp)
@@ -7576,7 +7576,7 @@ fun ColorThemeGrid(
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.Check,
+                                    imageVector = AppIcons.Check,
                                     contentDescription = "Selected",
                                     tint = Color.White,
                                     modifier = Modifier.size(10.dp)
@@ -7627,7 +7627,7 @@ fun FaqAccordion(viewModel: FinanceViewModel) {
                             modifier = Modifier.weight(1f)
                         )
                         Icon(
-                            imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                            imageVector = if (isExpanded) AppIcons.ExpandLess else AppIcons.ExpandMore,
                             contentDescription = if (isExpanded) "Collapse" else "Expand",
                             tint = SleekTextSecondary,
                             modifier = Modifier.size(20.dp)
@@ -7666,7 +7666,7 @@ fun FaqAccordion(viewModel: FinanceViewModel) {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Icon(
-                        imageVector = Icons.Default.AutoAwesome,
+                        imageVector = AppIcons.AutoAwesome,
                         contentDescription = "AI",
                         tint = SleekPrimary,
                         modifier = Modifier.size(18.dp)

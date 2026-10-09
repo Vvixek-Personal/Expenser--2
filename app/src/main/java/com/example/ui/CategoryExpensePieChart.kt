@@ -174,7 +174,7 @@ fun CategoryExpensePieChart(
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
-                            Icons.Default.PieChart,
+                            AppIcons.PieChart,
                             contentDescription = "Pie Chart",
                             tint = if (!isDonutMode) Color.White else SleekTextSecondary,
                             modifier = Modifier.size(SleekSizes.iconMicro)
@@ -201,7 +201,7 @@ fun CategoryExpensePieChart(
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
-                            Icons.Default.DonutLarge,
+                            AppIcons.DonutLarge,
                             contentDescription = "Donut Chart",
                             tint = if (isDonutMode) Color.White else SleekTextSecondary,
                             modifier = Modifier.size(SleekSizes.iconMicro)
@@ -548,7 +548,7 @@ fun CategoryExpensePieChart(
                                 )
                                 if (isSelected) {
                                     Icon(
-                                        Icons.Default.CheckCircle,
+                                        AppIcons.CheckCircle,
                                         contentDescription = null,
                                         tint = catColor,
                                         modifier = Modifier.size(SleekSizes.iconMicro)

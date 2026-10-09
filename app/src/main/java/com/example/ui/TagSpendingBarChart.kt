@@ -165,7 +165,7 @@ fun TagSpendingBarChart(
                 Column(modifier = Modifier.weight(1f)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
-                            imageVector = Icons.Default.LocalOffer,
+                            imageVector = AppIcons.LocalOffer,
                             contentDescription = null,
                             tint = SleekPrimary,
                             modifier = Modifier.size(SleekSizes.iconSmall)
@@ -219,7 +219,7 @@ fun TagSpendingBarChart(
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(
-                            imageVector = Icons.Default.BarChart,
+                            imageVector = AppIcons.BarChart,
                             contentDescription = null,
                             tint = SleekTextSecondary,
                             modifier = Modifier.size(40.dp)
@@ -466,7 +466,7 @@ fun TagSpendingBarChart(
                                     modifier = Modifier.weight(1f, fill = false)
                                 ) {
                                     Icon(
-                                        imageVector = Icons.Default.Label,
+                                        imageVector = AppIcons.Label,
                                         contentDescription = null,
                                         tint = color,
                                         modifier = Modifier.size(SleekSizes.iconMedium)

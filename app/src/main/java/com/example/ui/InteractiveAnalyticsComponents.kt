@@ -363,9 +363,9 @@ fun InteractiveAnalyticsHeader(
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             val modes = listOf(
-                Triple(AnalyticsViewMode.QUICK_STATS, "Quick Stats", Icons.Default.FlashOn),
-                Triple(AnalyticsViewMode.DEEP_ANALYTICS, "Deep Insights", Icons.Default.Analytics),
-                Triple(AnalyticsViewMode.TRENDS_CASHFLOW, "Trends & Flow", Icons.Default.Timeline)
+                Triple(AnalyticsViewMode.QUICK_STATS, "Quick Stats", AppIcons.FlashOn),
+                Triple(AnalyticsViewMode.DEEP_ANALYTICS, "Deep Insights", AppIcons.Analytics),
+                Triple(AnalyticsViewMode.TRENDS_CASHFLOW, "Trends & Flow", AppIcons.Timeline)
             )
 
             modes.forEach { (mode, label, icon) ->
@@ -469,7 +469,7 @@ fun InteractiveAnalyticsHeader(
                     horizontalArrangement = Arrangement.spacedBy(3.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.DateRange,
+                        imageVector = AppIcons.DateRange,
                         contentDescription = "Custom Range",
                         tint = if (selectedTimeFilter == "Custom") SleekPrimary else SleekTextSecondary,
                         modifier = Modifier.size(13.dp)
@@ -538,7 +538,7 @@ fun InteractiveScorecardRow(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text("Income", fontSize = 11.sp, color = SleekTextSecondary, fontWeight = FontWeight.Medium)
-                    Icon(Icons.Default.OpenInFull, contentDescription = "Enlarge", tint = SleekTextSecondary, modifier = Modifier.size(12.dp))
+                    Icon(AppIcons.OpenInFull, contentDescription = "Enlarge", tint = SleekTextSecondary, modifier = Modifier.size(12.dp))
                 }
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
@@ -589,7 +589,7 @@ fun InteractiveScorecardRow(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text("Expenses", fontSize = 11.sp, color = SleekTextSecondary, fontWeight = FontWeight.Medium)
-                    Icon(Icons.Default.OpenInFull, contentDescription = "Enlarge", tint = SleekTextSecondary, modifier = Modifier.size(12.dp))
+                    Icon(AppIcons.OpenInFull, contentDescription = "Enlarge", tint = SleekTextSecondary, modifier = Modifier.size(12.dp))
                 }
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
@@ -639,7 +639,7 @@ fun InteractiveScorecardRow(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text("Net Flow", fontSize = 11.sp, color = SleekTextSecondary, fontWeight = FontWeight.Medium)
-                    Icon(Icons.Default.OpenInFull, contentDescription = "Enlarge", tint = SleekTextSecondary, modifier = Modifier.size(12.dp))
+                    Icon(AppIcons.OpenInFull, contentDescription = "Enlarge", tint = SleekTextSecondary, modifier = Modifier.size(12.dp))
                 }
                 Spacer(modifier = Modifier.height(4.dp))
                 val isPositive = comparison.currentNetFlow >= 0
@@ -683,7 +683,7 @@ fun PeriodChangeBadge(
     ) {
         if (!isZero) {
             Icon(
-                imageVector = if (isUp) Icons.AutoMirrored.Filled.TrendingUp else Icons.AutoMirrored.Filled.TrendingDown,
+                imageVector = if (isUp) AppIcons.TrendingUp else AppIcons.TrendingDown,
                 contentDescription = null,
                 tint = tintColor,
                 modifier = Modifier.size(10.dp)
@@ -847,7 +847,7 @@ fun CategoryTrendsSection(
                                     ) {
                                         if (!isZero) {
                                             Icon(
-                                                imageVector = if (isUp) Icons.AutoMirrored.Filled.TrendingUp else Icons.AutoMirrored.Filled.TrendingDown,
+                                                imageVector = if (isUp) AppIcons.TrendingUp else AppIcons.TrendingDown,
                                                 contentDescription = null,
                                                 tint = if (isUp) Color(0xFFEF4444) else Color(0xFF10B981), // higher expense is red
                                                 modifier = Modifier.size(11.dp)
@@ -872,7 +872,7 @@ fun CategoryTrendsSection(
 
                             Spacer(modifier = Modifier.width(6.dp))
                             Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                imageVector = AppIcons.ArrowForward,
                                 contentDescription = "Drill Down",
                                 tint = SleekTextSecondary.copy(alpha = 0.5f),
                                 modifier = Modifier.size(14.dp)
@@ -928,7 +928,7 @@ fun CashFlowWaterfallCard(
                         .background(Color(0xFF10B981).copy(alpha = 0.15f)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Default.AccountBalanceWallet, contentDescription = null, tint = Color(0xFF10B981), modifier = Modifier.size(18.dp))
+                    Icon(AppIcons.AccountBalanceWallet, contentDescription = null, tint = Color(0xFF10B981), modifier = Modifier.size(18.dp))
                 }
             }
 
@@ -989,7 +989,7 @@ fun CashFlowWaterfallCard(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Icon(Icons.Default.Savings, contentDescription = null, tint = SleekPrimary, modifier = Modifier.size(18.dp))
+                        Icon(AppIcons.Savings, contentDescription = null, tint = SleekPrimary, modifier = Modifier.size(18.dp))
                         Column {
                             Text("Savings Rate", fontWeight = FontWeight.Bold, fontSize = 12.sp, color = SleekTextPrimary)
                             Text(
@@ -1097,7 +1097,7 @@ fun BudgetPerformanceSection(
                         .background(Color(0xFF6366F1).copy(alpha = 0.15f)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Default.PieChart, contentDescription = null, tint = Color(0xFF6366F1), modifier = Modifier.size(18.dp))
+                    Icon(AppIcons.PieChart, contentDescription = null, tint = Color(0xFF6366F1), modifier = Modifier.size(18.dp))
                 }
             }
 
@@ -1235,7 +1235,7 @@ fun AccountWiseAnalyticsSection(
                         .background(Color(0xFF0284C7).copy(alpha = 0.15f)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Default.CreditCard, contentDescription = null, tint = Color(0xFF0284C7), modifier = Modifier.size(18.dp))
+                    Icon(AppIcons.CreditCard, contentDescription = null, tint = Color(0xFF0284C7), modifier = Modifier.size(18.dp))
                 }
             }
 
@@ -1276,10 +1276,10 @@ fun AccountWiseAnalyticsSection(
                             ) {
                                 Icon(
                                     imageVector = when (acc.type) {
-                                        "BANK" -> Icons.Default.AccountBalance
-                                        "CREDIT" -> Icons.Default.CreditCard
-                                        "SAVINGS" -> Icons.Default.Savings
-                                        else -> Icons.Default.Payments
+                                        "BANK" -> AppIcons.AccountBalance
+                                        "CREDIT" -> AppIcons.CreditCard
+                                        "SAVINGS" -> AppIcons.Savings
+                                        else -> AppIcons.Payments
                                     },
                                     contentDescription = null,
                                     tint = SleekPrimary,
@@ -1348,7 +1348,7 @@ fun SpendingPatternDetectionSection(
                         .background(Color(0xFFEA580C).copy(alpha = 0.15f)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Default.Whatshot, contentDescription = null, tint = Color(0xFFEA580C), modifier = Modifier.size(18.dp))
+                    Icon(AppIcons.Whatshot, contentDescription = null, tint = Color(0xFFEA580C), modifier = Modifier.size(18.dp))
                 }
             }
 
@@ -1364,7 +1364,7 @@ fun SpendingPatternDetectionSection(
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(
-                            imageVector = Icons.Default.Timeline,
+                            imageVector = AppIcons.Timeline,
                             contentDescription = null,
                             tint = SleekTextSecondary.copy(alpha = 0.5f),
                             modifier = Modifier.size(36.dp)
@@ -1546,7 +1546,7 @@ fun MetricInspectionModal(
                             .clip(CircleShape)
                             .background(SleekBorder.copy(alpha = 0.4f))
                     ) {
-                        Icon(Icons.Default.Close, contentDescription = "Close", tint = SleekTextPrimary, modifier = Modifier.size(18.dp))
+                        Icon(AppIcons.Close, contentDescription = "Close", tint = SleekTextPrimary, modifier = Modifier.size(18.dp))
                     }
                 }
 
@@ -1714,7 +1714,7 @@ fun CategoryDrillDownDialog(
                             .clip(CircleShape)
                             .background(SleekBorder.copy(alpha = 0.4f))
                     ) {
-                        Icon(Icons.Default.Close, contentDescription = "Close", tint = SleekTextPrimary, modifier = Modifier.size(18.dp))
+                        Icon(AppIcons.Close, contentDescription = "Close", tint = SleekTextPrimary, modifier = Modifier.size(18.dp))
                     }
                 }
 

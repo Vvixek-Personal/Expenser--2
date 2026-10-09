@@ -192,7 +192,7 @@ fun CurrencySettingsScreen(
                                         )
                                     }
                                     Icon(
-                                        imageVector = Icons.Default.Edit,
+                                        imageVector = AppIcons.Edit,
                                         contentDescription = "Change Stats Currency",
                                         tint = SleekTextSecondary,
                                         modifier = Modifier.size(14.dp)
@@ -244,7 +244,7 @@ fun CurrencySettingsScreen(
                             Column(modifier = Modifier.weight(1f)) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(
-                                        imageVector = Icons.Default.Sync,
+                                        imageVector = AppIcons.Sync,
                                         contentDescription = null,
                                         tint = SleekPrimary,
                                         modifier = Modifier.size(18.dp)
@@ -285,7 +285,7 @@ fun CurrencySettingsScreen(
                                     )
                                 } else {
                                     Icon(
-                                        imageVector = Icons.Default.Refresh,
+                                        imageVector = AppIcons.Refresh,
                                         contentDescription = "Refresh",
                                         modifier = Modifier.size(16.dp)
                                     )
@@ -337,12 +337,12 @@ fun CurrencySettingsScreen(
                             .testTag("currency_search_input"),
                         placeholder = { Text("Search by country, name, code, symbol...") },
                         leadingIcon = {
-                            Icon(Icons.Default.Search, contentDescription = "Search", tint = SleekTextSecondary)
+                            Icon(AppIcons.Search, contentDescription = "Search", tint = SleekTextSecondary)
                         },
                         trailingIcon = {
                             if (searchQuery.isNotEmpty()) {
                                 IconButton(onClick = { searchQuery = "" }) {
-                                    Icon(Icons.Default.Clear, contentDescription = "Clear", tint = SleekTextSecondary)
+                                    Icon(AppIcons.Clear, contentDescription = "Clear", tint = SleekTextSecondary)
                                 }
                             }
                         },
@@ -689,7 +689,7 @@ fun CurrencySettingsScreen(
                                     )
                                     if (isSelected) {
                                         Icon(
-                                            imageVector = Icons.Default.Check,
+                                            imageVector = AppIcons.Check,
                                             contentDescription = null,
                                             tint = SleekPrimary,
                                             modifier = Modifier.size(18.dp)
@@ -929,7 +929,7 @@ private fun CurrencyConverterTool(viewModel: FinanceViewModel) {
                     .size(42.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.SwapHoriz,
+                    imageVector = AppIcons.SwapHoriz,
                     contentDescription = "Swap Currencies",
                     tint = Color.White
                 )
@@ -968,7 +968,7 @@ private fun CurrencyConverterTool(viewModel: FinanceViewModel) {
             shape = RoundedCornerShape(14.dp),
             colors = ButtonDefaults.buttonColors(containerColor = SleekPrimary)
         ) {
-            Icon(Icons.Default.ContentCopy, contentDescription = null, modifier = Modifier.size(18.dp))
+            Icon(AppIcons.ContentCopy, contentDescription = null, modifier = Modifier.size(18.dp))
             Spacer(modifier = Modifier.width(8.dp))
             Text("Copy Conversion Result")
         }
@@ -1147,7 +1147,7 @@ private fun SplitBillCalculatorTool(viewModel: FinanceViewModel) {
                             .background(SleekPrimaryContainer, CircleShape)
                             .size(36.dp)
                     ) {
-                        Icon(Icons.Default.Remove, contentDescription = "Decrease", tint = SleekPrimary)
+                        Icon(AppIcons.Remove, contentDescription = "Decrease", tint = SleekPrimary)
                     }
 
                     Text(
@@ -1164,7 +1164,7 @@ private fun SplitBillCalculatorTool(viewModel: FinanceViewModel) {
                             .background(SleekPrimaryContainer, CircleShape)
                             .size(36.dp)
                     ) {
-                        Icon(Icons.Default.Add, contentDescription = "Increase", tint = SleekPrimary)
+                        Icon(AppIcons.Add, contentDescription = "Increase", tint = SleekPrimary)
                     }
                 }
             }
@@ -1189,7 +1189,7 @@ private fun SplitBillCalculatorTool(viewModel: FinanceViewModel) {
             shape = RoundedCornerShape(14.dp),
             colors = ButtonDefaults.buttonColors(containerColor = SleekPrimary)
         ) {
-            Icon(Icons.Default.ReceiptLong, contentDescription = null, modifier = Modifier.size(18.dp))
+            Icon(AppIcons.ReceiptLong, contentDescription = null, modifier = Modifier.size(18.dp))
             Spacer(modifier = Modifier.width(8.dp))
             Text("Record My Share as Expense")
         }
@@ -1774,7 +1774,7 @@ fun SavingsGoalsSettingsScreen(
                                 border = BorderStroke(1.dp, if (isSelected) SleekPrimary else SleekBorder)
                             ) {
                                 Icon(
-                                    imageVector = if (mode == "Grid") Icons.Default.GridView else Icons.Default.ViewAgenda,
+                                    imageVector = if (mode == "Grid") AppIcons.GridView else AppIcons.ViewAgenda,
                                     contentDescription = null,
                                     modifier = Modifier.size(16.dp)
                                 )
@@ -1806,7 +1806,7 @@ fun SavingsGoalsSettingsScreen(
                                 border = BorderStroke(1.dp, if (isSelected) SleekPrimary else SleekBorder)
                             ) {
                                 Icon(
-                                    imageVector = if (style == "Circle") Icons.Default.PieChart else Icons.Default.LinearScale,
+                                    imageVector = if (style == "Circle") AppIcons.PieChart else AppIcons.LinearScale,
                                     contentDescription = null,
                                     modifier = Modifier.size(16.dp)
                                 )
@@ -2129,7 +2129,7 @@ private fun CurrencyPickerDialog(
                     value = query,
                     onValueChange = { query = it },
                     placeholder = { Text("Search currency...") },
-                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = SleekTextSecondary) },
+                    leadingIcon = { Icon(AppIcons.Search, contentDescription = null, tint = SleekTextSecondary) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp)
@@ -2161,7 +2161,7 @@ private fun CurrencyPickerDialog(
                                     Text(item.country, style = MaterialTheme.typography.labelSmall, color = SleekTextSecondary)
                                 }
                                 if (isSelected) {
-                                    Icon(Icons.Default.Check, contentDescription = null, tint = SleekPrimary, modifier = Modifier.size(18.dp))
+                                    Icon(AppIcons.Check, contentDescription = null, tint = SleekPrimary, modifier = Modifier.size(18.dp))
                                 }
                             }
                         }

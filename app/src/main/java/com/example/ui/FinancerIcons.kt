@@ -54,106 +54,106 @@ object FinancerIcons {
 
     // 1. Bottom Navigation
     object BottomNav {
-        val Home: ImageVector = Icons.Rounded.Home
-        val Transactions: ImageVector = Icons.Rounded.Autorenew
-        val Analytics: ImageVector = Icons.Rounded.BarChart
-        val Goals: ImageVector = Icons.Rounded.TrackChanges
-        val More: ImageVector = Icons.Rounded.MoreHoriz
+        val Home: ImageVector = AppIcons.Home
+        val Transactions: ImageVector = AppIcons.Autorenew
+        val Analytics: ImageVector = AppIcons.BarChart
+        val Goals: ImageVector = AppIcons.TrackChanges
+        val More: ImageVector = AppIcons.MoreHoriz
     }
 
     // 2. Sidebar / Settings Navigation
     object Sidebar {
-        val Dashboard: ImageVector = Icons.Rounded.Home
-        val Transactions: ImageVector = Icons.Rounded.ReceiptLong
-        val Analytics: ImageVector = Icons.Rounded.BarChart
-        val Goals: ImageVector = Icons.Rounded.TrackChanges
-        val Budget: ImageVector = Icons.Rounded.PieChart
-        val Bills: ImageVector = Icons.Rounded.Description
-        val Settings: ImageVector = Icons.Rounded.Settings
-        val Appearance: ImageVector = Icons.Rounded.WaterDrop
-        val Language: ImageVector = Icons.Rounded.Language
-        val Data: ImageVector = Icons.Rounded.Storage
+        val Dashboard: ImageVector = AppIcons.Home
+        val Transactions: ImageVector = AppIcons.ReceiptLong
+        val Analytics: ImageVector = AppIcons.BarChart
+        val Goals: ImageVector = AppIcons.TrackChanges
+        val Budget: ImageVector = AppIcons.PieChart
+        val Bills: ImageVector = AppIcons.Description
+        val Settings: ImageVector = AppIcons.Settings
+        val Appearance: ImageVector = AppIcons.WaterDrop
+        val Language: ImageVector = AppIcons.Language
+        val Data: ImageVector = AppIcons.Storage
     }
 
     // 4. Dashboard / Home Badges
     object Dashboard {
-        val TotalBalance: ImageVector = Icons.Rounded.AccountBalanceWallet
-        val Income: ImageVector = Icons.Rounded.ArrowUpward
-        val Expense: ImageVector = Icons.Rounded.ArrowDownward
-        val Savings: ImageVector = Icons.Rounded.Savings
-        val QuickAdd: ImageVector = Icons.Rounded.Add
+        val TotalBalance: ImageVector = AppIcons.AccountBalanceWallet
+        val Income: ImageVector = AppIcons.ArrowUpward
+        val Expense: ImageVector = AppIcons.ArrowDownward
+        val Savings: ImageVector = AppIcons.Savings
+        val QuickAdd: ImageVector = AppIcons.Add
     }
 
     // 5. Transactions Controls
     object Transactions {
-        val Add: ImageVector = Icons.Rounded.Add
-        val Edit: ImageVector = Icons.Rounded.Edit
-        val Delete: ImageVector = Icons.Rounded.Delete
-        val Search: ImageVector = Icons.Rounded.Search
-        val Filter: ImageVector = Icons.Rounded.FilterList
+        val Add: ImageVector = AppIcons.Add
+        val Edit: ImageVector = AppIcons.Edit
+        val Delete: ImageVector = AppIcons.Delete
+        val Search: ImageVector = AppIcons.Search
+        val Filter: ImageVector = AppIcons.FilterList
     }
 
     // 6. Analytics Charts
     object Analytics {
-        val Chart: ImageVector = Icons.Rounded.BarChart
-        val PieChart: ImageVector = Icons.Rounded.PieChart
-        val LineChart: ImageVector = Icons.Rounded.ShowChart
-        val Insights: ImageVector = Icons.Rounded.Lightbulb
-        val Export: ImageVector = Icons.Rounded.FileDownload
+        val Chart: ImageVector = AppIcons.BarChart
+        val PieChart: ImageVector = AppIcons.PieChart
+        val LineChart: ImageVector = AppIcons.ShowChart
+        val Insights: ImageVector = AppIcons.Lightbulb
+        val Export: ImageVector = AppIcons.FileDownload
     }
 
     // 7. Budget Controls
     object Budget {
-        val Add: ImageVector = Icons.Rounded.Add
-        val Edit: ImageVector = Icons.Rounded.Edit
-        val Category: ImageVector = Icons.Rounded.GridView
-        val Progress: ImageVector = Icons.Rounded.DonutLarge
-        val Limit: ImageVector = Icons.Rounded.Shield
+        val Add: ImageVector = AppIcons.Add
+        val Edit: ImageVector = AppIcons.Edit
+        val Category: ImageVector = AppIcons.GridView
+        val Progress: ImageVector = AppIcons.DonutLarge
+        val Limit: ImageVector = AppIcons.Shield
     }
 
     // 8. Goals / Savings Badges
     object Goals {
-        val AddGoal: ImageVector = Icons.Rounded.TrackChanges
-        val Edit: ImageVector = Icons.Rounded.Edit
-        val Progress: ImageVector = Icons.Rounded.DonutLarge
-        val Achieved: ImageVector = Icons.Rounded.EmojiEvents
-        val History: ImageVector = Icons.Rounded.History
+        val AddGoal: ImageVector = AppIcons.TrackChanges
+        val Edit: ImageVector = AppIcons.Edit
+        val Progress: ImageVector = AppIcons.DonutLarge
+        val Achieved: ImageVector = AppIcons.EmojiEvents
+        val History: ImageVector = AppIcons.History
     }
 
     // 9. Bills / Reminders Controls
     object Bills {
-        val AddBill: ImageVector = Icons.Rounded.Add
-        val Recurring: ImageVector = Icons.Rounded.Repeat
-        val Due: ImageVector = Icons.Rounded.CalendarMonth
-        val Paid: ImageVector = Icons.Rounded.CheckCircle
-        val History: ImageVector = Icons.Rounded.History
+        val AddBill: ImageVector = AppIcons.Add
+        val Recurring: ImageVector = AppIcons.Repeat
+        val Due: ImageVector = AppIcons.CalendarMonth
+        val Paid: ImageVector = AppIcons.CheckCircle
+        val History: ImageVector = AppIcons.History
     }
 
     // 10. Transaction Categories
     object Categories {
-        val Food: ImageVector = Icons.Rounded.Restaurant
-        val Transport: ImageVector = Icons.Rounded.DirectionsCar
-        val Shopping: ImageVector = Icons.Rounded.ShoppingBag
-        val Health: ImageVector = Icons.Rounded.Favorite
-        val Entertainment: ImageVector = Icons.Rounded.SportsEsports
+        val Food: ImageVector = AppIcons.Restaurant
+        val Transport: ImageVector = AppIcons.DirectionsCar
+        val Shopping: ImageVector = AppIcons.ShoppingBag
+        val Health: ImageVector = AppIcons.Favorite
+        val Entertainment: ImageVector = AppIcons.SportsEsports
     }
 
     // 11. General Actions & Controls
     object Actions {
-        val Save: ImageVector = Icons.Rounded.Save
-        val Share: ImageVector = Icons.Rounded.Share
-        val Download: ImageVector = Icons.Rounded.Download
-        val Refresh: ImageVector = Icons.Rounded.Refresh
-        val More: ImageVector = Icons.Rounded.MoreHoriz
+        val Save: ImageVector = AppIcons.Save
+        val Share: ImageVector = AppIcons.Share
+        val Download: ImageVector = AppIcons.Download
+        val Refresh: ImageVector = AppIcons.Refresh
+        val More: ImageVector = AppIcons.MoreHoriz
     }
 
     // 12. States & Feedback Badges
     object States {
-        val Success: ImageVector = Icons.Rounded.CheckCircle
-        val Error: ImageVector = Icons.Rounded.Cancel
-        val Info: ImageVector = Icons.Rounded.Info
-        val Warning: ImageVector = Icons.Rounded.Warning
-        val EmptyState: ImageVector = Icons.Rounded.HourglassEmpty
+        val Success: ImageVector = AppIcons.CheckCircle
+        val Error: ImageVector = AppIcons.Cancel
+        val Info: ImageVector = AppIcons.Info
+        val Warning: ImageVector = AppIcons.Warning
+        val EmptyState: ImageVector = AppIcons.HourglassEmpty
     }
 
     // Theme Palette Colors for Badges

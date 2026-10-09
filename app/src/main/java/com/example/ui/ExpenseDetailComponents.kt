@@ -375,7 +375,7 @@ fun ExpenseDetailContent(
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    imageVector = AppIcons.ArrowBack,
                                     contentDescription = "Back",
                                     tint = SleekTextPrimary,
                                     modifier = Modifier.size(20.dp)
@@ -413,7 +413,7 @@ fun ExpenseDetailContent(
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Icon(
-                                        imageVector = Icons.Default.Edit,
+                                        imageVector = AppIcons.Edit,
                                         contentDescription = "Edit Transaction",
                                         tint = SleekTextPrimary,
                                         modifier = Modifier.size(20.dp)
@@ -437,7 +437,7 @@ fun ExpenseDetailContent(
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Icon(
-                                        imageVector = Icons.Default.DeleteOutline,
+                                        imageVector = AppIcons.DeleteOutline,
                                         contentDescription = "Delete Transaction",
                                         tint = expenseRed,
                                         modifier = Modifier.size(20.dp)
@@ -580,7 +580,7 @@ fun ExpenseDetailContent(
                                 contentPadding = PaddingValues(horizontal = 16.dp)
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.Edit,
+                                    imageVector = AppIcons.Edit,
                                     contentDescription = null,
                                     tint = Color.White,
                                     modifier = Modifier.size(17.dp)
@@ -613,7 +613,7 @@ fun ExpenseDetailContent(
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Icon(
-                                    imageVector = Icons.Default.AttachFile,
+                                    imageVector = AppIcons.AttachFile,
                                     contentDescription = null,
                                     tint = primaryBlue,
                                     modifier = Modifier.size(16.dp)
@@ -679,7 +679,7 @@ fun ExpenseDetailContent(
                                                 horizontalArrangement = Arrangement.spacedBy(4.dp)
                                             ) {
                                                 Icon(
-                                                    imageVector = Icons.Rounded.ZoomIn,
+                                                    imageVector = AppIcons.ZoomIn,
                                                     contentDescription = null,
                                                     tint = Color.White,
                                                     modifier = Modifier.size(14.dp)
@@ -710,7 +710,7 @@ fun ExpenseDetailContent(
                                             border = BorderStroke(1.dp, cardBorder),
                                             colors = ButtonDefaults.outlinedButtonColors(contentColor = SleekTextPrimary)
                                         ) {
-                                            Icon(Icons.Rounded.Crop, contentDescription = null, modifier = Modifier.size(16.dp))
+                                            Icon(AppIcons.Crop, contentDescription = null, modifier = Modifier.size(16.dp))
                                             Spacer(modifier = Modifier.width(4.dp))
                                             Text("Crop / Rotate", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
                                         }
@@ -728,7 +728,7 @@ fun ExpenseDetailContent(
                                             shape = RoundedCornerShape(12.dp),
                                             colors = ButtonDefaults.buttonColors(containerColor = expenseRed.copy(alpha = 0.15f), contentColor = expenseRed)
                                         ) {
-                                            Icon(Icons.Default.DeleteOutline, contentDescription = null, modifier = Modifier.size(16.dp))
+                                            Icon(AppIcons.DeleteOutline, contentDescription = null, modifier = Modifier.size(16.dp))
                                             Spacer(modifier = Modifier.width(4.dp))
                                             Text("Remove", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                                         }
@@ -796,7 +796,7 @@ fun ExpenseDetailContent(
                                                 shape = RoundedCornerShape(14.dp)
                                             ) {
                                                 Icon(
-                                                    imageVector = Icons.Outlined.PhotoCamera,
+                                                    imageVector = AppIcons.PhotoCamera,
                                                     contentDescription = null,
                                                     tint = Color.White,
                                                     modifier = Modifier.size(18.dp)
@@ -824,7 +824,7 @@ fun ExpenseDetailContent(
                                                 shape = RoundedCornerShape(14.dp)
                                             ) {
                                                 Icon(
-                                                    imageVector = Icons.Default.PhotoLibrary,
+                                                    imageVector = AppIcons.PhotoLibrary,
                                                     contentDescription = null,
                                                     tint = lightBlueButtonText,
                                                     modifier = Modifier.size(18.dp)
@@ -870,7 +870,7 @@ fun ExpenseDetailContent(
                         shape = RoundedCornerShape(16.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Edit,
+                            imageVector = AppIcons.Edit,
                             contentDescription = null,
                             tint = Color.White,
                             modifier = Modifier.size(18.dp)
@@ -964,7 +964,7 @@ fun ExpenseDetailContent(
                             .padding(16.dp)
                             .background(Color.Black.copy(alpha = 0.6f), CircleShape)
                     ) {
-                        Icon(Icons.Default.Close, contentDescription = "Close", tint = Color.White)
+                        Icon(AppIcons.Close, contentDescription = "Close", tint = Color.White)
                     }
                 }
             }
@@ -1029,7 +1029,7 @@ fun ImageEditDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.Default.Close, contentDescription = "Cancel", tint = Color.White)
+                        Icon(AppIcons.Close, contentDescription = "Cancel", tint = Color.White)
                     }
                     Text(
                         text = "Receipt Photo Editor",
@@ -1066,7 +1066,7 @@ fun ImageEditDialog(
                             }
                         }
                     ) {
-                        Icon(Icons.Default.Check, contentDescription = "Apply", tint = Color(0xFF10B981))
+                        Icon(AppIcons.Check, contentDescription = "Apply", tint = Color(0xFF10B981))
                     }
                 }
 
@@ -1127,7 +1127,7 @@ fun ImageEditDialog(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                Icon(Icons.Rounded.RotateRight, contentDescription = null, tint = Color.White)
+                                Icon(AppIcons.RotateRight, contentDescription = null, tint = Color.White)
                                 Text("Rotation angle", style = MaterialTheme.typography.bodyMedium, color = Color.White)
                             }
 

@@ -79,7 +79,7 @@ fun DashboardQuickActionHub(
             verticalAlignment = Alignment.CenterVertically
         ) {
             QuickActionButton(
-                icon = Icons.Default.TrendingDown,
+                icon = AppIcons.TrendingDown,
                 label = "+ Expense",
                 tintColor = Color(0xFFEF4444),
                 bgBrush = Brush.linearGradient(listOf(Color(0xFFEF4444).copy(alpha = 0.15f), Color(0xFFDC2626).copy(alpha = 0.08f))),
@@ -88,7 +88,7 @@ fun DashboardQuickActionHub(
             )
 
             QuickActionButton(
-                icon = Icons.Default.TrendingUp,
+                icon = AppIcons.TrendingUp,
                 label = "+ Income",
                 tintColor = Color(0xFF10B981),
                 bgBrush = Brush.linearGradient(listOf(Color(0xFF10B981).copy(alpha = 0.15f), Color(0xFF059669).copy(alpha = 0.08f))),
@@ -97,7 +97,7 @@ fun DashboardQuickActionHub(
             )
 
             QuickActionButton(
-                icon = Icons.Default.CallSplit,
+                icon = AppIcons.CallSplit,
                 label = "Split Bill",
                 tintColor = Color(0xFF6366F1),
                 bgBrush = Brush.linearGradient(listOf(Color(0xFF6366F1).copy(alpha = 0.15f), Color(0xFF4F46E5).copy(alpha = 0.08f))),
@@ -106,7 +106,7 @@ fun DashboardQuickActionHub(
             )
 
             QuickActionButton(
-                icon = Icons.Default.CurrencyExchange,
+                icon = AppIcons.CurrencyExchange,
                 label = "Convert",
                 tintColor = Color(0xFF0EA5E9),
                 bgBrush = Brush.linearGradient(listOf(Color(0xFF0EA5E9).copy(alpha = 0.15f), Color(0xFF0284C7).copy(alpha = 0.08f))),
@@ -115,7 +115,7 @@ fun DashboardQuickActionHub(
             )
 
             QuickActionButton(
-                icon = Icons.Default.Savings,
+                icon = AppIcons.Savings,
                 label = "Goals",
                 tintColor = Color(0xFFF59E0B),
                 bgBrush = Brush.linearGradient(listOf(Color(0xFFF59E0B).copy(alpha = 0.15f), Color(0xFFD97706).copy(alpha = 0.08f))),
@@ -253,7 +253,7 @@ fun DailySpendingAllowanceWidget(
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Today,
+                            imageVector = AppIcons.Today,
                             contentDescription = null,
                             tint = Color(0xFF0EA5E9),
                             modifier = Modifier.size(20.dp)
@@ -423,7 +423,7 @@ fun UpcomingBillsDashboardWidget(
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Receipt,
+                            imageVector = AppIcons.Receipt,
                             contentDescription = null,
                             tint = Color(0xFFF59E0B),
                             modifier = Modifier.size(20.dp)
@@ -466,7 +466,7 @@ fun UpcomingBillsDashboardWidget(
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Default.CheckCircle,
+                            imageVector = AppIcons.CheckCircle,
                             contentDescription = null,
                             tint = Color(0xFF10B981),
                             modifier = Modifier.size(22.dp)
@@ -508,7 +508,7 @@ fun UpcomingBillsDashboardWidget(
                                         contentAlignment = Alignment.Center
                                     ) {
                                         Icon(
-                                            imageVector = Icons.Default.Payment,
+                                            imageVector = AppIcons.Payment,
                                             contentDescription = null,
                                             tint = if (isDueToday) Color(0xFFD97706) else SleekPrimary,
                                             modifier = Modifier.size(18.dp)
@@ -702,7 +702,7 @@ fun SavingsGoalSpotlightWidget(
                 ),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Icon(Icons.Default.AddCircleOutline, contentDescription = null, modifier = Modifier.size(16.dp))
+                Icon(AppIcons.AddCircleOutline, contentDescription = null, modifier = Modifier.size(16.dp))
                 Spacer(modifier = Modifier.width(6.dp))
                 Text("Deposit to this Goal", fontWeight = FontWeight.Bold, fontSize = 13.sp)
             }
@@ -778,7 +778,7 @@ fun TopSpendingCategoriesWidget(
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Category,
+                            imageVector = AppIcons.Category,
                             contentDescription = null,
                             tint = Color(0xFF6366F1),
                             modifier = Modifier.size(20.dp)
@@ -922,7 +922,7 @@ fun DailyFinancialInsightWidget(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = Icons.Default.Lightbulb,
+                    imageVector = AppIcons.Lightbulb,
                     contentDescription = null,
                     tint = SleekPrimary,
                     modifier = Modifier.size(16.dp)
@@ -942,7 +942,7 @@ fun DailyFinancialInsightWidget(
                 modifier = Modifier.size(20.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Close,
+                    imageVector = AppIcons.Close,
                     contentDescription = "Dismiss",
                     tint = SleekTextSecondary,
                     modifier = Modifier.size(14.dp)
@@ -1100,7 +1100,7 @@ fun QuickSplitBillDialog(
                         color = SleekTextPrimary
                     )
                     IconButton(onClick = onDismiss, modifier = Modifier.size(24.dp)) {
-                        Icon(Icons.Default.Close, contentDescription = "Close", tint = SleekTextSecondary)
+                        Icon(AppIcons.Close, contentDescription = "Close", tint = SleekTextSecondary)
                     }
                 }
 
@@ -1153,14 +1153,14 @@ fun QuickSplitBillDialog(
                             onClick = { if (peopleCount > 1) peopleCount-- },
                             modifier = Modifier.size(32.dp).background(SleekBg, CircleShape)
                         ) {
-                            Icon(Icons.Default.Remove, contentDescription = "Decrease", modifier = Modifier.size(16.dp))
+                            Icon(AppIcons.Remove, contentDescription = "Decrease", modifier = Modifier.size(16.dp))
                         }
                         Text("$peopleCount People", fontWeight = FontWeight.Bold, fontSize = 14.sp)
                         IconButton(
                             onClick = { peopleCount++ },
                             modifier = Modifier.size(32.dp).background(SleekBg, CircleShape)
                         ) {
-                            Icon(Icons.Default.Add, contentDescription = "Increase", modifier = Modifier.size(16.dp))
+                            Icon(AppIcons.Add, contentDescription = "Increase", modifier = Modifier.size(16.dp))
                         }
                     }
                 }
@@ -1190,7 +1190,7 @@ fun QuickSplitBillDialog(
                     colors = ButtonDefaults.buttonColors(containerColor = SleekPrimary),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Icon(Icons.Default.Receipt, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Icon(AppIcons.Receipt, contentDescription = null, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(6.dp))
                     Text("Record My Share as Expense")
                 }
@@ -1242,7 +1242,7 @@ fun QuickCurrencyConvertDialog(
                         color = SleekTextPrimary
                     )
                     IconButton(onClick = onDismiss, modifier = Modifier.size(24.dp)) {
-                        Icon(Icons.Default.Close, contentDescription = "Close", tint = SleekTextSecondary)
+                        Icon(AppIcons.Close, contentDescription = "Close", tint = SleekTextSecondary)
                     }
                 }
 
@@ -1357,7 +1357,7 @@ fun SavingsGoalsMiniCarouselWidget(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Savings,
+                    imageVector = AppIcons.Savings,
                     contentDescription = null,
                     tint = Color(0xFFF59E0B),
                     modifier = Modifier.size(20.dp)
@@ -1543,7 +1543,7 @@ fun SmartBudgetHealthGaugeWidget(
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Speed,
+                            imageVector = AppIcons.Speed,
                             contentDescription = null,
                             tint = gaugeColor,
                             modifier = Modifier.size(20.dp)
@@ -1721,7 +1721,7 @@ fun FinancialHealthScoreWidget(
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.HealthAndSafety,
+                            imageVector = AppIcons.HealthAndSafety,
                             contentDescription = null,
                             tint = badgeColor,
                             modifier = Modifier.size(22.dp)
@@ -1812,7 +1812,7 @@ fun FinancialHealthScoreWidget(
                         )
                     }
                     Icon(
-                        imageVector = Icons.Rounded.AutoGraph,
+                        imageVector = AppIcons.AutoGraph,
                         contentDescription = null,
                         tint = badgeColor,
                         modifier = Modifier.size(24.dp)
@@ -1837,7 +1837,7 @@ fun FinancialHealthScoreWidget(
                     color = SleekPrimary
                 )
                 Icon(
-                    imageVector = if (expandedDiagnostics) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    imageVector = if (expandedDiagnostics) AppIcons.KeyboardArrowUp else AppIcons.KeyboardArrowDown,
                     contentDescription = null,
                     tint = SleekPrimary,
                     modifier = Modifier.size(18.dp)

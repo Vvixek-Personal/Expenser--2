@@ -89,7 +89,7 @@ fun AllShortcutsTabScreen(
                 id = "add_expense",
                 title = "Add Expense",
                 subtitle = "Log daily spend",
-                icon = Icons.Rounded.TrendingDown,
+                icon = AppIcons.TrendingDown,
                 iconTint = Color(0xFFEF4444),
                 gradientColors = listOf(Color(0xFFEF4444), Color(0xFFDC2626)),
                 category = "Money Flow",
@@ -100,7 +100,7 @@ fun AllShortcutsTabScreen(
                 id = "add_income",
                 title = "Add Income",
                 subtitle = "Record revenue",
-                icon = Icons.Rounded.TrendingUp,
+                icon = AppIcons.TrendingUp,
                 iconTint = Color(0xFF10B981),
                 gradientColors = listOf(Color(0xFF10B981), Color(0xFF059669)),
                 category = "Money Flow",
@@ -111,7 +111,7 @@ fun AllShortcutsTabScreen(
                 id = "split_bill",
                 title = "Split Bill",
                 subtitle = "Calculate group shares",
-                icon = Icons.Rounded.CallSplit,
+                icon = AppIcons.CallSplit,
                 iconTint = Color(0xFF6366F1),
                 gradientColors = listOf(Color(0xFF6366F1), Color(0xFF4F46E5)),
                 category = "Money Flow",
@@ -122,7 +122,7 @@ fun AllShortcutsTabScreen(
                 id = "convert_currency",
                 title = "Currency Convert",
                 subtitle = "Live exchange rates",
-                icon = Icons.Rounded.CurrencyExchange,
+                icon = AppIcons.CurrencyExchange,
                 iconTint = Color(0xFF0EA5E9),
                 gradientColors = listOf(Color(0xFF0EA5E9), Color(0xFF0284C7)),
                 category = "Money Flow",
@@ -135,7 +135,7 @@ fun AllShortcutsTabScreen(
                 id = "transactions_ledger",
                 title = "Transactions",
                 subtitle = "Full ledger & history",
-                icon = Icons.Rounded.ReceiptLong,
+                icon = AppIcons.ReceiptLong,
                 iconTint = Color(0xFF8B5CF6),
                 gradientColors = listOf(Color(0xFF8B5CF6), Color(0xFF7C3AED)),
                 category = "Planning",
@@ -145,7 +145,7 @@ fun AllShortcutsTabScreen(
                 id = "analytics_reports",
                 title = "Analytics",
                 subtitle = "Charts & breakdown",
-                icon = Icons.Rounded.PieChart,
+                icon = AppIcons.PieChart,
                 iconTint = Color(0xFF10B981),
                 gradientColors = listOf(Color(0xFF10B981), Color(0xFF047857)),
                 category = "Planning",
@@ -155,7 +155,7 @@ fun AllShortcutsTabScreen(
                 id = "savings_goals",
                 title = "Savings Goals",
                 subtitle = "Track financial targets",
-                icon = Icons.Rounded.Savings,
+                icon = AppIcons.Savings,
                 iconTint = Color(0xFFF59E0B),
                 gradientColors = listOf(Color(0xFFF59E0B), Color(0xFFD97706)),
                 category = "Planning",
@@ -165,7 +165,7 @@ fun AllShortcutsTabScreen(
                 id = "bills_manager",
                 title = "Bills & Due Dates",
                 subtitle = "Upcoming recurring bills",
-                icon = Icons.Rounded.Receipt,
+                icon = AppIcons.Receipt,
                 iconTint = Color(0xFFF97316),
                 gradientColors = listOf(Color(0xFFF97316), Color(0xFFEA580C)),
                 category = "Planning",
@@ -176,7 +176,7 @@ fun AllShortcutsTabScreen(
                 id = "bill_reminders",
                 title = "Reminders",
                 subtitle = "Custom notifications",
-                icon = Icons.Rounded.NotificationsActive,
+                icon = AppIcons.NotificationsActive,
                 iconTint = Color(0xFFEC4899),
                 gradientColors = listOf(Color(0xFFEC4899), Color(0xFFDB2777)),
                 category = "Planning",
@@ -186,7 +186,7 @@ fun AllShortcutsTabScreen(
                 id = "monthly_budget",
                 title = "Monthly Budget",
                 subtitle = "Adjust limits & alerts",
-                icon = Icons.Rounded.AccountBalance,
+                icon = AppIcons.AccountBalance,
                 iconTint = Color(0xFF3B82F6),
                 gradientColors = listOf(Color(0xFF3B82F6), Color(0xFF2563EB)),
                 category = "Planning",
@@ -198,7 +198,7 @@ fun AllShortcutsTabScreen(
                 id = "calculations_hub",
                 title = "Calculations",
                 subtitle = "Math & finance tools",
-                icon = Icons.Rounded.Calculate,
+                icon = AppIcons.Calculate,
                 iconTint = Color(0xFF14B8A6),
                 gradientColors = listOf(Color(0xFF14B8A6), Color(0xFF0D9488)),
                 category = "Tools",
@@ -208,7 +208,7 @@ fun AllShortcutsTabScreen(
                 id = "categories_tags",
                 title = "Categories & Tags",
                 subtitle = "Custom icons & colors",
-                icon = Icons.Rounded.Category,
+                icon = AppIcons.Category,
                 iconTint = Color(0xFFA855F7),
                 gradientColors = listOf(Color(0xFFA855F7), Color(0xFF9333EA)),
                 category = "Tools",
@@ -218,7 +218,7 @@ fun AllShortcutsTabScreen(
                 id = "daily_streak",
                 title = "Daily Streak",
                 subtitle = "$currentStreak days active",
-                icon = Icons.Rounded.LocalFireDepartment,
+                icon = AppIcons.LocalFireDepartment,
                 iconTint = Color(0xFFFF5722),
                 gradientColors = listOf(Color(0xFFFF5722), Color(0xFFE64A19)),
                 category = "Tools",
@@ -229,7 +229,7 @@ fun AllShortcutsTabScreen(
                 id = "export_data",
                 title = "Export Reports",
                 subtitle = "Download CSV / PDF",
-                icon = Icons.Rounded.FileDownload,
+                icon = AppIcons.FileDownload,
                 iconTint = Color(0xFF64748B),
                 gradientColors = listOf(Color(0xFF64748B), Color(0xFF475569)),
                 category = "Tools",
@@ -239,7 +239,7 @@ fun AllShortcutsTabScreen(
                 id = "backup_restore",
                 title = "Backup & Restore",
                 subtitle = "Safe local data storage",
-                icon = Icons.Rounded.CloudSync,
+                icon = AppIcons.CloudSync,
                 iconTint = Color(0xFF0284C7),
                 gradientColors = listOf(Color(0xFF0284C7), Color(0xFF0369A1)),
                 category = "Tools",
@@ -249,7 +249,7 @@ fun AllShortcutsTabScreen(
                 id = "privacy_shield",
                 title = "Privacy & Security",
                 subtitle = "PIN & balance shield",
-                icon = Icons.Rounded.Security,
+                icon = AppIcons.Security,
                 iconTint = Color(0xFFE11D48),
                 gradientColors = listOf(Color(0xFFE11D48), Color(0xFFBE123C)),
                 category = "Tools",
@@ -259,7 +259,7 @@ fun AllShortcutsTabScreen(
                 id = "app_updates",
                 title = "Updates & Specs",
                 subtitle = "Real-time timeline",
-                icon = Icons.Rounded.Timeline,
+                icon = AppIcons.Timeline,
                 iconTint = Color(0xFFEAB308),
                 gradientColors = listOf(Color(0xFFEAB308), Color(0xFFCA8A04)),
                 category = "Tools",
@@ -303,7 +303,7 @@ fun AllShortcutsTabScreen(
                     ) {
                         IconButton(onClick = onBack) {
                             Icon(
-                                imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                                imageVector = AppIcons.ArrowBack,
                                 contentDescription = "Back",
                                 tint = SleekTextPrimary
                             )
@@ -351,7 +351,7 @@ fun AllShortcutsTabScreen(
                         placeholder = { Text("Search shortcuts (e.g. Split, Goal, Bills)...", fontSize = SleekSizes.textBodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                         leadingIcon = {
                             Icon(
-                                Icons.Rounded.Search,
+                                AppIcons.Search,
                                 contentDescription = null,
                                 tint = SleekTextSecondary,
                                 modifier = Modifier.size(SleekSizes.iconMedium)
@@ -361,7 +361,7 @@ fun AllShortcutsTabScreen(
                             if (searchQuery.isNotBlank()) {
                                 IconButton(onClick = { searchQuery = "" }) {
                                     Icon(
-                                        Icons.Rounded.Close,
+                                        AppIcons.Close,
                                         contentDescription = "Clear",
                                         tint = SleekTextSecondary,
                                         modifier = Modifier.size(SleekSizes.iconSmall)
@@ -433,7 +433,7 @@ fun AllShortcutsTabScreen(
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Icon(
-                                Icons.Rounded.SearchOff,
+                                AppIcons.SearchOff,
                                 contentDescription = null,
                                 tint = SleekTextSecondary,
                                 modifier = Modifier.size(48.dp)

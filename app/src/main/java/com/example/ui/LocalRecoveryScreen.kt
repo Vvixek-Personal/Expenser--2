@@ -148,7 +148,7 @@ fun LocalRecoveryScreen(
                             shape = SleekShapes.md,
                             colors = ButtonDefaults.buttonColors(containerColor = SleekPrimary)
                         ) {
-                            Icon(Icons.Default.Backup, contentDescription = null, modifier = Modifier.size(SleekSizes.iconSmall))
+                            Icon(AppIcons.Backup, contentDescription = null, modifier = Modifier.size(SleekSizes.iconSmall))
                             Spacer(modifier = Modifier.width(8.dp))
                             Text("Create Recovery Snapshot", fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         }
@@ -168,7 +168,7 @@ fun LocalRecoveryScreen(
                                 .heightIn(min = SleekSizes.buttonMedium),
                             shape = SleekShapes.md
                         ) {
-                            Icon(Icons.Default.Restore, contentDescription = null, modifier = Modifier.size(SleekSizes.iconSmall))
+                            Icon(AppIcons.Restore, contentDescription = null, modifier = Modifier.size(SleekSizes.iconSmall))
                             Spacer(modifier = Modifier.width(8.dp))
                             Text("Restore Latest Snapshot", maxLines = 1, overflow = TextOverflow.Ellipsis)
                         }
@@ -339,7 +339,7 @@ fun SnapshotItemCard(
                     onClick = onDelete,
                     colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
                 ) {
-                    Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(SleekSizes.iconMicro))
+                    Icon(AppIcons.Delete, contentDescription = null, modifier = Modifier.size(SleekSizes.iconMicro))
                     Spacer(modifier = Modifier.width(4.dp))
                     Text("Delete", fontSize = SleekSizes.textBodySmall)
                 }
@@ -353,7 +353,7 @@ fun SnapshotItemCard(
                     colors = ButtonDefaults.buttonColors(containerColor = SleekPrimary),
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
                 ) {
-                    Icon(Icons.Default.Restore, contentDescription = null, modifier = Modifier.size(SleekSizes.iconMicro))
+                    Icon(AppIcons.Restore, contentDescription = null, modifier = Modifier.size(SleekSizes.iconMicro))
                     Spacer(modifier = Modifier.width(4.dp))
                     Text("Restore", fontSize = SleekSizes.textBodySmall, fontWeight = FontWeight.Bold)
                 }

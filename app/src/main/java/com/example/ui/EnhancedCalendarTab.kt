@@ -262,7 +262,7 @@ fun EnhancedCalendarTab(
                         .height(34.dp)
                         .scale(todayScale)
                 ) {
-                    Icon(Icons.Default.Today, contentDescription = null, modifier = Modifier.size(15.dp))
+                    Icon(AppIcons.Today, contentDescription = null, modifier = Modifier.size(15.dp))
                     Spacer(modifier = Modifier.width(4.dp))
                     Text("Today", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
@@ -286,7 +286,7 @@ fun EnhancedCalendarTab(
                         label = "searchIconAnim"
                     ) { active ->
                         Icon(
-                            imageVector = if (active) Icons.Default.Close else Icons.Default.Search,
+                            imageVector = if (active) AppIcons.Close else AppIcons.Search,
                             contentDescription = "Search",
                             tint = if (active) Color.White else SleekTextPrimary,
                             modifier = Modifier.size(17.dp)
@@ -308,12 +308,12 @@ fun EnhancedCalendarTab(
                     placeholder = { Text("Search transactions in calendar...", fontSize = 13.sp) },
                     singleLine = true,
                     leadingIcon = {
-                        Icon(Icons.Default.Search, contentDescription = null, tint = SleekPrimary, modifier = Modifier.size(18.dp))
+                        Icon(AppIcons.Search, contentDescription = null, tint = SleekPrimary, modifier = Modifier.size(18.dp))
                     },
                     trailingIcon = {
                         if (searchKeyword.isNotEmpty()) {
                             IconButton(onClick = { searchKeyword = "" }) {
-                                Icon(Icons.Default.Clear, contentDescription = "Clear", modifier = Modifier.size(16.dp))
+                                Icon(AppIcons.Clear, contentDescription = "Clear", modifier = Modifier.size(16.dp))
                             }
                         }
                     },
@@ -496,7 +496,7 @@ fun EnhancedCalendarTab(
                                         }
                                     }
                                 ) {
-                                    Icon(Icons.Default.ChevronLeft, contentDescription = "Prev Month", tint = SleekPrimary)
+                                    Icon(AppIcons.ChevronLeft, contentDescription = "Prev Month", tint = SleekPrimary)
                                 }
 
                                 Surface(
@@ -532,7 +532,7 @@ fun EnhancedCalendarTab(
                                                 )
                                             }
                                             Icon(
-                                                imageVector = Icons.Default.ReceiptLong,
+                                                imageVector = AppIcons.ReceiptLong,
                                                 contentDescription = "View Month Transactions",
                                                 tint = SleekPrimary,
                                                 modifier = Modifier.size(16.dp)
@@ -560,7 +560,7 @@ fun EnhancedCalendarTab(
                                     enabled = canGoForward
                                 ) {
                                     Icon(
-                                        imageVector = Icons.Default.ChevronRight,
+                                        imageVector = AppIcons.ChevronRight,
                                         contentDescription = "Next Month",
                                         tint = if (canGoForward) SleekPrimary else SleekTextSecondary.copy(alpha = 0.5f)
                                     )
@@ -689,7 +689,7 @@ fun EnhancedCalendarTab(
                                                 onClick = goToPrevWeek,
                                                 modifier = Modifier.size(28.dp)
                                             ) {
-                                                Icon(Icons.Default.ChevronLeft, contentDescription = "Prev Week", tint = SleekPrimary)
+                                                Icon(AppIcons.ChevronLeft, contentDescription = "Prev Week", tint = SleekPrimary)
                                             }
 
                                             Text(
@@ -703,7 +703,7 @@ fun EnhancedCalendarTab(
                                                 onClick = goToNextWeek,
                                                 modifier = Modifier.size(28.dp)
                                             ) {
-                                                Icon(Icons.Default.ChevronRight, contentDescription = "Next Week", tint = SleekPrimary)
+                                                Icon(AppIcons.ChevronRight, contentDescription = "Next Week", tint = SleekPrimary)
                                             }
                                         }
 
@@ -965,7 +965,7 @@ fun EnhancedCalendarTab(
                             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
                             modifier = Modifier.height(30.dp)
                         ) {
-                            Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(12.dp))
+                            Icon(AppIcons.Add, contentDescription = null, modifier = Modifier.size(12.dp))
                             Spacer(modifier = Modifier.width(3.dp))
                             Text("Expense", fontSize = 10.sp, fontWeight = FontWeight.Bold)
                         }
@@ -983,7 +983,7 @@ fun EnhancedCalendarTab(
                             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
                             modifier = Modifier.height(30.dp)
                         ) {
-                            Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(12.dp))
+                            Icon(AppIcons.Add, contentDescription = null, modifier = Modifier.size(12.dp))
                             Spacer(modifier = Modifier.width(3.dp))
                             Text("Income", fontSize = 10.sp, fontWeight = FontWeight.Bold)
                         }
@@ -1011,7 +1011,7 @@ fun EnhancedCalendarTab(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
-                                imageVector = Icons.Default.NotificationsActive,
+                                imageVector = AppIcons.NotificationsActive,
                                 contentDescription = null,
                                 tint = Color(0xFFF59E0B),
                                 modifier = Modifier.size(20.dp)
@@ -1055,7 +1055,7 @@ fun EnhancedCalendarTab(
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(
-                            imageVector = Icons.Default.EventBusy,
+                            imageVector = AppIcons.EventBusy,
                             contentDescription = null,
                             tint = SleekTextSecondary.copy(alpha = 0.4f),
                             modifier = Modifier.size(44.dp)
@@ -1154,7 +1154,7 @@ fun EnhancedCalendarTab(
                                 modifier = Modifier.size(26.dp)
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.Delete,
+                                    imageVector = AppIcons.Delete,
                                     contentDescription = "Delete",
                                     tint = ExpenseRed.copy(alpha = 0.7f),
                                     modifier = Modifier.size(16.dp)
@@ -1311,12 +1311,12 @@ fun AgendaAllTransactionsView(
                 placeholder = { Text("Filter all transactions in agenda...", fontSize = 12.sp) },
                 singleLine = true,
                 leadingIcon = {
-                    Icon(Icons.Default.Search, contentDescription = null, tint = SleekPrimary, modifier = Modifier.size(16.dp))
+                    Icon(AppIcons.Search, contentDescription = null, tint = SleekPrimary, modifier = Modifier.size(16.dp))
                 },
                 trailingIcon = {
                     if (agendaSearchQuery.isNotEmpty()) {
                         IconButton(onClick = { agendaSearchQuery = "" }) {
-                            Icon(Icons.Default.Clear, contentDescription = "Clear", modifier = Modifier.size(14.dp))
+                            Icon(AppIcons.Clear, contentDescription = "Clear", modifier = Modifier.size(14.dp))
                         }
                     }
                 },
@@ -1372,7 +1372,7 @@ fun AgendaAllTransactionsView(
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(
-                            imageVector = Icons.Default.EventBusy,
+                            imageVector = AppIcons.EventBusy,
                             contentDescription = null,
                             tint = SleekTextSecondary.copy(alpha = 0.4f),
                             modifier = Modifier.size(40.dp)
@@ -1485,7 +1485,7 @@ fun AgendaAllTransactionsView(
                                         modifier = Modifier.size(24.dp)
                                     ) {
                                         Icon(
-                                            imageVector = Icons.Default.Delete,
+                                            imageVector = AppIcons.Delete,
                                             contentDescription = "Delete",
                                             tint = ExpenseRed.copy(alpha = 0.6f),
                                             modifier = Modifier.size(15.dp)
@@ -1588,7 +1588,7 @@ fun MonthTransactionsModalSheet(
                 }
 
                 IconButton(onClick = onDismiss) {
-                    Icon(Icons.Default.Close, contentDescription = "Close", tint = SleekTextSecondary)
+                    Icon(AppIcons.Close, contentDescription = "Close", tint = SleekTextSecondary)
                 }
             }
 
@@ -1647,12 +1647,12 @@ fun MonthTransactionsModalSheet(
                 placeholder = { Text("Search this month...", fontSize = 12.sp) },
                 singleLine = true,
                 leadingIcon = {
-                    Icon(Icons.Default.Search, contentDescription = null, tint = SleekPrimary, modifier = Modifier.size(16.dp))
+                    Icon(AppIcons.Search, contentDescription = null, tint = SleekPrimary, modifier = Modifier.size(16.dp))
                 },
                 trailingIcon = {
                     if (searchQuery.isNotEmpty()) {
                         IconButton(onClick = { searchQuery = "" }) {
-                            Icon(Icons.Default.Clear, contentDescription = "Clear", modifier = Modifier.size(14.dp))
+                            Icon(AppIcons.Clear, contentDescription = "Clear", modifier = Modifier.size(14.dp))
                         }
                     }
                 },
@@ -1705,7 +1705,7 @@ fun MonthTransactionsModalSheet(
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(
-                            imageVector = Icons.Default.EventBusy,
+                            imageVector = AppIcons.EventBusy,
                             contentDescription = null,
                             tint = SleekTextSecondary.copy(alpha = 0.4f),
                             modifier = Modifier.size(42.dp)
@@ -1718,7 +1718,7 @@ fun MonthTransactionsModalSheet(
                             colors = ButtonDefaults.buttonColors(containerColor = SleekPrimary),
                             shape = RoundedCornerShape(12.dp)
                         ) {
-                            Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Icon(AppIcons.Add, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(6.dp))
                             Text("Add Transaction", fontSize = 12.sp)
                         }
@@ -1778,7 +1778,7 @@ fun MonthTransactionsModalSheet(
                                 modifier = Modifier.size(24.dp)
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.Delete,
+                                    imageVector = AppIcons.Delete,
                                     contentDescription = "Delete",
                                     tint = ExpenseRed.copy(alpha = 0.65f),
                                     modifier = Modifier.size(16.dp)

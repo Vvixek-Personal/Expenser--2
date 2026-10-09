@@ -127,7 +127,7 @@ fun SavingGoalsFullScreen(
                     }
                 ) {
                     Icon(
-                        imageVector = Icons.Default.ArrowBack,
+                        imageVector = AppIcons.ArrowBack,
                         contentDescription = "Back",
                         tint = SleekTextPrimary
                     )
@@ -146,7 +146,7 @@ fun SavingGoalsFullScreen(
                     }
                 ) {
                     Icon(
-                        imageVector = Icons.Default.MoreVert,
+                        imageVector = AppIcons.MoreVert,
                         contentDescription = "Options",
                         tint = SleekTextPrimary
                     )
@@ -212,7 +212,7 @@ fun SavingGoalsFullScreen(
                             modifier = Modifier.weight(1f, fill = false)
                         ) {
                             Icon(
-                                imageVector = Icons.Rounded.Savings,
+                                imageVector = AppIcons.Savings,
                                 contentDescription = null,
                                 tint = Color.White.copy(alpha = 0.95f),
                                 modifier = Modifier.size(SleekSizes.iconSmall)
@@ -351,7 +351,7 @@ fun SavingGoalsFullScreen(
                     contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Rounded.Add,
+                        imageVector = AppIcons.Add,
                         contentDescription = null,
                         tint = SleekPrimary,
                         modifier = Modifier.size(SleekSizes.iconMicro)
@@ -424,7 +424,7 @@ fun SavingGoalsFullScreen(
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
-                                        imageVector = Icons.Rounded.Close,
+                                        imageVector = AppIcons.Close,
                                         contentDescription = "Delete Category",
                                         tint = textColor,
                                         modifier = Modifier.size(12.dp)
@@ -454,7 +454,7 @@ fun SavingGoalsFullScreen(
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             Icon(
-                                imageVector = Icons.Rounded.Add,
+                                imageVector = AppIcons.Add,
                                 contentDescription = "Add Category",
                                 tint = SleekPrimary,
                                 modifier = Modifier.size(SleekSizes.iconSmall)
@@ -493,7 +493,7 @@ fun SavingGoalsFullScreen(
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Icon(
-                                    imageVector = Icons.Rounded.Savings,
+                                    imageVector = AppIcons.Savings,
                                     contentDescription = null,
                                     tint = SleekPrimary,
                                     modifier = Modifier.size(32.dp)
@@ -1190,7 +1190,7 @@ fun AddEditSavingsGoalDialog(
                                             contentAlignment = Alignment.Center
                                         ) {
                                             Icon(
-                                                imageVector = Icons.Rounded.Close,
+                                                imageVector = AppIcons.Close,
                                                 contentDescription = "Delete Category",
                                                 tint = SleekTextSecondary,
                                                 modifier = Modifier.size(10.dp)
@@ -1506,10 +1506,10 @@ fun GoalDepositDetailBottomSheet(
 
                     Row {
                         IconButton(onClick = onEdit) {
-                            Icon(Icons.Rounded.Edit, contentDescription = "Edit", tint = SleekPrimary)
+                            Icon(AppIcons.Edit, contentDescription = "Edit", tint = SleekPrimary)
                         }
                         IconButton(onClick = onDelete) {
-                            Icon(Icons.Rounded.Delete, contentDescription = "Delete", tint = Color(0xFFEF4444))
+                            Icon(AppIcons.Delete, contentDescription = "Delete", tint = Color(0xFFEF4444))
                         }
                     }
                 }
@@ -1583,7 +1583,7 @@ fun GoalDepositDetailBottomSheet(
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                imageVector = Icons.Rounded.ArrowDownward,
+                                imageVector = AppIcons.ArrowDownward,
                                 contentDescription = "Deposit to Goal",
                                 tint = if (isDep) Color(0xFF10B981) else SleekTextSecondary,
                                 modifier = Modifier.size(26.dp)
@@ -1625,7 +1625,7 @@ fun GoalDepositDetailBottomSheet(
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                imageVector = Icons.Rounded.ArrowUpward,
+                                imageVector = AppIcons.ArrowUpward,
                                 contentDescription = "Withdraw from Goal",
                                 tint = if (isWith) Color(0xFFEF4444) else SleekTextSecondary,
                                 modifier = Modifier.size(26.dp)
@@ -1771,7 +1771,7 @@ fun GoalDepositDetailBottomSheet(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 Icon(
-                                    imageVector = Icons.Rounded.Lock,
+                                    imageVector = AppIcons.Lock,
                                     contentDescription = "Balance Locked",
                                     tint = Color(0xFFEF4444),
                                     modifier = Modifier.size(20.dp)
@@ -1835,14 +1835,14 @@ fun GoalDepositDetailBottomSheet(
 fun getCategoryVectorIcon(category: String, name: String): ImageVector {
     val combined = "$category $name".lowercase()
     return when {
-        combined.contains("holiday") || combined.contains("travel") || combined.contains("trip") || combined.contains("beach") -> Icons.Rounded.BeachAccess
-        combined.contains("laptop") || combined.contains("tech") || combined.contains("phone") || combined.contains("gadget") -> Icons.Rounded.Laptop
-        combined.contains("education") || combined.contains("study") || combined.contains("school") || combined.contains("college") -> Icons.Rounded.School
-        combined.contains("shopping") || combined.contains("cloth") || combined.contains("fashion") -> Icons.Rounded.ShoppingBag
-        combined.contains("car") || combined.contains("vehicle") || combined.contains("bike") -> Icons.Rounded.DirectionsCar
-        combined.contains("investment") || combined.contains("stock") || combined.contains("mutual") -> Icons.Rounded.TrendingUp
-        combined.contains("emergency") || combined.contains("health") || combined.contains("medical") -> Icons.Rounded.Shield
-        else -> Icons.Rounded.Savings
+        combined.contains("holiday") || combined.contains("travel") || combined.contains("trip") || combined.contains("beach") -> AppIcons.BeachAccess
+        combined.contains("laptop") || combined.contains("tech") || combined.contains("phone") || combined.contains("gadget") -> AppIcons.Laptop
+        combined.contains("education") || combined.contains("study") || combined.contains("school") || combined.contains("college") -> AppIcons.School
+        combined.contains("shopping") || combined.contains("cloth") || combined.contains("fashion") -> AppIcons.ShoppingBag
+        combined.contains("car") || combined.contains("vehicle") || combined.contains("bike") -> AppIcons.DirectionsCar
+        combined.contains("investment") || combined.contains("stock") || combined.contains("mutual") -> AppIcons.TrendingUp
+        combined.contains("emergency") || combined.contains("health") || combined.contains("medical") -> AppIcons.Shield
+        else -> AppIcons.Savings
     }
 }
 

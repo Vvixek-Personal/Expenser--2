@@ -215,7 +215,7 @@ fun PinLockScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Lock,
+                        imageVector = AppIcons.Lock,
                         contentDescription = "App Locked",
                         tint = SleekPrimary,
                         modifier = Modifier.size(38.dp)
@@ -322,7 +322,7 @@ fun PinLockScreen(
                     modifier = Modifier.size(48.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Fingerprint,
+                        imageVector = AppIcons.Fingerprint,
                         contentDescription = "Unlock with Biometrics",
                         tint = SleekPrimary,
                         modifier = Modifier.size(32.dp)
@@ -450,7 +450,7 @@ fun KeypadButton(
     ) {
         when (item) {
             "DEL" -> Icon(
-                imageVector = Icons.Default.Backspace,
+                imageVector = AppIcons.Backspace,
                 contentDescription = "Delete",
                 tint = SleekTextSecondary,
                 modifier = Modifier.size(SleekSizes.iconLarge)
@@ -514,7 +514,7 @@ fun FirstRunPinSetupDialog(
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Lock,
+                        imageVector = AppIcons.Lock,
                         contentDescription = null,
                         tint = Color(0xFFF97316),
                         modifier = Modifier.size(30.dp)
@@ -690,7 +690,7 @@ fun ChangePinDialog(
                         overflow = TextOverflow.Ellipsis
                     )
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.Default.Close, contentDescription = "Close", tint = SleekTextSecondary)
+                        Icon(AppIcons.Close, contentDescription = "Close", tint = SleekTextSecondary)
                     }
                 }
 

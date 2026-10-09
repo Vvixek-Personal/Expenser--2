@@ -149,7 +149,7 @@ fun SpendingTrendsScreen(
                             .border(1.dp, SleekBorder, CircleShape)
                     ) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = AppIcons.ArrowBack,
                             contentDescription = "Back to Overview",
                             tint = SleekTextPrimary,
                             modifier = Modifier.size(18.dp)
@@ -198,7 +198,7 @@ fun SpendingTrendsScreen(
                         .background(if (selectedChartStyle == TrendChartStyle.CURVE) SleekPrimary else Color.Transparent)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.ShowChart,
+                        imageVector = AppIcons.ShowChart,
                         contentDescription = "Spline Curve",
                         tint = if (selectedChartStyle == TrendChartStyle.CURVE) Color.White else SleekTextSecondary,
                         modifier = Modifier.size(SleekSizes.iconSmall)
@@ -215,7 +215,7 @@ fun SpendingTrendsScreen(
                         .background(if (selectedChartStyle == TrendChartStyle.BARS) SleekPrimary else Color.Transparent)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.BarChart,
+                        imageVector = AppIcons.BarChart,
                         contentDescription = "Bars",
                         tint = if (selectedChartStyle == TrendChartStyle.BARS) Color.White else SleekTextSecondary,
                         modifier = Modifier.size(SleekSizes.iconSmall)
@@ -253,7 +253,7 @@ fun SpendingTrendsScreen(
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.CalendarViewWeek,
+                        imageVector = AppIcons.CalendarViewWeek,
                         contentDescription = null,
                         tint = if (selectedTimeframe == TrendTimeframe.WEEKLY) Color.White else SleekTextSecondary,
                         modifier = Modifier.size(SleekSizes.iconSmall)
@@ -286,7 +286,7 @@ fun SpendingTrendsScreen(
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.CalendarMonth,
+                        imageVector = AppIcons.CalendarMonth,
                         contentDescription = null,
                         tint = if (selectedTimeframe == TrendTimeframe.MONTHLY) Color.White else SleekTextSecondary,
                         modifier = Modifier.size(SleekSizes.iconSmall)
@@ -429,7 +429,7 @@ fun SpendingTrendsScreen(
                                         horizontalArrangement = Arrangement.spacedBy(2.dp)
                                     ) {
                                         Icon(
-                                            imageVector = if (isDrop) Icons.AutoMirrored.Filled.TrendingDown else Icons.AutoMirrored.Filled.TrendingUp,
+                                            imageVector = if (isDrop) AppIcons.TrendingDown else AppIcons.TrendingUp,
                                             contentDescription = null,
                                             tint = badgeText,
                                             modifier = Modifier.size(SleekSizes.iconMicro)
@@ -488,7 +488,7 @@ fun SpendingTrendsScreen(
                             verticalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Timeline,
+                                imageVector = AppIcons.Timeline,
                                 contentDescription = null,
                                 tint = SleekTextSecondary.copy(alpha = 0.5f),
                                 modifier = Modifier.size(40.dp)
@@ -532,7 +532,7 @@ fun SpendingTrendsScreen(
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Default.TouchApp,
+                            imageVector = AppIcons.TouchApp,
                             contentDescription = null,
                             tint = SleekTextSecondary,
                             modifier = Modifier.size(13.dp)
@@ -607,7 +607,7 @@ fun SpendingTrendsScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                imageVector = Icons.Default.NorthEast,
+                                imageVector = AppIcons.NorthEast,
                                 contentDescription = null,
                                 tint = ExpenseRed,
                                 modifier = Modifier.size(SleekSizes.iconMicro)
@@ -654,7 +654,7 @@ fun SpendingTrendsScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                imageVector = Icons.Default.SouthEast,
+                                imageVector = AppIcons.SouthEast,
                                 contentDescription = null,
                                 tint = IncomeGreen,
                                 modifier = Modifier.size(SleekSizes.iconMicro)
@@ -701,7 +701,7 @@ fun SpendingTrendsScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                imageVector = Icons.Default.AllInclusive,
+                                imageVector = AppIcons.AllInclusive,
                                 contentDescription = null,
                                 tint = SleekPrimary,
                                 modifier = Modifier.size(SleekSizes.iconMicro)

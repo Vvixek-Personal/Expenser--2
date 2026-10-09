@@ -91,7 +91,7 @@ fun SettingsHeaderTitle(title: String, onBack: () -> Unit) {
         ) {
             IconButton(onClick = onBack) {
                 Icon(
-                    imageVector = Icons.Default.ArrowBack,
+                    imageVector = AppIcons.ArrowBack,
                     contentDescription = "Back",
                     tint = SleekTextPrimary
                 )
@@ -195,7 +195,7 @@ fun PersonalDataScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Person,
+                            imageVector = AppIcons.Person,
                             contentDescription = null,
                             tint = SleekPrimary,
                             modifier = Modifier.size(50.dp)
@@ -209,7 +209,7 @@ fun PersonalDataScreen(
                     modifier = Modifier.size(32.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.CameraAlt,
+                        imageVector = AppIcons.CameraAlt,
                         contentDescription = "Edit photo",
                         tint = Color.White,
                         modifier = Modifier.padding(6.dp)
@@ -286,7 +286,7 @@ fun PersonalDataScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(
-                    imageVector = Icons.Default.Star,
+                    imageVector = AppIcons.Star,
                     contentDescription = null,
                     tint = Color(0xFFEA580C),
                     modifier = Modifier.size(20.dp)
@@ -557,7 +557,7 @@ fun ComingSoonConstructionBanner(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Construction,
+                        imageVector = AppIcons.Construction,
                         contentDescription = null,
                         tint = Color(0xFFF59E0B),
                         modifier = Modifier.size(20.dp)
@@ -587,7 +587,7 @@ fun ComingSoonConstructionBanner(
                     modifier = Modifier.size(36.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Star,
+                        imageVector = AppIcons.Star,
                         contentDescription = null,
                         tint = Color(0xFFEA580C),
                         modifier = Modifier.padding(8.dp)
@@ -669,9 +669,9 @@ fun AppearanceScreen(
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     listOf(
-                        Triple("light", "Light", Icons.Default.LightMode),
-                        Triple("dark", "Dark", Icons.Default.DarkMode),
-                        Triple("device", "Device", Icons.Default.Tv)
+                        Triple("light", "Light", AppIcons.LightMode),
+                        Triple("dark", "Dark", AppIcons.DarkMode),
+                        Triple("device", "Device", AppIcons.Tv)
                     ).forEach { (modeKey, label, icon) ->
                         val isSelected = themeMode == modeKey
                         Surface(
@@ -763,7 +763,7 @@ fun AppearanceScreen(
                                                     contentAlignment = Alignment.Center
                                                 ) {
                                                     Icon(
-                                                        imageVector = Icons.Default.Check,
+                                                        imageVector = AppIcons.Check,
                                                         contentDescription = null,
                                                         tint = Color.White,
                                                         modifier = Modifier.size(12.dp)
@@ -777,7 +777,7 @@ fun AppearanceScreen(
                                             contentAlignment = Alignment.Center
                                         ) {
                                             Icon(
-                                                imageVector = Icons.Default.Edit,
+                                                imageVector = AppIcons.Edit,
                                                 contentDescription = "Custom Hue",
                                                 tint = SleekTextPrimary,
                                                 modifier = Modifier.size(22.dp)
@@ -792,7 +792,7 @@ fun AppearanceScreen(
                                                     contentAlignment = Alignment.Center
                                                 ) {
                                                     Icon(
-                                                        imageVector = Icons.Default.Check,
+                                                        imageVector = AppIcons.Check,
                                                         contentDescription = null,
                                                         tint = Color.White,
                                                         modifier = Modifier.size(12.dp)
@@ -1003,7 +1003,7 @@ fun AppearanceScreen(
                                 }
                                 if (isSelected) {
                                     Icon(
-                                        imageVector = Icons.Default.CheckCircle,
+                                        imageVector = AppIcons.CheckCircle,
                                         contentDescription = null,
                                         tint = SleekPrimary,
                                         modifier = Modifier.size(20.dp)
@@ -1086,7 +1086,7 @@ fun LanguageScreen(
                 value = searchLanguage,
                 onValueChange = { searchLanguage = it },
                 placeholder = { Text("Search language") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = SleekTextSecondary) },
+                leadingIcon = { Icon(AppIcons.Search, contentDescription = null, tint = SleekTextSecondary) },
                 shape = RoundedCornerShape(16.dp),
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
@@ -1263,7 +1263,7 @@ fun BillsSettingsScreen(
             ) {
                 IconButton(onClick = onBack) {
                     Icon(
-                        imageVector = Icons.Default.ArrowBack,
+                        imageVector = AppIcons.ArrowBack,
                         contentDescription = "Back",
                         tint = SleekTextPrimary
                     )
@@ -1295,7 +1295,7 @@ fun BillsSettingsScreen(
         ) {
             // ================= SECTION 1: Bills Preferences =================
             BillsSettingSectionCard(
-                sectionIcon = Icons.Outlined.AccountBalanceWallet,
+                sectionIcon = AppIcons.AccountBalanceWallet,
                 sectionIconBg = Color(0xFFEFF0FE),
                 sectionIconTint = Color(0xFF4F46E5),
                 title = "Bills Preferences",
@@ -1303,7 +1303,7 @@ fun BillsSettingsScreen(
             ) {
                 // 1. Default Recurrence
                 BillsSettingItemRow(
-                    icon = Icons.Outlined.CalendarToday,
+                    icon = AppIcons.CalendarToday,
                     iconBg = Color(0xFFEBF5FF),
                     iconTint = Color(0xFF2563EB),
                     title = "Default Recurrence",
@@ -1321,7 +1321,7 @@ fun BillsSettingsScreen(
 
                 // 2. Recurring End
                 BillsSettingItemRow(
-                    icon = Icons.Outlined.CalendarMonth,
+                    icon = AppIcons.CalendarMonth,
                     iconBg = Color(0xFFECFDF5),
                     iconTint = Color(0xFF059669),
                     title = "Recurring End",
@@ -1339,7 +1339,7 @@ fun BillsSettingsScreen(
 
                 // 3. Default Bill Category
                 BillsSettingItemRow(
-                    icon = Icons.Outlined.Sell,
+                    icon = AppIcons.Sell,
                     iconBg = Color(0xFFFEF3C7),
                     iconTint = Color(0xFFD97706),
                     title = "Default Bill Category",
@@ -1357,7 +1357,7 @@ fun BillsSettingsScreen(
 
                 // 4. Mark as Paid Automatically
                 BillsSettingSwitchRow(
-                    icon = Icons.Outlined.TaskAlt,
+                    icon = AppIcons.TaskAlt,
                     iconBg = Color(0xFFF3E8FF),
                     iconTint = Color(0xFF9333EA),
                     title = "Mark as Paid Automatically",
@@ -1370,7 +1370,7 @@ fun BillsSettingsScreen(
 
                 // 5. Archive Paid Bills
                 BillsSettingItemRow(
-                    icon = Icons.Outlined.Archive,
+                    icon = AppIcons.Archive,
                     iconBg = Color(0xFFFEE2E2),
                     iconTint = Color(0xFFDC2626),
                     title = "Archive Paid Bills",
@@ -1387,7 +1387,7 @@ fun BillsSettingsScreen(
 
             // ================= SECTION 2: Upcoming Bills =================
             BillsSettingSectionCard(
-                sectionIcon = Icons.Outlined.FormatListBulleted,
+                sectionIcon = AppIcons.FormatListBulleted,
                 sectionIconBg = Color(0xFFE0F2FE),
                 sectionIconTint = Color(0xFF0284C7),
                 title = "Upcoming Bills",
@@ -1395,7 +1395,7 @@ fun BillsSettingsScreen(
             ) {
                 // 1. Show Upcoming Bills on Dashboard
                 BillsSettingSwitchRow(
-                    icon = Icons.Outlined.GridView,
+                    icon = AppIcons.GridView,
                     iconBg = Color(0xFFFFEDD5),
                     iconTint = Color(0xFFEA580C),
                     title = "Show Upcoming Bills on Dashboard",
@@ -1408,7 +1408,7 @@ fun BillsSettingsScreen(
 
                 // 2. Upcoming Days to Show
                 BillsSettingItemRow(
-                    icon = Icons.Outlined.DateRange,
+                    icon = AppIcons.DateRange,
                     iconBg = Color(0xFFF3E8FF),
                     iconTint = Color(0xFF9333EA),
                     title = "Upcoming Days to Show",
@@ -1426,7 +1426,7 @@ fun BillsSettingsScreen(
 
                 // 3. Sort Upcoming Bills By
                 BillsSettingItemRow(
-                    icon = Icons.Outlined.SwapVert,
+                    icon = AppIcons.SwapVert,
                     iconBg = Color(0xFFEBF5FF),
                     iconTint = Color(0xFF2563EB),
                     title = "Sort Upcoming Bills By",
@@ -1443,7 +1443,7 @@ fun BillsSettingsScreen(
 
             // ================= SECTION 3: Bill Management =================
             BillsSettingSectionCard(
-                sectionIcon = Icons.Outlined.SnippetFolder,
+                sectionIcon = AppIcons.SnippetFolder,
                 sectionIconBg = Color(0xFFDCFCE7),
                 sectionIconTint = Color(0xFF16A34A),
                 title = "Bill Management",
@@ -1451,7 +1451,7 @@ fun BillsSettingsScreen(
             ) {
                 // 1. Default Filter
                 BillsSettingItemRow(
-                    icon = Icons.Outlined.FilterList,
+                    icon = AppIcons.FilterList,
                     iconBg = Color(0xFFCFFAFE),
                     iconTint = Color(0xFF0891B2),
                     title = "Default Filter",
@@ -1469,7 +1469,7 @@ fun BillsSettingsScreen(
 
                 // 2. Overdue Bills
                 BillsSettingSwitchRow(
-                    icon = Icons.Outlined.AccessTime,
+                    icon = AppIcons.AccessTime,
                     iconBg = Color(0xFFFEE2E2),
                     iconTint = Color(0xFFDC2626),
                     title = "Overdue Bills",
@@ -1482,7 +1482,7 @@ fun BillsSettingsScreen(
 
                 // 3. Show Notes on Bill List
                 BillsSettingSwitchRow(
-                    icon = Icons.Outlined.StickyNote2,
+                    icon = AppIcons.StickyNote2,
                     iconBg = Color(0xFFFEF3C7),
                     iconTint = Color(0xFFD97706),
                     title = "Show Notes on Bill List",
@@ -1575,7 +1575,7 @@ fun BillsSettingsScreen(
                             )
                             if (selected) {
                                 Icon(
-                                    Icons.Default.Check,
+                                    AppIcons.Check,
                                     contentDescription = null,
                                     tint = SleekPrimary
                                 )
@@ -1712,7 +1712,7 @@ private fun BillsSettingItemRow(
             )
             Spacer(modifier = Modifier.width(4.dp))
             Icon(
-                imageVector = Icons.Default.ChevronRight,
+                imageVector = AppIcons.ChevronRight,
                 contentDescription = null,
                 tint = SleekPrimary,
                 modifier = Modifier.size(18.dp)
@@ -1834,7 +1834,7 @@ fun CategoriesTagsScreen(
             ) {
                 IconButton(onClick = onBack) {
                     Icon(
-                        imageVector = Icons.Default.ArrowBack,
+                        imageVector = AppIcons.ArrowBack,
                         contentDescription = "Back",
                         tint = SleekTextPrimary
                     )
@@ -1883,7 +1883,7 @@ fun CategoriesTagsScreen(
         ) {
             // ================= SECTION 1: Categories =================
             BillsSettingSectionCard(
-                sectionIcon = Icons.Outlined.AccountBalanceWallet,
+                sectionIcon = AppIcons.AccountBalanceWallet,
                 sectionIconBg = Color(0xFFEFF0FE),
                 sectionIconTint = Color(0xFF4F46E5),
                 title = "Categories",
@@ -1898,7 +1898,7 @@ fun CategoriesTagsScreen(
                         // Expense Categories Card
                         CategoryPillCard(
                             modifier = Modifier.weight(1f),
-                            icon = Icons.Default.ArrowDownward,
+                            icon = AppIcons.ArrowDownward,
                             iconBg = Color(0xFFDCFCE7),
                             iconTint = Color(0xFF16A34A),
                             title = "Expense Categories",
@@ -1910,7 +1910,7 @@ fun CategoriesTagsScreen(
                         // Income Categories Card
                         CategoryPillCard(
                             modifier = Modifier.weight(1f),
-                            icon = Icons.Default.ArrowUpward,
+                            icon = AppIcons.ArrowUpward,
                             iconBg = Color(0xFFDBEAFE),
                             iconTint = Color(0xFF2563EB),
                             title = "Income Categories",
@@ -1929,7 +1929,7 @@ fun CategoriesTagsScreen(
                         // Savings Categories Card
                         CategoryPillCard(
                             modifier = Modifier.weight(1f),
-                            icon = Icons.Outlined.Savings,
+                            icon = AppIcons.Savings,
                             iconBg = Color(0xFFFFEDD5),
                             iconTint = Color(0xFFEA580C),
                             title = "Savings Categories",
@@ -1941,7 +1941,7 @@ fun CategoriesTagsScreen(
                         // Budget Categories Card
                         CategoryPillCard(
                             modifier = Modifier.weight(1f),
-                            icon = Icons.Outlined.PieChart,
+                            icon = AppIcons.PieChart,
                             iconBg = Color(0xFFF3E8FF),
                             iconTint = Color(0xFF9333EA),
                             title = "Budget Categories",
@@ -1956,7 +1956,7 @@ fun CategoriesTagsScreen(
 
                 // Create Category Row
                 BillsSettingItemRow(
-                    icon = Icons.Outlined.Add,
+                    icon = AppIcons.Add,
                     iconBg = Color(0xFFF3E8FF),
                     iconTint = Color(0xFF9333EA),
                     title = "Create Category",
@@ -1969,7 +1969,7 @@ fun CategoriesTagsScreen(
 
                 // Edit Categories Row
                 BillsSettingItemRow(
-                    icon = Icons.Outlined.Edit,
+                    icon = AppIcons.Edit,
                     iconBg = Color(0xFFFFEDD5),
                     iconTint = Color(0xFFEA580C),
                     title = "Edit Categories",
@@ -1982,7 +1982,7 @@ fun CategoriesTagsScreen(
 
                 // Delete Categories Row
                 BillsSettingItemRow(
-                    icon = Icons.Outlined.Delete,
+                    icon = AppIcons.Delete,
                     iconBg = Color(0xFFFEE2E2),
                     iconTint = Color(0xFFDC2626),
                     title = "Delete Categories",
@@ -1995,7 +1995,7 @@ fun CategoriesTagsScreen(
 
                 // Reorder Categories Row
                 BillsSettingItemRow(
-                    icon = Icons.Outlined.SwapVert,
+                    icon = AppIcons.SwapVert,
                     iconBg = Color(0xFFEBF5FF),
                     iconTint = Color(0xFF2563EB),
                     title = "Reorder Categories",
@@ -2008,7 +2008,7 @@ fun CategoriesTagsScreen(
 
                 // Category Colors Row
                 BillsSettingItemRow(
-                    icon = Icons.Outlined.Palette,
+                    icon = AppIcons.Palette,
                     iconBg = Color(0xFFCFFAFE),
                     iconTint = Color(0xFF0891B2),
                     title = "Category Colors",
@@ -2020,7 +2020,7 @@ fun CategoriesTagsScreen(
 
             // ================= SECTION 2: Tags =================
             BillsSettingSectionCard(
-                sectionIcon = Icons.Outlined.Sell,
+                sectionIcon = AppIcons.Sell,
                 sectionIconBg = Color(0xFFEFF0FE),
                 sectionIconTint = Color(0xFF4F46E5),
                 title = "Tags",
@@ -2028,7 +2028,7 @@ fun CategoriesTagsScreen(
             ) {
                 // Create Tag Row
                 BillsSettingItemRow(
-                    icon = Icons.Outlined.Add,
+                    icon = AppIcons.Add,
                     iconBg = Color(0xFFF3E8FF),
                     iconTint = Color(0xFF9333EA),
                     title = "Create Tag",
@@ -2041,7 +2041,7 @@ fun CategoriesTagsScreen(
 
                 // Edit Tags Row
                 BillsSettingItemRow(
-                    icon = Icons.Outlined.Edit,
+                    icon = AppIcons.Edit,
                     iconBg = Color(0xFFFFEDD5),
                     iconTint = Color(0xFFEA580C),
                     title = "Edit Tags",
@@ -2054,7 +2054,7 @@ fun CategoriesTagsScreen(
 
                 // Delete Tags Row
                 BillsSettingItemRow(
-                    icon = Icons.Outlined.Delete,
+                    icon = AppIcons.Delete,
                     iconBg = Color(0xFFFEE2E2),
                     iconTint = Color(0xFFDC2626),
                     title = "Delete Tags",
@@ -2067,7 +2067,7 @@ fun CategoriesTagsScreen(
 
                 // Reorder Tags Row
                 BillsSettingItemRow(
-                    icon = Icons.Outlined.SwapVert,
+                    icon = AppIcons.SwapVert,
                     iconBg = Color(0xFFEBF5FF),
                     iconTint = Color(0xFF2563EB),
                     title = "Reorder Tags",
@@ -2080,7 +2080,7 @@ fun CategoriesTagsScreen(
 
                 // Tag Colors Row
                 BillsSettingItemRow(
-                    icon = Icons.Outlined.Palette,
+                    icon = AppIcons.Palette,
                     iconBg = Color(0xFFDCFCE7),
                     iconTint = Color(0xFF16A34A),
                     title = "Tag Colors",
@@ -2092,7 +2092,7 @@ fun CategoriesTagsScreen(
 
             // ================= SECTION 3: General Preferences =================
             BillsSettingSectionCard(
-                sectionIcon = Icons.Outlined.Settings,
+                sectionIcon = AppIcons.Settings,
                 sectionIconBg = Color(0xFFEFF0FE),
                 sectionIconTint = Color(0xFF4F46E5),
                 title = "General Preferences",
@@ -2100,7 +2100,7 @@ fun CategoriesTagsScreen(
             ) {
                 // Prevent Deleting Used Categories
                 BillsSettingSwitchRow(
-                    icon = Icons.Outlined.Link,
+                    icon = AppIcons.Link,
                     iconBg = Color(0xFFECFDF5),
                     iconTint = Color(0xFF059669),
                     title = "Prevent Deleting Used Categories",
@@ -2113,7 +2113,7 @@ fun CategoriesTagsScreen(
 
                 // Show Category in Transaction List
                 BillsSettingSwitchRow(
-                    icon = Icons.Outlined.Sell,
+                    icon = AppIcons.Sell,
                     iconBg = Color(0xFFEBF5FF),
                     iconTint = Color(0xFF2563EB),
                     title = "Show Category in Transaction List",
@@ -2170,7 +2170,7 @@ fun CategoriesTagsScreen(
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     Icon(
-                        imageVector = Icons.Default.ChevronRight,
+                        imageVector = AppIcons.ChevronRight,
                         contentDescription = null,
                         tint = Color(0xFF4F46E5),
                         modifier = Modifier.size(18.dp)
@@ -2270,7 +2270,7 @@ fun CategoriesTagsScreen(
                                         modifier = Modifier.size(28.dp)
                                     ) {
                                         Icon(
-                                            Icons.Outlined.Delete,
+                                            AppIcons.Delete,
                                             contentDescription = "Delete",
                                             tint = MaterialTheme.colorScheme.error,
                                             modifier = Modifier.size(18.dp)
@@ -2391,7 +2391,7 @@ fun CategoriesTagsScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(cat, fontWeight = FontWeight.Medium, color = SleekTextPrimary)
-                                Icon(Icons.Outlined.Edit, contentDescription = "Edit", tint = SleekPrimary, modifier = Modifier.size(18.dp))
+                                Icon(AppIcons.Edit, contentDescription = "Edit", tint = SleekPrimary, modifier = Modifier.size(18.dp))
                             }
                         }
                     }
@@ -2476,7 +2476,7 @@ fun CategoriesTagsScreen(
                                     },
                                     modifier = Modifier.size(28.dp)
                                 ) {
-                                    Icon(Icons.Outlined.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                                    Icon(AppIcons.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
                                 }
                             }
                         }
@@ -2619,7 +2619,7 @@ fun CategoriesTagsScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(tag, fontWeight = FontWeight.Medium, color = SleekTextPrimary)
-                                Icon(Icons.Outlined.Edit, contentDescription = "Edit", tint = SleekPrimary, modifier = Modifier.size(18.dp))
+                                Icon(AppIcons.Edit, contentDescription = "Edit", tint = SleekPrimary, modifier = Modifier.size(18.dp))
                             }
                         }
                     }
@@ -2695,7 +2695,7 @@ fun CategoriesTagsScreen(
                                 },
                                 modifier = Modifier.size(28.dp)
                             ) {
-                                Icon(Icons.Outlined.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                                Icon(AppIcons.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
                             }
                         }
                     }
@@ -2843,7 +2843,7 @@ private fun CategoryPillCard(
                         )
                     }
                     Icon(
-                        imageVector = Icons.Default.ChevronRight,
+                        imageVector = AppIcons.ChevronRight,
                         contentDescription = null,
                         tint = SleekTextSecondary,
                         modifier = Modifier.size(16.dp)
@@ -2938,7 +2938,7 @@ fun BudgetSettingsScreen(
                     .border(1.dp, SleekBorder, CircleShape)
             ) {
                 Icon(
-                    imageVector = Icons.Default.ArrowBack,
+                    imageVector = AppIcons.ArrowBack,
                     contentDescription = "Back",
                     tint = SleekTextPrimary
                 )
@@ -2952,7 +2952,7 @@ fun BudgetSettingsScreen(
                     .border(1.dp, SleekBorder, CircleShape)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Info,
+                    imageVector = AppIcons.Info,
                     contentDescription = "Info",
                     tint = SleekTextPrimary
                 )
@@ -3003,7 +3003,7 @@ fun BudgetSettingsScreen(
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Icon(
-                                    imageVector = Icons.Default.AccountBalanceWallet,
+                                    imageVector = AppIcons.AccountBalanceWallet,
                                     contentDescription = null,
                                     tint = SleekPrimary,
                                     modifier = Modifier.size(20.dp)
@@ -3047,7 +3047,7 @@ fun BudgetSettingsScreen(
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Icon(
-                                        imageVector = Icons.Default.PieChart,
+                                        imageVector = AppIcons.PieChart,
                                         contentDescription = null,
                                         tint = Color(0xFF6366F1),
                                         modifier = Modifier.size(18.dp)
@@ -3081,7 +3081,7 @@ fun BudgetSettingsScreen(
                                 fontSize = 13.sp
                             )
                             Icon(
-                                imageVector = Icons.Default.ChevronRight,
+                                imageVector = AppIcons.ChevronRight,
                                 contentDescription = null,
                                 tint = SleekTextSecondary,
                                 modifier = Modifier.size(18.dp)
@@ -3112,7 +3112,7 @@ fun BudgetSettingsScreen(
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Icon(
-                                        imageVector = Icons.Default.CurrencyExchange,
+                                        imageVector = AppIcons.CurrencyExchange,
                                         contentDescription = null,
                                         tint = Color(0xFF10B981),
                                         modifier = Modifier.size(18.dp)
@@ -3165,7 +3165,7 @@ fun BudgetSettingsScreen(
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Icon(
-                                        imageVector = Icons.Default.Autorenew,
+                                        imageVector = AppIcons.Autorenew,
                                         contentDescription = null,
                                         tint = Color(0xFFF59E0B),
                                         modifier = Modifier.size(18.dp)
@@ -3225,7 +3225,7 @@ fun BudgetSettingsScreen(
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Icon(
-                                    imageVector = Icons.Default.Warning,
+                                    imageVector = AppIcons.Warning,
                                     contentDescription = null,
                                     tint = Color(0xFFF59E0B),
                                     modifier = Modifier.size(20.dp)
@@ -3261,7 +3261,7 @@ fun BudgetSettingsScreen(
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Icon(
-                                        imageVector = Icons.Default.ReportProblem,
+                                        imageVector = AppIcons.ReportProblem,
                                         contentDescription = null,
                                         tint = Color(0xFFEF4444),
                                         modifier = Modifier.size(18.dp)
@@ -3294,7 +3294,7 @@ fun BudgetSettingsScreen(
                                 }
                             )
                             Icon(
-                                imageVector = Icons.Default.ChevronRight,
+                                imageVector = AppIcons.ChevronRight,
                                 contentDescription = null,
                                 tint = SleekTextSecondary,
                                 modifier = Modifier.size(18.dp)
@@ -3324,7 +3324,7 @@ fun BudgetSettingsScreen(
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Icon(
-                                        imageVector = Icons.Default.Notifications,
+                                        imageVector = AppIcons.Notifications,
                                         contentDescription = null,
                                         tint = Color(0xFFF59E0B),
                                         modifier = Modifier.size(18.dp)
@@ -3353,7 +3353,7 @@ fun BudgetSettingsScreen(
                                 onCheckedChange = { viewModel.toggleBudgetWarning(80, it) }
                             )
                             Icon(
-                                imageVector = Icons.Default.ChevronRight,
+                                imageVector = AppIcons.ChevronRight,
                                 contentDescription = null,
                                 tint = SleekTextSecondary,
                                 modifier = Modifier.size(18.dp)
@@ -3383,7 +3383,7 @@ fun BudgetSettingsScreen(
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Icon(
-                                        imageVector = Icons.Default.Lightbulb,
+                                        imageVector = AppIcons.Lightbulb,
                                         contentDescription = null,
                                         tint = Color(0xFFF97316),
                                         modifier = Modifier.size(18.dp)
@@ -3412,7 +3412,7 @@ fun BudgetSettingsScreen(
                                 onCheckedChange = { viewModel.toggleBudgetWarning(90, it) }
                             )
                             Icon(
-                                imageVector = Icons.Default.ChevronRight,
+                                imageVector = AppIcons.ChevronRight,
                                 contentDescription = null,
                                 tint = SleekTextSecondary,
                                 modifier = Modifier.size(18.dp)
@@ -3442,7 +3442,7 @@ fun BudgetSettingsScreen(
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Icon(
-                                        imageVector = Icons.Default.RemoveCircleOutline,
+                                        imageVector = AppIcons.RemoveCircleOutline,
                                         contentDescription = null,
                                         tint = Color(0xFFDC2626),
                                         modifier = Modifier.size(18.dp)
@@ -3471,7 +3471,7 @@ fun BudgetSettingsScreen(
                                 onCheckedChange = { viewModel.toggleBudgetWarning(100, it) }
                             )
                             Icon(
-                                imageVector = Icons.Default.ChevronRight,
+                                imageVector = AppIcons.ChevronRight,
                                 contentDescription = null,
                                 tint = SleekTextSecondary,
                                 modifier = Modifier.size(18.dp)
@@ -3507,7 +3507,7 @@ fun BudgetSettingsScreen(
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Icon(
-                                        imageVector = Icons.Default.Category,
+                                        imageVector = AppIcons.Category,
                                         contentDescription = null,
                                         tint = Color(0xFF8B5CF6),
                                         modifier = Modifier.size(20.dp)
@@ -3542,7 +3542,7 @@ fun BudgetSettingsScreen(
                                 .clip(CircleShape)
                                 .background(SleekPrimary.copy(alpha = 0.12f))
                         ) {
-                            Icon(Icons.Default.Add, contentDescription = "Add Category Budget", tint = SleekPrimary, modifier = Modifier.size(20.dp))
+                            Icon(AppIcons.Add, contentDescription = "Add Category Budget", tint = SleekPrimary, modifier = Modifier.size(20.dp))
                         }
                     }
 
@@ -3560,7 +3560,7 @@ fun BudgetSettingsScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(10.dp)
                             ) {
-                                Icon(Icons.Default.Tune, contentDescription = null, tint = SleekPrimary, modifier = Modifier.size(20.dp))
+                                Icon(AppIcons.Tune, contentDescription = null, tint = SleekPrimary, modifier = Modifier.size(20.dp))
                                 Column {
                                     Text("No category budgets set", fontWeight = FontWeight.Bold, fontSize = 13.sp, color = SleekTextPrimary)
                                     Text("Tap '+' above to set a spending limit for Food, Transport, Shopping, etc.", fontSize = 11.sp, color = SleekTextSecondary)
@@ -3622,13 +3622,13 @@ fun BudgetSettingsScreen(
                                                     },
                                                     modifier = Modifier.size(28.dp)
                                                 ) {
-                                                    Icon(Icons.Default.Edit, contentDescription = "Edit", tint = SleekPrimary, modifier = Modifier.size(16.dp))
+                                                    Icon(AppIcons.Edit, contentDescription = "Edit", tint = SleekPrimary, modifier = Modifier.size(16.dp))
                                                 }
                                                 IconButton(
                                                     onClick = { viewModel.deleteCategoryBudget(b.category) },
                                                     modifier = Modifier.size(28.dp)
                                                 ) {
-                                                    Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color(0xFFEF4444), modifier = Modifier.size(16.dp))
+                                                    Icon(AppIcons.Delete, contentDescription = "Delete", tint = Color(0xFFEF4444), modifier = Modifier.size(16.dp))
                                                 }
                                             }
                                         }
@@ -3696,7 +3696,7 @@ fun BudgetSettingsScreen(
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Icon(
-                                    imageVector = Icons.Default.Palette,
+                                    imageVector = AppIcons.Palette,
                                     contentDescription = null,
                                     tint = Color(0xFF06B6D4),
                                     modifier = Modifier.size(20.dp)
@@ -3733,7 +3733,7 @@ fun BudgetSettingsScreen(
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Icon(
-                                        imageVector = Icons.Default.ColorLens,
+                                        imageVector = AppIcons.ColorLens,
                                         contentDescription = null,
                                         tint = Color(0xFF14B8A6),
                                         modifier = Modifier.size(18.dp)
@@ -3757,7 +3757,7 @@ fun BudgetSettingsScreen(
                         }
 
                         Icon(
-                            imageVector = Icons.Default.ChevronRight,
+                            imageVector = AppIcons.ChevronRight,
                             contentDescription = null,
                             tint = SleekTextSecondary,
                             modifier = Modifier.size(18.dp)
@@ -3832,7 +3832,7 @@ fun BudgetSettingsScreen(
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Icon(
-                                    imageVector = Icons.Default.Info,
+                                    imageVector = AppIcons.Info,
                                     contentDescription = null,
                                     tint = SleekPrimary,
                                     modifier = Modifier.size(18.dp)
@@ -3857,7 +3857,7 @@ fun BudgetSettingsScreen(
                     }
 
                     Icon(
-                        imageVector = Icons.Default.ChevronRight,
+                        imageVector = AppIcons.ChevronRight,
                         contentDescription = null,
                         tint = SleekPrimary,
                         modifier = Modifier.size(18.dp)
@@ -4142,7 +4142,7 @@ fun BackupRestoreScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                imageVector = if (syncMode == "ONLINE_SYNC") Icons.Default.CloudSync else Icons.Default.Security,
+                                imageVector = if (syncMode == "ONLINE_SYNC") AppIcons.CloudSync else AppIcons.Security,
                                 contentDescription = "Storage Mode",
                                 tint = if (syncMode == "ONLINE_SYNC") Color(0xFF0284C7) else Color(0xFF10B981),
                                 modifier = Modifier.size(24.dp)
@@ -4349,7 +4349,7 @@ fun BackupRestoreScreen(
                                 )
                             ) {
                                 Icon(
-                                    imageVector = if (isCloudSyncing) Icons.Default.Sync else Icons.Default.CloudUpload,
+                                    imageVector = if (isCloudSyncing) AppIcons.Sync else AppIcons.CloudUpload,
                                     contentDescription = null,
                                     modifier = Modifier.size(18.dp)
                                 )
@@ -4370,7 +4370,7 @@ fun BackupRestoreScreen(
                                 shape = RoundedCornerShape(12.dp)
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.CloudDownload,
+                                    imageVector = AppIcons.CloudDownload,
                                     contentDescription = null,
                                     modifier = Modifier.size(18.dp)
                                 )
@@ -4393,7 +4393,7 @@ fun BackupRestoreScreen(
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Icon(
-                                imageVector = Icons.Default.CheckCircle,
+                                imageVector = AppIcons.CheckCircle,
                                 contentDescription = null,
                                 tint = Color(0xFF10B981),
                                 modifier = Modifier.size(18.dp)
@@ -4436,7 +4436,7 @@ fun BackupRestoreScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                imageVector = Icons.Default.QrCode,
+                                imageVector = AppIcons.QrCode,
                                 contentDescription = "Backup Code",
                                 tint = Color(0xFF8B5CF6),
                                 modifier = Modifier.size(22.dp)
@@ -4483,7 +4483,7 @@ fun BackupRestoreScreen(
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text("Generating Encrypted Code...")
                             } else {
-                                Icon(Icons.Default.VpnKey, contentDescription = null, modifier = Modifier.size(18.dp))
+                                Icon(AppIcons.VpnKey, contentDescription = null, modifier = Modifier.size(18.dp))
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text("Generate My Backup Code", fontWeight = FontWeight.Bold)
                             }
@@ -4524,7 +4524,7 @@ fun BackupRestoreScreen(
                                 shape = RoundedCornerShape(12.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = SleekPrimary)
                             ) {
-                                Icon(Icons.Default.ContentCopy, contentDescription = null, modifier = Modifier.size(18.dp))
+                                Icon(AppIcons.ContentCopy, contentDescription = null, modifier = Modifier.size(18.dp))
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text("Copy Code", fontWeight = FontWeight.Bold)
                             }
@@ -4541,7 +4541,7 @@ fun BackupRestoreScreen(
                                 },
                                 shape = RoundedCornerShape(12.dp)
                             ) {
-                                Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
+                                Icon(AppIcons.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
                             }
                         }
 
@@ -4558,7 +4558,7 @@ fun BackupRestoreScreen(
                                 horizontalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.CheckCircle,
+                                    imageVector = AppIcons.CheckCircle,
                                     contentDescription = null,
                                     tint = Color(0xFF16A34A),
                                     modifier = Modifier.size(14.dp)
@@ -4597,7 +4597,7 @@ fun BackupRestoreScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                imageVector = Icons.Default.FileDownload,
+                                imageVector = AppIcons.FileDownload,
                                 contentDescription = "Restore Code",
                                 tint = SleekPrimary,
                                 modifier = Modifier.size(22.dp)
@@ -4655,7 +4655,7 @@ fun BackupRestoreScreen(
                             },
                             shape = RoundedCornerShape(12.dp)
                         ) {
-                            Icon(Icons.Default.ContentPaste, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Icon(AppIcons.ContentPaste, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(6.dp))
                             Text("Paste")
                         }
@@ -4682,7 +4682,7 @@ fun BackupRestoreScreen(
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text("Restoring...")
                             } else {
-                                Icon(Icons.Default.Restore, contentDescription = null, modifier = Modifier.size(18.dp))
+                                Icon(AppIcons.Restore, contentDescription = null, modifier = Modifier.size(18.dp))
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text("Restore Data Now", fontWeight = FontWeight.Bold)
                             }
@@ -4716,7 +4716,7 @@ fun BackupRestoreScreen(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp)
                     ) {
-                        Icon(Icons.Default.Backup, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Icon(AppIcons.Backup, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(8.dp))
                         Text("Create Manual Local Snapshot")
                     }
@@ -4796,7 +4796,7 @@ fun BackupRestoreScreen(
             onDismissRequest = { showCloudRestoreConfirmDialog = false },
             title = {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Icon(Icons.Default.CloudDownload, contentDescription = null, tint = Color(0xFF0284C7))
+                    Icon(AppIcons.CloudDownload, contentDescription = null, tint = Color(0xFF0284C7))
                     Text("Restore from Cloud Vault?", fontWeight = FontWeight.Bold)
                 }
             },
@@ -4893,7 +4893,7 @@ fun DataManagementScreen(
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = SleekPrimary)
                     ) {
-                        Icon(Icons.Default.Restore, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Icon(AppIcons.Restore, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(8.dp))
                         Text("Open Local Recovery", fontWeight = FontWeight.Bold)
                     }
@@ -4917,7 +4917,7 @@ fun DataManagementScreen(
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             Icon(
-                                imageVector = if (syncMode == "ONLINE_SYNC") Icons.Default.CloudSync else Icons.Default.Security,
+                                imageVector = if (syncMode == "ONLINE_SYNC") AppIcons.CloudSync else AppIcons.Security,
                                 contentDescription = null,
                                 tint = if (syncMode == "ONLINE_SYNC") Color(0xFF0284C7) else Color(0xFF10B981),
                                 modifier = Modifier.size(20.dp)
@@ -4970,7 +4970,7 @@ fun DataManagementScreen(
                             shape = RoundedCornerShape(12.dp)
                         ) {
                             Icon(
-                                imageVector = if (syncMode == "ONLINE_SYNC") Icons.Default.Security else Icons.Default.CloudSync,
+                                imageVector = if (syncMode == "ONLINE_SYNC") AppIcons.Security else AppIcons.CloudSync,
                                 contentDescription = null,
                                 modifier = Modifier.size(16.dp)
                             )
@@ -4993,7 +4993,7 @@ fun DataManagementScreen(
                                 if (isCloudSyncing) {
                                     CircularProgressIndicator(modifier = Modifier.size(14.dp), strokeWidth = 2.dp, color = Color.White)
                                 } else {
-                                    Icon(Icons.Default.Sync, contentDescription = null, modifier = Modifier.size(16.dp))
+                                    Icon(AppIcons.Sync, contentDescription = null, modifier = Modifier.size(16.dp))
                                 }
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text(if (isCloudSyncing) "Syncing..." else "Sync Now", fontSize = 12.sp, fontWeight = FontWeight.Bold)
@@ -5445,7 +5445,7 @@ fun AboutAppScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        Icon(Icons.Default.Timeline, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Icon(AppIcons.Timeline, contentDescription = null, modifier = Modifier.size(16.dp))
                         Text("Updates Timeline", fontWeight = if (selectedTab == 0) FontWeight.Bold else FontWeight.Normal)
                     }
                 }
@@ -5458,7 +5458,7 @@ fun AboutAppScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        Icon(Icons.Default.Info, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Icon(AppIcons.Info, contentDescription = null, modifier = Modifier.size(16.dp))
                         Text("About & System", fontWeight = if (selectedTab == 1) FontWeight.Bold else FontWeight.Normal)
                     }
                 }
@@ -5583,7 +5583,7 @@ fun AboutAppScreen(
                             onClick = { showTruckPreviewDialog = true },
                             shape = RoundedCornerShape(12.dp)
                         ) {
-                            Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Icon(AppIcons.PlayArrow, contentDescription = null, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(6.dp))
                             Text("Test Fullscreen Loading Screen")
                         }
@@ -5663,7 +5663,7 @@ fun HelpSupportScreen(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
                 placeholder = { Text("Search help topics") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = SleekTextSecondary) },
+                leadingIcon = { Icon(AppIcons.Search, contentDescription = null, tint = SleekTextSecondary) },
                 shape = RoundedCornerShape(16.dp),
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
@@ -5689,7 +5689,7 @@ fun HelpSupportScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(question, fontWeight = FontWeight.Bold, color = SleekTextPrimary, modifier = Modifier.weight(1f))
-                            Icon(if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown, contentDescription = null, tint = SleekPrimary)
+                            Icon(if (expanded) AppIcons.KeyboardArrowUp else AppIcons.KeyboardArrowDown, contentDescription = null, tint = SleekPrimary)
                         }
 
                         AnimatedVisibility(visible = expanded) {
@@ -5794,7 +5794,7 @@ fun ExportDataScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Icon(Icons.Default.FilterList, contentDescription = null, tint = SleekPrimary)
+                        Icon(AppIcons.FilterList, contentDescription = null, tint = SleekPrimary)
                         Text(
                             text = "Statement Configuration",
                             fontWeight = FontWeight.Bold,
@@ -5890,7 +5890,7 @@ fun ExportDataScreen(
                                         fontWeight = FontWeight.Bold,
                                         color = SleekTextPrimary
                                     )
-                                    Icon(Icons.Default.ArrowDropDown, contentDescription = null, tint = SleekTextSecondary)
+                                    Icon(AppIcons.ArrowDropDown, contentDescription = null, tint = SleekTextSecondary)
                                 }
                             }
 
@@ -6024,7 +6024,7 @@ fun ExportDataScreen(
                                 .background(Color(0xFFDC2626).copy(alpha = 0.15f)),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(Icons.Default.PictureAsPdf, contentDescription = null, tint = Color(0xFFDC2626), modifier = Modifier.size(24.dp))
+                            Icon(AppIcons.PictureAsPdf, contentDescription = null, tint = Color(0xFFDC2626), modifier = Modifier.size(24.dp))
                         }
 
                         Column(modifier = Modifier.weight(1f)) {
@@ -6054,7 +6054,7 @@ fun ExportDataScreen(
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Icon(Icons.Default.PictureAsPdf, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Icon(AppIcons.PictureAsPdf, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(8.dp))
                         Text("Export PDF Document", color = Color.White, fontWeight = FontWeight.Bold)
                     }
@@ -6080,7 +6080,7 @@ fun ExportDataScreen(
                                 .background(Color(0xFF16A34A).copy(alpha = 0.15f)),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(Icons.Default.Description, contentDescription = null, tint = Color(0xFF16A34A), modifier = Modifier.size(24.dp))
+                            Icon(AppIcons.Description, contentDescription = null, tint = Color(0xFF16A34A), modifier = Modifier.size(24.dp))
                         }
 
                         Column(modifier = Modifier.weight(1f)) {
@@ -6109,7 +6109,7 @@ fun ExportDataScreen(
                         border = BorderStroke(1.5.dp, Color(0xFF16A34A)),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Icon(Icons.Default.FileDownload, contentDescription = null, tint = Color(0xFF16A34A), modifier = Modifier.size(18.dp))
+                        Icon(AppIcons.FileDownload, contentDescription = null, tint = Color(0xFF16A34A), modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(8.dp))
                         Text("Export CSV Spreadsheet", color = Color(0xFF16A34A), fontWeight = FontWeight.Bold)
                     }
@@ -6135,7 +6135,7 @@ fun ExportDataScreen(
                                 .background(Color(0xFF8B5CF6).copy(alpha = 0.15f)),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(Icons.Default.Code, contentDescription = null, tint = Color(0xFF8B5CF6), modifier = Modifier.size(24.dp))
+                            Icon(AppIcons.Code, contentDescription = null, tint = Color(0xFF8B5CF6), modifier = Modifier.size(24.dp))
                         }
 
                         Column(modifier = Modifier.weight(1f)) {
@@ -6164,7 +6164,7 @@ fun ExportDataScreen(
                         border = BorderStroke(1.5.dp, Color(0xFF8B5CF6)),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Icon(Icons.Default.Code, contentDescription = null, tint = Color(0xFF8B5CF6), modifier = Modifier.size(18.dp))
+                        Icon(AppIcons.Code, contentDescription = null, tint = Color(0xFF8B5CF6), modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(8.dp))
                         Text("Export JSON Document", color = Color(0xFF8B5CF6), fontWeight = FontWeight.Bold)
                     }
@@ -6190,7 +6190,7 @@ fun ExportDataScreen(
                                 .background(SleekPrimary.copy(alpha = 0.15f)),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(Icons.Default.BarChart, contentDescription = null, tint = SleekPrimary, modifier = Modifier.size(24.dp))
+                            Icon(AppIcons.BarChart, contentDescription = null, tint = SleekPrimary, modifier = Modifier.size(24.dp))
                         }
 
                         Column(modifier = Modifier.weight(1f)) {
@@ -6219,7 +6219,7 @@ fun ExportDataScreen(
                         border = BorderStroke(1.5.dp, SleekPrimary),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Icon(Icons.Default.Share, contentDescription = null, tint = SleekPrimary, modifier = Modifier.size(18.dp))
+                        Icon(AppIcons.Share, contentDescription = null, tint = SleekPrimary, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(8.dp))
                         Text("Export Graphic Summary", color = SleekPrimary, fontWeight = FontWeight.Bold)
                     }

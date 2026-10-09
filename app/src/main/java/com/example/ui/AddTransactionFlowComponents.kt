@@ -241,7 +241,7 @@ fun AddExpenseDialog(
                             modifier = Modifier.size(32.dp)
                         ) {
                             Icon(
-                                imageVector = Icons.Rounded.Close,
+                                imageVector = AppIcons.Close,
                                 contentDescription = "Close",
                                 tint = SleekTextSecondary
                             )
@@ -283,7 +283,7 @@ fun AddExpenseDialog(
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
-                                    imageVector = Icons.Rounded.ArrowDownward,
+                                    imageVector = AppIcons.ArrowDownward,
                                     contentDescription = "Expense",
                                     tint = if (isExpenseActive) Color(0xFFEF5350) else SleekTextSecondary,
                                     modifier = Modifier.size(28.dp)
@@ -325,7 +325,7 @@ fun AddExpenseDialog(
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
-                                    imageVector = Icons.Rounded.ArrowUpward,
+                                    imageVector = AppIcons.ArrowUpward,
                                     contentDescription = "Income",
                                     tint = if (isIncomeActive) Color(0xFF10B981) else SleekTextSecondary,
                                     modifier = Modifier.size(28.dp)
@@ -510,7 +510,7 @@ fun AddExpenseDialog(
                             }
 
                             Icon(
-                                imageVector = Icons.Rounded.ChevronRight,
+                                imageVector = AppIcons.ChevronRight,
                                 contentDescription = "Select Category",
                                 tint = SleekTextSecondary
                             )
@@ -564,7 +564,7 @@ fun AddExpenseDialog(
                             modifier = Modifier.size(32.dp)
                         ) {
                             Icon(
-                                imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                                imageVector = AppIcons.ArrowBack,
                                 contentDescription = "Back",
                                 tint = SleekTextPrimary
                             )
@@ -690,7 +690,7 @@ fun AddExpenseDialog(
                                         .background(Color.Black.copy(alpha = 0.6f), CircleShape)
                                         .size(26.dp)
                                 ) {
-                                    Icon(Icons.Rounded.Close, contentDescription = "Clear", tint = Color.White, modifier = Modifier.size(14.dp))
+                                    Icon(AppIcons.Close, contentDescription = "Clear", tint = Color.White, modifier = Modifier.size(14.dp))
                                 }
                             }
                         } else {
@@ -715,7 +715,7 @@ fun AddExpenseDialog(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Icon(
-                                            imageVector = Icons.Rounded.CameraAlt,
+                                            imageVector = AppIcons.CameraAlt,
                                             contentDescription = "Camera",
                                             tint = activeColor,
                                             modifier = Modifier.size(18.dp)
@@ -746,7 +746,7 @@ fun AddExpenseDialog(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Icon(
-                                            imageVector = Icons.Rounded.Image,
+                                            imageVector = AppIcons.Image,
                                             contentDescription = "Gallery",
                                             tint = activeColor,
                                             modifier = Modifier.size(18.dp)
@@ -900,7 +900,7 @@ fun SelectCategorySheet(
                         fontWeight = FontWeight.Bold
                     )
                     IconButton(onClick = onDismiss, modifier = Modifier.size(28.dp)) {
-                        Icon(Icons.Rounded.Close, contentDescription = "Close", tint = SleekTextSecondary)
+                        Icon(AppIcons.Close, contentDescription = "Close", tint = SleekTextSecondary)
                     }
                 }
 
@@ -993,7 +993,7 @@ fun SelectCategorySheet(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.Add,
+                            imageVector = AppIcons.Add,
                             contentDescription = null,
                             tint = Color(0xFFEF5350),
                             modifier = Modifier.size(16.dp)
@@ -1039,7 +1039,7 @@ fun SelectCategorySheet(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.Add,
+                            imageVector = AppIcons.Add,
                             contentDescription = null,
                             tint = Color(0xFF10B981),
                             modifier = Modifier.size(16.dp)

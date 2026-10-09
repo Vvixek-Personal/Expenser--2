@@ -140,7 +140,7 @@ fun ProfilePictureCropDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.Default.Close, contentDescription = "Cancel", tint = Color.White)
+                        Icon(AppIcons.Close, contentDescription = "Cancel", tint = Color.White)
                     }
                     Text(
                         text = "Crop Profile Photo",
@@ -172,7 +172,7 @@ fun ProfilePictureCropDialog(
                         }
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Check,
+                            imageVector = AppIcons.Check,
                             contentDescription = "Save Photo",
                             tint = Color(0xFF10B981),
                             modifier = Modifier.size(28.dp)
@@ -339,7 +339,7 @@ fun ProfilePictureCropDialog(
                                 contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
                                 modifier = Modifier.heightIn(min = SleekSizes.buttonSmall)
                             ) {
-                                Icon(Icons.Rounded.RotateLeft, contentDescription = "Rotate Left", tint = Color.White, modifier = Modifier.size(SleekSizes.iconSmall))
+                                Icon(AppIcons.RotateLeft, contentDescription = "Rotate Left", tint = Color.White, modifier = Modifier.size(SleekSizes.iconSmall))
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text("90° Left", fontSize = SleekSizes.textCaption, color = Color.White, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
                             }
@@ -352,7 +352,7 @@ fun ProfilePictureCropDialog(
                                 contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
                                 modifier = Modifier.heightIn(min = SleekSizes.buttonSmall)
                             ) {
-                                Icon(Icons.Rounded.RotateRight, contentDescription = "Rotate Right", tint = Color.White, modifier = Modifier.size(SleekSizes.iconSmall))
+                                Icon(AppIcons.RotateRight, contentDescription = "Rotate Right", tint = Color.White, modifier = Modifier.size(SleekSizes.iconSmall))
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text("90° Right", fontSize = SleekSizes.textCaption, color = Color.White, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
                             }
@@ -365,7 +365,7 @@ fun ProfilePictureCropDialog(
                                 contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
                                 modifier = Modifier.heightIn(min = SleekSizes.buttonSmall)
                             ) {
-                                Icon(Icons.Rounded.CropFree, contentDescription = "Toggle Shape", tint = Color.White, modifier = Modifier.size(SleekSizes.iconSmall))
+                                Icon(AppIcons.CropFree, contentDescription = "Toggle Shape", tint = Color.White, modifier = Modifier.size(SleekSizes.iconSmall))
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(if (isCircleCrop) "Circle" else "Square", fontSize = SleekSizes.textCaption, color = Color.White, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
                             }
@@ -378,7 +378,7 @@ fun ProfilePictureCropDialog(
                                     rotationAngle = 0f
                                 }
                             ) {
-                                Icon(Icons.Default.Refresh, contentDescription = "Reset Transforms", tint = Color.LightGray)
+                                Icon(AppIcons.Refresh, contentDescription = "Reset Transforms", tint = Color.LightGray)
                             }
                         }
                     }

@@ -105,9 +105,14 @@ fun getAppUpdatesHistory(): List<AppReleaseUpdate> {
             timestamp = tsV129,
             startDate = "7th Oct",
             endDate = "7th Oct",
-            headline = "Zero-Data-Loss Universal Migration Engine (v13), Pre-Migration Auto-Backups, 210,000 Iteration PBKDF2 & Keystore HMAC PIN Security, Brute-Force Lockout, Firebase Wipe Sign-Out, Schema Normalization, and Accounting Guardrails",
+            headline = "Zero-Data-Loss Universal Migration Engine (v13), Pre-Migration Auto-Backups, 210,000 Iteration PBKDF2 & Keystore HMAC PIN Security, Brute-Force Lockout, Firebase Wipe Sign-Out, Claude-Style Unified Outlined Icon Architecture, and Accounting Guardrails",
             isLatest = true,
             specifications = listOf(
+                UpdateSpecification(
+                    category = SpecCategory.UI_UX,
+                    title = "Claude-Style Unified Outlined Icon Architecture (AppIcons)",
+                    description = "Eliminated visual inconsistency across 524 icon touchpoints by consolidating all 179 distinct icons through a centralized AppIcons registry. Standardized all icons into a refined, minimalist, thin rounded line aesthetic (Outlined/AutoMirrored.Outlined) reminiscent of Claude/Lucide/Phosphor, eliminating mixed filled/rounded/outlined variants while preserving RTL auto-mirroring."
+                ),
                 UpdateSpecification(
                     category = SpecCategory.SYSTEM,
                     title = "Cascade-Proof Database Normalizer & Row-Count Safety Check",
@@ -550,7 +555,7 @@ fun UpdatesTimelineView(
                     ) {
                         if (isCheckingUpdates) {
                             Icon(
-                                Icons.Rounded.Refresh,
+                                AppIcons.Refresh,
                                 contentDescription = null,
                                 tint = Color.White,
                                 modifier = Modifier
@@ -561,7 +566,7 @@ fun UpdatesTimelineView(
                             Text("Checking...", fontSize = 12.sp, color = Color.White)
                         } else {
                             Icon(
-                                Icons.Rounded.Sync,
+                                AppIcons.Sync,
                                 contentDescription = null,
                                 tint = Color.White,
                                 modifier = Modifier.size(16.dp)
@@ -598,7 +603,7 @@ fun UpdatesTimelineView(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
-                                    Icons.Rounded.CheckCircle,
+                                    AppIcons.CheckCircle,
                                     contentDescription = null,
                                     tint = Color(0xFF10B981),
                                     modifier = Modifier.size(SleekSizes.iconSmall)
@@ -751,7 +756,7 @@ fun TimelineReleaseNodeCard(
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        imageVector = if (release.isLatest) Icons.Rounded.RocketLaunch else Icons.Rounded.Check,
+                        imageVector = if (release.isLatest) AppIcons.RocketLaunch else AppIcons.Check,
                         contentDescription = null,
                         tint = Color.White,
                         modifier = Modifier.size(14.dp)
@@ -896,7 +901,7 @@ fun TimelineReleaseNodeCard(
                         )
                         Spacer(modifier = Modifier.width(3.dp))
                         Icon(
-                            imageVector = Icons.Rounded.KeyboardArrowDown,
+                            imageVector = AppIcons.KeyboardArrowDown,
                             contentDescription = null,
                             tint = SleekPrimary,
                             modifier = Modifier

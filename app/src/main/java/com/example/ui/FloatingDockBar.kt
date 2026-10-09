@@ -65,10 +65,10 @@ fun FloatingDockBar(
 
     val screens = remember {
         listOf(
-            Triple(Screen.Dashboard, Icons.Default.Dashboard, "Home"),
-            Triple(Screen.Expenses, Icons.Default.ReceiptLong, "Transactions"),
-            Triple(Screen.Analytics, Icons.Default.PieChart, "Analytics"),
-            Triple(Screen.Calendar, Icons.Default.CalendarMonth, "Calendar")
+            Triple(Screen.Dashboard, AppIcons.Dashboard, "Home"),
+            Triple(Screen.Expenses, AppIcons.ReceiptLong, "Transactions"),
+            Triple(Screen.Analytics, AppIcons.PieChart, "Analytics"),
+            Triple(Screen.Calendar, AppIcons.CalendarMonth, "Calendar")
         )
     }
 

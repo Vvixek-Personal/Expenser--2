@@ -164,7 +164,7 @@ fun ExpenseUndoSnackbar(
                         colors = ButtonDefaults.textButtonColors(contentColor = SleekPrimary)
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.Undo,
+                            imageVector = AppIcons.Undo,
                             contentDescription = "Undo",
                             modifier = Modifier.size(SleekSizes.iconSmall),
                             tint = SleekPrimary
