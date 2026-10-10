@@ -509,7 +509,8 @@ fun InteractiveScorecardRow(
         // Income Metric Card
         Card(
             colors = CardDefaults.cardColors(containerColor = SleekSurface),
-            shape = RoundedCornerShape(20.dp),
+            shape = SleekShapes.card,
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
             border = BorderStroke(1.dp, SleekBorder),
             modifier = Modifier
                 .weight(1f)
@@ -517,7 +518,7 @@ fun InteractiveScorecardRow(
                     haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                     onMetricClick(
                         MetricInspectionData(
-                            title = "Total Income",
+                            title = "Total income",
                             primaryValueStr = "$currencySymbol%,.2f".format(comparison.currentIncome),
                             subtitle = "Income over selected period",
                             changePercent = comparison.incomeChangePercent,
@@ -537,15 +538,15 @@ fun InteractiveScorecardRow(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Income", fontSize = 11.sp, color = SleekTextSecondary, fontWeight = FontWeight.Medium)
+                    Text("Income", fontSize = 12.sp, color = SleekTextSecondary, fontWeight = FontWeight.Medium)
                     Icon(AppIcons.OpenInFull, contentDescription = "Enlarge", tint = SleekTextSecondary, modifier = Modifier.size(12.dp))
                 }
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "$currencySymbol%,.0f".format(comparison.currentIncome),
-                    fontSize = 15.5.sp,
-                    fontWeight = FontWeight.Black,
-                    color = Color(0xFF10B981)
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = IncomeGreen
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 // Comparison Pill vs Previous Period
@@ -560,7 +561,8 @@ fun InteractiveScorecardRow(
         // Expense Metric Card
         Card(
             colors = CardDefaults.cardColors(containerColor = SleekSurface),
-            shape = RoundedCornerShape(20.dp),
+            shape = SleekShapes.card,
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
             border = BorderStroke(1.dp, SleekBorder),
             modifier = Modifier
                 .weight(1f)
@@ -568,7 +570,7 @@ fun InteractiveScorecardRow(
                     haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                     onMetricClick(
                         MetricInspectionData(
-                            title = "Total Expenses",
+                            title = "Total expenses",
                             primaryValueStr = "$currencySymbol%,.2f".format(comparison.currentSpent),
                             subtitle = "Expenses over selected period",
                             changePercent = comparison.spentChangePercent,
@@ -588,15 +590,15 @@ fun InteractiveScorecardRow(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Expenses", fontSize = 11.sp, color = SleekTextSecondary, fontWeight = FontWeight.Medium)
+                    Text("Expenses", fontSize = 12.sp, color = SleekTextSecondary, fontWeight = FontWeight.Medium)
                     Icon(AppIcons.OpenInFull, contentDescription = "Enlarge", tint = SleekTextSecondary, modifier = Modifier.size(12.dp))
                 }
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "$currencySymbol%,.0f".format(comparison.currentSpent),
-                    fontSize = 15.5.sp,
-                    fontWeight = FontWeight.Black,
-                    color = Color(0xFFEF4444)
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = ExpenseRed
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 PeriodChangeBadge(
@@ -610,7 +612,8 @@ fun InteractiveScorecardRow(
         // Net Flow Metric Card
         Card(
             colors = CardDefaults.cardColors(containerColor = SleekSurface),
-            shape = RoundedCornerShape(20.dp),
+            shape = SleekShapes.card,
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
             border = BorderStroke(1.dp, SleekBorder),
             modifier = Modifier
                 .weight(1f)
@@ -618,7 +621,7 @@ fun InteractiveScorecardRow(
                     haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                     onMetricClick(
                         MetricInspectionData(
-                            title = "Net Cash Flow",
+                            title = "Net cash flow",
                             primaryValueStr = if (comparison.currentNetFlow >= 0) "+$currencySymbol%,.2f".format(comparison.currentNetFlow) else "-$currencySymbol%,.2f".format(abs(comparison.currentNetFlow)),
                             subtitle = "Income minus expenses net balance",
                             changePercent = comparison.netFlowChangePercent,
@@ -638,16 +641,16 @@ fun InteractiveScorecardRow(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Net Flow", fontSize = 11.sp, color = SleekTextSecondary, fontWeight = FontWeight.Medium)
+                    Text("Net Flow", fontSize = 12.sp, color = SleekTextSecondary, fontWeight = FontWeight.Medium)
                     Icon(AppIcons.OpenInFull, contentDescription = "Enlarge", tint = SleekTextSecondary, modifier = Modifier.size(12.dp))
                 }
                 Spacer(modifier = Modifier.height(4.dp))
                 val isPositive = comparison.currentNetFlow >= 0
                 Text(
                     text = if (isPositive) "+$currencySymbol%,.0f".format(comparison.currentNetFlow) else "-$currencySymbol%,.0f".format(abs(comparison.currentNetFlow)),
-                    fontSize = 15.5.sp,
-                    fontWeight = FontWeight.Black,
-                    color = if (isPositive) Color(0xFF10B981) else Color(0xFFEF4444)
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = if (isPositive) IncomeGreen else ExpenseRed
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 PeriodChangeBadge(

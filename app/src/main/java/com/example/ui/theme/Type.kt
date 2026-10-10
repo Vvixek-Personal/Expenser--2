@@ -32,30 +32,27 @@ fun createAppTypography(choice: String): Typography {
     return Typography(
         displayLarge = TextStyle(
             fontFamily = family,
-            fontWeight = FontWeight.Bold,
-            fontSize = 42.sp,
-            lineHeight = 48.sp,
-            letterSpacing = (-1.0).sp
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 32.sp,
+            lineHeight = 38.sp
         ),
         displayMedium = TextStyle(
             fontFamily = family,
-            fontWeight = FontWeight.Bold,
-            fontSize = 34.sp,
-            lineHeight = 40.sp,
-            letterSpacing = (-0.5).sp
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 32.sp,
+            lineHeight = 38.sp
         ),
         displaySmall = TextStyle(
             fontFamily = family,
             fontWeight = FontWeight.SemiBold,
-            fontSize = 28.sp,
-            lineHeight = 34.sp,
-            letterSpacing = (-0.25).sp
+            fontSize = 32.sp,
+            lineHeight = 38.sp
         ),
         headlineLarge = TextStyle(
             fontFamily = family,
-            fontWeight = FontWeight.Bold,
-            fontSize = 26.sp,
-            lineHeight = 32.sp
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 22.sp,
+            lineHeight = 28.sp
         ),
         headlineMedium = TextStyle(
             fontFamily = family,
@@ -66,65 +63,62 @@ fun createAppTypography(choice: String): Typography {
         headlineSmall = TextStyle(
             fontFamily = family,
             fontWeight = FontWeight.SemiBold,
-            fontSize = 20.sp,
-            lineHeight = 26.sp
+            fontSize = 22.sp,
+            lineHeight = 28.sp
         ),
         titleLarge = TextStyle(
             fontFamily = family,
-            fontWeight = FontWeight.Bold,
-            fontSize = 18.sp,
-            lineHeight = 24.sp
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 16.sp,
+            lineHeight = 22.sp
         ),
         titleMedium = TextStyle(
             fontFamily = family,
             fontWeight = FontWeight.SemiBold,
-            fontSize = 15.sp,
-            lineHeight = 20.sp
+            fontSize = 16.sp,
+            lineHeight = 22.sp
         ),
         titleSmall = TextStyle(
             fontFamily = family,
-            fontWeight = FontWeight.Medium,
+            fontWeight = FontWeight.Normal,
             fontSize = 14.sp,
-            lineHeight = 18.sp
+            lineHeight = 20.sp
         ),
         bodyLarge = TextStyle(
             fontFamily = family,
             fontWeight = FontWeight.Normal,
-            fontSize = 15.sp,
-            lineHeight = 22.sp
+            fontSize = 14.sp,
+            lineHeight = 20.sp
         ),
         bodyMedium = TextStyle(
             fontFamily = family,
             fontWeight = FontWeight.Normal,
-            fontSize = 13.sp,
-            lineHeight = 18.sp
+            fontSize = 14.sp,
+            lineHeight = 20.sp
         ),
         bodySmall = TextStyle(
             fontFamily = family,
             fontWeight = FontWeight.Normal,
-            fontSize = 11.sp,
+            fontSize = 12.sp,
             lineHeight = 16.sp
         ),
         labelLarge = TextStyle(
             fontFamily = family,
             fontWeight = FontWeight.SemiBold,
-            fontSize = 13.sp,
-            lineHeight = 16.sp,
-            letterSpacing = 0.2.sp
+            fontSize = 14.sp,
+            lineHeight = 18.sp
         ),
         labelMedium = TextStyle(
             fontFamily = family,
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 11.sp,
-            lineHeight = 14.sp,
-            letterSpacing = 0.4.sp
+            fontWeight = FontWeight.Normal,
+            fontSize = 12.sp,
+            lineHeight = 16.sp
         ),
         labelSmall = TextStyle(
             fontFamily = family,
-            fontWeight = FontWeight.Bold,
-            fontSize = 10.sp,
-            lineHeight = 12.sp,
-            letterSpacing = 0.5.sp
+            fontWeight = FontWeight.Normal,
+            fontSize = 12.sp,
+            lineHeight = 16.sp
         )
     )
 }
@@ -134,77 +128,102 @@ val Typography: Typography
 
 /**
  * Standardized typography and sizing scale for buttons, icons, and text across tabs.
+ * Disciplined to max 5 font sizes (12, 14, 16, 22, 32) and only 2 weights (Normal, SemiBold).
  */
 object SleekSizes {
     // Icon sizing scale
-    val iconMicro = 14.dp
+    val iconMicro = 16.dp
     val iconSmall = 18.dp
-    val iconMedium = 22.dp
-    val iconLarge = 28.dp
-    val iconHero = 36.dp
+    val iconMedium = 20.dp
+    val iconLarge = 24.dp
+    val iconHero = 32.dp
 
-    // Button height scale
-    val buttonSmall = 36.dp
+    // Button height scale (min 48dp for touch targets)
+    val buttonSmall = 48.dp
     val buttonMedium = 48.dp
     val buttonLarge = 56.dp
-    val buttonHeightSmall = 36.dp
+    val buttonHeightSmall = 48.dp
     val buttonHeightMedium = 48.dp
     val buttonHeightLarge = 56.dp
 
-    // Typography sp scale
-    val textMicro = 10.sp
-    val textCaption = 11.sp
-    val textBodySmall = 12.sp
-    val textBodyMedium = 13.sp
+    // Strictly 5-step typography scale
+    val textCaption = 12.sp
     val textBody = 14.sp
-    val textBodyLarge = 15.sp
+    val textTitle = 16.sp
+    val textHeading = 22.sp
+    val textHero = 32.sp
+
+    // Aliases mapped strictly to the 5 permitted sizes
+    val textMicro = 12.sp
+    val textBodySmall = 12.sp
+    val textBodyMedium = 14.sp
+    val textBodyLarge = 14.sp
     val textSubhead = 16.sp
-    val textTitle = 18.sp
-    val textTitleLarge = 20.sp
+    val textTitleLarge = 16.sp
     val textHeadline = 22.sp
-    val textHeadlineLarge = 24.sp
-    val textDisplay = 28.sp
-    val textHero = 34.sp
-    val textMega = 42.sp
+    val textHeadlineLarge = 22.sp
+    val textDisplay = 32.sp
+    val textMega = 32.sp
 }
 
 /**
- * Standardized corner radius tokens to replace ad-hoc radius values across all components.
+ * Standardized corner radius tokens: ONLY 3 permitted radii.
+ * 8dp for chips/inputs, 12dp for cards, 20dp for sheets/dialogs.
  */
 object SleekRadius {
-    val xs = 4.dp
+    val chip = 8.dp
+    val input = 8.dp
+    val card = 12.dp
+    val sheet = 20.dp
+    val dialog = 20.dp
+
+    // Aliases preserved for compilation compatibility
+    val xs = 8.dp
     val sm = 8.dp
     val md = 12.dp
-    val lg = 16.dp
+    val lg = 12.dp
     val xl = 20.dp
-    val xxl = 24.dp
-    val pill = 999.dp
+    val xxl = 20.dp
+    val pill = 20.dp
 }
 
 /**
- * Predefined RoundedCornerShapes matching [SleekRadius] for cards, surfaces, and buttons.
+ * Standardized RoundedCornerShapes matching the 3-radii system (8dp, 12dp, 20dp).
  */
 object SleekShapes {
-    val xs = RoundedCornerShape(4.dp)
+    val chip = RoundedCornerShape(8.dp)
+    val input = RoundedCornerShape(8.dp)
+    val card = RoundedCornerShape(12.dp)
+    val sheet = RoundedCornerShape(20.dp)
+    val dialog = RoundedCornerShape(20.dp)
+
+    // Aliases preserved for compilation compatibility
+    val xs = RoundedCornerShape(8.dp)
     val sm = RoundedCornerShape(8.dp)
     val md = RoundedCornerShape(12.dp)
-    val lg = RoundedCornerShape(16.dp)
+    val lg = RoundedCornerShape(12.dp)
     val xl = RoundedCornerShape(20.dp)
-    val xxl = RoundedCornerShape(24.dp)
-    val pill = RoundedCornerShape(999.dp)
+    val xxl = RoundedCornerShape(20.dp)
+    val pill = RoundedCornerShape(20.dp)
 }
 
 /**
- * Standardized layout spacing scale based on 4dp/8dp grid.
+ * Standardized layout spacing scale based strictly on the 4/8/12/16/24 grid.
  */
 object SleekSpacing {
-    val xxs = 2.dp
     val xs = 4.dp
     val sm = 8.dp
     val md = 12.dp
     val lg = 16.dp
-    val xl = 20.dp
+    val xl = 24.dp
+
+    // Screen and Card standard padding
+    val screenPadding = 16.dp
+    val cardPadding = 16.dp
+
+    // Compatibility aliases constrained to 4/8/12/16/24 grid
+    val xxs = 4.dp
     val xxl = 24.dp
-    val xxxl = 32.dp
+    val xxxl = 24.dp
 }
 

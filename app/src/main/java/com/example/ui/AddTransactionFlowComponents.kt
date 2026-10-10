@@ -170,8 +170,8 @@ fun AddExpenseDialog(
         }
     }
 
-    val activeColor = if (type == "INCOME") Color(0xFF10B981) else Color(0xFFEF5350)
-    val activeSoftBg = if (type == "INCOME") Color(0xFFDCFCE7) else Color(0xFFFEE2E2)
+    val activeColor = if (type == "INCOME") IncomeGreen else ExpenseRed
+    val activeSoftBg = if (type == "INCOME") IncomeGreenBg else ExpenseRedBg
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -180,7 +180,8 @@ fun AddExpenseDialog(
         Card(
             colors = CardDefaults.cardColors(containerColor = SleekSurface),
             border = BorderStroke(1.dp, SleekBorder),
-            shape = RoundedCornerShape(28.dp),
+            shape = SleekShapes.dialog,
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
             modifier = Modifier
                 .fillMaxWidth(0.92f)
                 .padding(vertical = 16.dp)
@@ -189,56 +190,35 @@ fun AddExpenseDialog(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(20.dp)
+                    .padding(SleekSpacing.cardPadding)
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 if (step == 1) {
-                    // ==========================================
-                    // STEP 1: MAIN ADD SCREEN (Wireframe 1, 2, 3)
-                    // ==========================================
-                    
-                    // 1. Top Header: Welcome, Vivek & Settings/Close
+                    // Top Header
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(
-                                modifier = Modifier
-                                    .size(36.dp)
-                                    .clip(CircleShape)
-                                    .background(SleekPrimary.copy(alpha = 0.15f)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = "V",
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 16.sp,
-                                    color = SleekPrimary
-                                )
-                            }
-                            Spacer(modifier = Modifier.width(10.dp))
-                            Column {
-                                Text(
-                                    text = "Welcome,",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = SleekTextSecondary,
-                                    fontSize = 10.sp
-                                )
-                                Text(
-                                    text = "Vivek",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    color = SleekTextPrimary,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
+                        Column {
+                            Text(
+                                text = "New transaction",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = SleekTextPrimary,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Text(
+                                text = "Record incoming or outgoing funds",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = SleekTextSecondary,
+                                fontSize = 12.sp
+                            )
                         }
 
                         IconButton(
                             onClick = onDismiss,
-                            modifier = Modifier.size(32.dp)
+                            modifier = Modifier.size(36.dp)
                         ) {
                             Icon(
                                 imageVector = AppIcons.Close,
@@ -248,124 +228,101 @@ fun AddExpenseDialog(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                    // 2. Type Switcher: Expense (Down Red Arrow) & Income (Up Green Arrow)
+                    // Type Switcher: Expense / Income
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(SleekShapes.chip)
+                            .background(SleekBg)
+                            .border(BorderStroke(1.dp, SleekBorder), SleekShapes.chip)
+                            .padding(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        // Expense Button
                         val isExpenseActive = type == "EXPENSE"
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
+                        Box(
                             modifier = Modifier
-                                .clip(RoundedCornerShape(20.dp))
+                                .weight(1f)
+                                .clip(SleekShapes.chip)
+                                .background(if (isExpenseActive) ExpenseRedBg else Color.Transparent)
                                 .clickable {
                                     haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                     type = "EXPENSE"
                                     category = (if (rememberLastCategory) lastUsedExpenseCategory else null)
                                         ?: expenseCategories.firstOrNull() ?: categories.firstOrNull() ?: "Food"
                                 }
-                                .padding(8.dp)
+                                .padding(vertical = 10.dp),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(64.dp)
-                                    .clip(CircleShape)
-                                    .background(if (isExpenseActive) Color(0xFFFEE2E2) else SleekBg)
-                                    .border(
-                                        width = if (isExpenseActive) 2.dp else 1.dp,
-                                        color = if (isExpenseActive) Color(0xFFEF5350) else SleekBorder,
-                                        shape = CircleShape
-                                    ),
-                                contentAlignment = Alignment.Center
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
                                 Icon(
                                     imageVector = AppIcons.ArrowDownward,
-                                    contentDescription = "Expense",
-                                    tint = if (isExpenseActive) Color(0xFFEF5350) else SleekTextSecondary,
-                                    modifier = Modifier.size(28.dp)
+                                    contentDescription = null,
+                                    tint = if (isExpenseActive) ExpenseRed else SleekTextSecondary,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Text(
+                                    text = "Expense",
+                                    fontSize = 14.sp,
+                                    fontWeight = if (isExpenseActive) FontWeight.SemiBold else FontWeight.Normal,
+                                    color = if (isExpenseActive) ExpenseRed else SleekTextSecondary
                                 )
                             }
-                            Spacer(modifier = Modifier.height(6.dp))
-                            Text(
-                                text = "Expense",
-                                fontSize = 13.sp,
-                                fontWeight = if (isExpenseActive) FontWeight.Bold else FontWeight.Medium,
-                                color = if (isExpenseActive) Color(0xFFEF5350) else SleekTextSecondary
-                            )
                         }
 
-                        // Income Button
                         val isIncomeActive = type == "INCOME"
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
+                        Box(
                             modifier = Modifier
-                                .clip(RoundedCornerShape(20.dp))
+                                .weight(1f)
+                                .clip(SleekShapes.chip)
+                                .background(if (isIncomeActive) IncomeGreenBg else Color.Transparent)
                                 .clickable {
                                     haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                     type = "INCOME"
                                     category = (if (rememberLastCategory) lastUsedIncomeCategory else null)
                                         ?: incomeCategories.firstOrNull() ?: "Salary"
                                 }
-                                .padding(8.dp)
+                                .padding(vertical = 10.dp),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(64.dp)
-                                    .clip(CircleShape)
-                                    .background(if (isIncomeActive) Color(0xFFDCFCE7) else SleekBg)
-                                    .border(
-                                        width = if (isIncomeActive) 2.dp else 1.dp,
-                                        color = if (isIncomeActive) Color(0xFF10B981) else SleekBorder,
-                                        shape = CircleShape
-                                    ),
-                                contentAlignment = Alignment.Center
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
                                 Icon(
                                     imageVector = AppIcons.ArrowUpward,
-                                    contentDescription = "Income",
-                                    tint = if (isIncomeActive) Color(0xFF10B981) else SleekTextSecondary,
-                                    modifier = Modifier.size(28.dp)
+                                    contentDescription = null,
+                                    tint = if (isIncomeActive) IncomeGreen else SleekTextSecondary,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Text(
+                                    text = "Income",
+                                    fontSize = 14.sp,
+                                    fontWeight = if (isIncomeActive) FontWeight.SemiBold else FontWeight.Normal,
+                                    color = if (isIncomeActive) IncomeGreen else SleekTextSecondary
                                 )
                             }
-                            Spacer(modifier = Modifier.height(6.dp))
-                            Text(
-                                text = "Income",
-                                fontSize = 13.sp,
-                                fontWeight = if (isIncomeActive) FontWeight.Bold else FontWeight.Medium,
-                                color = if (isIncomeActive) Color(0xFF10B981) else SleekTextSecondary
-                            )
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                    // 3. Main Circular Ring Dial (Centerpiece Display)
+                    // Main Amount Centerpiece Display
                     Box(
                         modifier = Modifier
-                            .size(210.dp)
-                            .clip(CircleShape)
+                            .fillMaxWidth()
+                            .clip(SleekShapes.card)
                             .background(SleekBg)
-                            .border(
-                                width = 3.dp,
-                                brush = Brush.sweepGradient(
-                                    listOf(
-                                        activeColor.copy(alpha = 0.2f),
-                                        activeColor,
-                                        activeColor.copy(alpha = 0.4f),
-                                        activeColor
-                                    )
-                                ),
-                                shape = CircleShape
-                            )
+                            .border(BorderStroke(1.dp, SleekBorder), SleekShapes.card)
                             .clickable {
                                 haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                 isAmountEditing = true
                             }
-                            .padding(20.dp),
+                            .padding(vertical = 24.dp, horizontal = 16.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Column(
@@ -381,7 +338,7 @@ fun AddExpenseDialog(
                                     singleLine = true,
                                     textStyle = LocalTextStyle.current.copy(
                                         fontSize = 28.sp,
-                                        fontWeight = FontWeight.Bold,
+                                        fontWeight = FontWeight.SemiBold,
                                         color = activeColor,
                                         textAlign = TextAlign.Center
                                     ),
@@ -395,23 +352,23 @@ fun AddExpenseDialog(
                                             focusManager.clearFocus()
                                         }
                                     ),
-                                    modifier = Modifier.width(140.dp).testTag("expense_amount_input")
+                                    modifier = Modifier.width(160.dp).testTag("expense_amount_input")
                                 )
                             } else {
                                 val formattedDisplay = if (enteredAmount > 0) "$currencySymbol%,.0f".format(enteredAmount) else "${currencySymbol}0"
                                 Text(
                                     text = formattedDisplay,
                                     fontSize = 32.sp,
-                                    fontWeight = FontWeight.ExtraBold,
+                                    fontWeight = FontWeight.SemiBold,
                                     color = activeColor,
                                     textAlign = TextAlign.Center
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
                                     text = if (enteredAmount > 0) "Tap to edit amount" else "Tap to enter amount",
-                                    fontSize = 11.sp,
+                                    fontSize = 12.sp,
                                     color = SleekTextSecondary,
-                                    fontWeight = FontWeight.Medium
+                                    fontWeight = FontWeight.Normal
                                 )
                             }
                         }
@@ -460,12 +417,12 @@ fun AddExpenseDialog(
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                    // 4. Category Selector Card (Frame 1 bottom card)
+                    // 4. Category Selector Card
                     val categoryEmoji = getCategoryEmoji(category, categoryIcons)
                     Card(
-                        shape = RoundedCornerShape(16.dp),
+                        shape = SleekShapes.card,
                         colors = CardDefaults.cardColors(containerColor = SleekBg),
                         border = BorderStroke(1.dp, SleekBorder),
                         modifier = Modifier
@@ -478,7 +435,7 @@ fun AddExpenseDialog(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 14.dp),
+                                .padding(16.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -486,11 +443,16 @@ fun AddExpenseDialog(
                                 Box(
                                     modifier = Modifier
                                         .size(36.dp)
-                                        .clip(CircleShape)
+                                        .clip(SleekShapes.chip)
                                         .background(activeSoftBg),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    Text(text = categoryEmoji.ifBlank { "🗂️" }, fontSize = 18.sp)
+                                    Icon(
+                                        imageVector = AppIcons.Category,
+                                        contentDescription = null,
+                                        tint = activeColor,
+                                        modifier = Modifier.size(18.dp)
+                                    )
                                 }
                                 Spacer(modifier = Modifier.width(12.dp))
                                 Column {
@@ -498,26 +460,26 @@ fun AddExpenseDialog(
                                         text = "Category",
                                         style = MaterialTheme.typography.labelSmall,
                                         color = SleekTextSecondary,
-                                        fontSize = 10.sp
+                                        fontSize = 12.sp
                                     )
                                     Text(
                                         text = category.ifBlank { "Select a category" },
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = SleekTextPrimary,
-                                        fontWeight = FontWeight.Bold
+                                        fontWeight = FontWeight.SemiBold
                                     )
                                 }
                             }
 
                             Icon(
                                 imageVector = AppIcons.ChevronRight,
-                                contentDescription = "Select Category",
+                                contentDescription = "Select category",
                                 tint = SleekTextSecondary
                             )
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     // 5. Confirm Button
                     Button(
@@ -534,25 +496,22 @@ fun AddExpenseDialog(
                             containerColor = activeColor,
                             disabledContainerColor = activeColor.copy(alpha = 0.3f)
                         ),
-                        shape = RoundedCornerShape(16.dp),
+                        shape = SleekShapes.chip,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(52.dp)
+                            .heightIn(min = 48.dp)
                             .testTag("confirm_amount_btn")
                     ) {
                         Text(
-                            text = if (enteredAmount > 0) "Confirm" else "Enter Amount",
+                            text = if (enteredAmount > 0) "Continue" else "Enter amount",
                             color = Color.White,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.SemiBold
                         )
                     }
 
                 } else {
-                    // ==========================================
-                    // STEP 2: ADD DESCRIPTION SCREEN (Wireframe 6)
-                    // ==========================================
-
+                    // STEP 2: ADD DESCRIPTION SCREEN
                     // Top Bar with Back Button
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -561,7 +520,7 @@ fun AddExpenseDialog(
                     ) {
                         IconButton(
                             onClick = { step = 1 },
-                            modifier = Modifier.size(32.dp)
+                            modifier = Modifier.size(36.dp)
                         ) {
                             Icon(
                                 imageVector = AppIcons.ArrowBack,
@@ -571,28 +530,31 @@ fun AddExpenseDialog(
                         }
 
                         Text(
-                            text = "Add Description",
+                            text = "Add note",
                             style = MaterialTheme.typography.titleMedium,
                             color = SleekTextPrimary,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.SemiBold
                         )
 
-                        Spacer(modifier = Modifier.width(32.dp))
+                        Spacer(modifier = Modifier.width(36.dp))
                     }
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                    // Big Category Icon Badge & Amount Display
-                    val categoryEmoji = getCategoryEmoji(category, categoryIcons)
+                    // Category Icon Badge & Amount Display
                     Box(
                         modifier = Modifier
-                            .size(72.dp)
-                            .clip(CircleShape)
-                            .background(activeColor)
-                            .padding(12.dp),
+                            .size(56.dp)
+                            .clip(SleekShapes.chip)
+                            .background(activeSoftBg),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(text = categoryEmoji.ifBlank { "🍔" }, fontSize = 34.sp)
+                        Icon(
+                            imageVector = AppIcons.Category,
+                            contentDescription = null,
+                            tint = activeColor,
+                            modifier = Modifier.size(24.dp)
+                        )
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -600,36 +562,37 @@ fun AddExpenseDialog(
                     Text(
                         text = "$currencySymbol%,.0f".format(enteredAmount),
                         fontSize = 32.sp,
-                        fontWeight = FontWeight.ExtraBold,
+                        fontWeight = FontWeight.SemiBold,
                         color = activeColor
                     )
 
                     Text(
                         text = "${if (type == "INCOME") "Income" else "Expense"} • $category",
-                        fontSize = 13.sp,
+                        fontSize = 12.sp,
                         color = SleekTextSecondary,
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.Normal
                     )
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     // Description Input Box
                     Column(modifier = Modifier.fillMaxWidth()) {
                         Text(
-                            text = "Description *",
+                            text = "Note (optional)",
                             style = MaterialTheme.typography.labelMedium,
                             color = SleekTextPrimary,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 12.sp
                         )
                         Spacer(modifier = Modifier.height(6.dp))
 
                         OutlinedTextField(
                             value = note,
                             onValueChange = { if (it.length <= 100) note = it },
-                            placeholder = { Text("Add a note or description...", color = SleekTextSecondary, fontSize = 13.sp) },
+                            placeholder = { Text("Add note or description...", color = SleekTextSecondary, fontSize = 14.sp) },
                             minLines = 3,
                             maxLines = 4,
-                            shape = RoundedCornerShape(16.dp),
+                            shape = SleekShapes.input,
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = activeColor,
                                 unfocusedBorderColor = SleekBorder,
@@ -647,7 +610,7 @@ fun AddExpenseDialog(
                         ) {
                             Text(
                                 text = "${note.length}/100",
-                                fontSize = 10.sp,
+                                fontSize = 12.sp,
                                 color = SleekTextSecondary
                             )
                         }
@@ -658,10 +621,11 @@ fun AddExpenseDialog(
                     // Add Receipt (Optional)
                     Column(modifier = Modifier.fillMaxWidth()) {
                         Text(
-                            text = "Add Receipt (Optional)",
+                            text = "Receipt (optional)",
                             style = MaterialTheme.typography.labelMedium,
                             color = SleekTextPrimary,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 12.sp
                         )
                         Spacer(modifier = Modifier.height(8.dp))
 
@@ -671,8 +635,8 @@ fun AddExpenseDialog(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(120.dp)
-                                    .clip(RoundedCornerShape(14.dp))
-                                    .border(1.dp, SleekBorder, RoundedCornerShape(14.dp))
+                                    .clip(SleekShapes.card)
+                                    .border(1.dp, SleekBorder, SleekShapes.card)
                                     .background(Color.Black),
                                 contentAlignment = Alignment.Center
                             ) {
@@ -688,9 +652,9 @@ fun AddExpenseDialog(
                                         .align(Alignment.TopEnd)
                                         .padding(6.dp)
                                         .background(Color.Black.copy(alpha = 0.6f), CircleShape)
-                                        .size(26.dp)
+                                        .size(28.dp)
                                 ) {
-                                    Icon(AppIcons.Close, contentDescription = "Clear", tint = Color.White, modifier = Modifier.size(14.dp))
+                                    Icon(AppIcons.Close, contentDescription = "Clear", tint = Color.White, modifier = Modifier.size(16.dp))
                                 }
                             }
                         } else {
@@ -705,8 +669,9 @@ fun AddExpenseDialog(
                                         suppressAutoLock()
                                         cameraLauncher.launch(null)
                                     },
-                                    shape = RoundedCornerShape(14.dp),
-                                    color = activeSoftBg,
+                                    shape = SleekShapes.chip,
+                                    color = SleekBg,
+                                    border = BorderStroke(1.dp, SleekBorder),
                                     modifier = Modifier.weight(1f)
                                 ) {
                                     Row(
@@ -717,15 +682,15 @@ fun AddExpenseDialog(
                                         Icon(
                                             imageVector = AppIcons.CameraAlt,
                                             contentDescription = "Camera",
-                                            tint = activeColor,
+                                            tint = SleekPrimary,
                                             modifier = Modifier.size(18.dp)
                                         )
                                         Spacer(modifier = Modifier.width(6.dp))
                                         Text(
                                             text = "Camera",
                                             fontSize = 12.sp,
-                                            color = activeColor,
-                                            fontWeight = FontWeight.Bold
+                                            color = SleekTextPrimary,
+                                            fontWeight = FontWeight.SemiBold
                                         )
                                     }
                                 }
@@ -736,8 +701,9 @@ fun AddExpenseDialog(
                                         suppressAutoLock()
                                         galleryLauncher.launch("image/*")
                                     },
-                                    shape = RoundedCornerShape(14.dp),
-                                    color = activeSoftBg,
+                                    shape = SleekShapes.chip,
+                                    color = SleekBg,
+                                    border = BorderStroke(1.dp, SleekBorder),
                                     modifier = Modifier.weight(1f)
                                 ) {
                                     Row(
@@ -748,15 +714,15 @@ fun AddExpenseDialog(
                                         Icon(
                                             imageVector = AppIcons.Image,
                                             contentDescription = "Gallery",
-                                            tint = activeColor,
+                                            tint = SleekPrimary,
                                             modifier = Modifier.size(18.dp)
                                         )
                                         Spacer(modifier = Modifier.width(6.dp))
                                         Text(
                                             text = "Gallery",
                                             fontSize = 12.sp,
-                                            color = activeColor,
-                                            fontWeight = FontWeight.Bold
+                                            color = SleekTextPrimary,
+                                            fontWeight = FontWeight.SemiBold
                                         )
                                     }
                                 }
@@ -764,7 +730,7 @@ fun AddExpenseDialog(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     // Final Save Button
                     val finalNote = if (note.trim().isBlank()) category else note.trim()
@@ -781,17 +747,17 @@ fun AddExpenseDialog(
                             )
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = activeColor),
-                        shape = RoundedCornerShape(16.dp),
+                        shape = SleekShapes.chip,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(52.dp)
+                            .heightIn(min = 48.dp)
                             .testTag("save_expense_btn")
                     ) {
                         Text(
-                            text = if (type == "INCOME") "Save Income" else "Save Expense",
+                            text = if (type == "INCOME") "Save income" else "Save expense",
                             color = Color.White,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.SemiBold
                         )
                     }
                 }

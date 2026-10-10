@@ -1100,10 +1100,9 @@ fun DashboardTab(
                 IconButton(
                     onClick = onAddExpenseClick,
                     modifier = Modifier
-                        .size(44.dp)
+                        .size(48.dp)
                         .clip(CircleShape)
                         .background(SleekPrimary)
-                        .bouncyPress()
                         .testTag("dashboard_add_expense_fab")
                 ) {
                     Icon(
@@ -1117,41 +1116,25 @@ fun DashboardTab(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Total Balance Card (Bank Account Balance Style)
-        val animatedBalance = animateAmountFloat(overallTotalNetBalance.toFloat())
-        val animatedIncome = animateAmountFloat(totalAllTimeIncome.toFloat())
-        val animatedExpense = animateAmountFloat(totalAllTimeExpense.toFloat())
-        val heroGlowBorder = rememberAnimatedGlowBrush(Color.White.copy(alpha = 0.15f), SleekPrimary.copy(alpha = 0.5f))
+        // Total Balance Card (Minimal, Calm, Flat Fintech Style)
+        val animatedBalance = overallTotalNetBalance.toFloat()
+        val animatedIncome = totalAllTimeIncome.toFloat()
+        val animatedExpense = totalAllTimeExpense.toFloat()
 
-        Box(
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .bouncyPress(scaleDown = 0.985f)
-                .clip(RoundedCornerShape(28.dp))
-                .background(getHeroCardGradient())
-                .border(
-                    BorderStroke(1.2.dp, heroGlowBorder),
-                    RoundedCornerShape(28.dp)
-                )
-                .padding(22.dp)
+                .testTag("dashboard_hero_balance_card"),
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(containerColor = SleekSurface),
+            border = BorderStroke(1.dp, SleekBorder),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
         ) {
-            // Canvas decorative overlapping ambient circles for fintech polish
-            Box(modifier = Modifier.matchParentSize()) {
-                Canvas(modifier = Modifier.fillMaxSize()) {
-                    drawCircle(
-                        color = Color.White.copy(alpha = 0.07f),
-                        radius = 120.dp.toPx(),
-                        center = Offset(size.width - 15.dp.toPx(), -15.dp.toPx())
-                    )
-                    drawCircle(
-                        color = Color.White.copy(alpha = 0.04f),
-                        radius = 175.dp.toPx(),
-                        center = Offset(size.width - 5.dp.toPx(), 25.dp.toPx())
-                    )
-                }
-            }
-
-            Column(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -1161,26 +1144,16 @@ fun DashboardTab(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size(28.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(Color.White.copy(alpha = 0.18f)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = AppIcons.AccountBalance,
-                                contentDescription = null,
-                                tint = Color.White,
-                                modifier = Modifier.size(16.dp)
-                            )
-                        }
+                        Icon(
+                            imageVector = AppIcons.AccountBalance,
+                            contentDescription = null,
+                            tint = SleekPrimary,
+                            modifier = Modifier.size(16.dp)
+                        )
                         Text(
-                            text = "TOTAL NET BALANCE",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = Color.White.copy(alpha = 0.9f),
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 1.1.sp
+                            text = "Net balance",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = SleekTextSecondary
                         )
                         if (isPrivacyMode) {
                             IconButton(
@@ -1190,7 +1163,7 @@ fun DashboardTab(
                                 Icon(
                                     imageVector = if (shouldHideBalance) AppIcons.VisibilityOff else AppIcons.Visibility,
                                     contentDescription = "Toggle privacy reveal",
-                                    tint = Color.White.copy(alpha = 0.85f),
+                                    tint = SleekTextSecondary,
                                     modifier = Modifier.size(16.dp)
                                 )
                             }
@@ -1198,68 +1171,44 @@ fun DashboardTab(
                     }
                     Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(20.dp))
+                            .clip(RoundedCornerShape(8.dp))
                             .background(
-                                if (overallTotalNetBalance >= 0) Color(0xFF10B981).copy(alpha = 0.28f)
-                                else Color(0xFFEF4444).copy(alpha = 0.28f)
+                                if (overallTotalNetBalance >= 0) IncomeGreenBg else ExpenseRedBg
                             )
-                            .border(
-                                BorderStroke(
-                                    1.dp,
-                                    if (overallTotalNetBalance >= 0) Color(0xFF10B981).copy(alpha = 0.6f)
-                                    else Color(0xFFEF4444).copy(alpha = 0.6f)
-                                ),
-                                RoundedCornerShape(20.dp)
-                            )
-                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
                     ) {
                         Text(
-                            text = if (overallTotalNetBalance >= 0) "Safe Balance" else "Overdrawn",
-                            color = Color.White,
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold
+                            text = if (overallTotalNetBalance >= 0) "Surplus" else "Deficit",
+                            color = if (overallTotalNetBalance >= 0) IncomeGreen else ExpenseRed,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = if (shouldHideBalance) "$currencySymbol ••••••" else String.format("%s%s%,.2f", if (animatedBalance >= 0) "" else "-", currencySymbol, Math.abs(animatedBalance)),
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 36.sp
+                    text = if (shouldHideBalance) "$currencySymbol ••••••" else String.format(Locale.getDefault(), "%s%s%,.2f", if (animatedBalance >= 0) "" else "-", currencySymbol, Math.abs(animatedBalance)),
+                    style = MaterialTheme.typography.displayMedium,
+                    color = SleekTextPrimary,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 32.sp
                 )
 
                 if (totalSavingsGoalsMoney > 0) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        modifier = Modifier
-                            .padding(top = 6.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(Color.White.copy(alpha = 0.12f))
-                            .padding(horizontal = 10.dp, vertical = 3.dp)
-                    ) {
-                        Icon(
-                            imageVector = AppIcons.Savings,
-                            contentDescription = null,
-                            tint = Color(0xFFFBBF24),
-                            modifier = Modifier.size(14.dp)
-                        )
-                        Text(
-                            text = if (shouldHideBalance) "Includes $currencySymbol•••• in Savings Goals" else String.format("Includes %s%,.0f in Savings Goals", currencySymbol, totalSavingsGoalsMoney),
-                            color = Color.White.copy(alpha = 0.95f),
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = if (shouldHideBalance) "Includes $currencySymbol•••• in savings goals" else String.format(Locale.getDefault(), "Includes %s%,.0f in savings goals", currencySymbol, totalSavingsGoalsMoney),
+                        color = SleekTextSecondary,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Normal
+                    )
                 }
 
-                Spacer(modifier = Modifier.height(18.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-                // Breakdown row: Inflow vs Outflow with frosted capsules
+                // Breakdown row: Income vs Expense capsules
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -1269,41 +1218,31 @@ fun DashboardTab(
                     Row(
                         modifier = Modifier
                             .weight(1f)
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(Color.White.copy(alpha = 0.12f))
-                            .border(BorderStroke(1.dp, Color.White.copy(alpha = 0.15f)), RoundedCornerShape(16.dp))
-                            .padding(horizontal = 12.dp, vertical = 10.dp),
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(IncomeGreenBg)
+                            .border(BorderStroke(1.dp, IncomeGreen.copy(alpha = 0.2f)), RoundedCornerShape(8.dp))
+                            .padding(horizontal = 12.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size(30.dp)
-                                .clip(CircleShape)
-                                .background(Color(0xFF10B981).copy(alpha = 0.25f)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = AppIcons.TrendingUp,
-                                contentDescription = null,
-                                tint = Color(0xFF34D399),
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(10.dp))
+                        Icon(
+                            imageVector = AppIcons.TrendingUp,
+                            contentDescription = null,
+                            tint = IncomeGreen,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
                         Column {
                             Text(
-                                text = "INCOME",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = Color.White.copy(alpha = 0.75f),
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Bold,
-                                letterSpacing = 0.5.sp
+                                text = "Income",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = SleekTextSecondary,
+                                fontSize = 12.sp
                             )
                             Text(
-                                text = if (shouldHideBalance) "$currencySymbol••••" else String.format("%s%,.0f", currencySymbol, animatedIncome),
+                                text = if (shouldHideBalance) "$currencySymbol••••" else String.format(Locale.getDefault(), "%s%,.0f", currencySymbol, animatedIncome),
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = Color.White,
-                                fontWeight = FontWeight.Bold,
+                                color = SleekTextPrimary,
+                                fontWeight = FontWeight.SemiBold,
                                 fontSize = 14.sp
                             )
                         }
@@ -1313,87 +1252,73 @@ fun DashboardTab(
                     Row(
                         modifier = Modifier
                             .weight(1f)
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(Color.White.copy(alpha = 0.12f))
-                            .border(BorderStroke(1.dp, Color.White.copy(alpha = 0.15f)), RoundedCornerShape(16.dp))
-                            .padding(horizontal = 12.dp, vertical = 10.dp),
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(ExpenseRedBg)
+                            .border(BorderStroke(1.dp, ExpenseRed.copy(alpha = 0.2f)), RoundedCornerShape(8.dp))
+                            .padding(horizontal = 12.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size(30.dp)
-                                .clip(CircleShape)
-                                .background(Color(0xFFEF4444).copy(alpha = 0.25f)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = AppIcons.TrendingDown,
-                                contentDescription = null,
-                                tint = Color(0xFFF87171),
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(10.dp))
+                        Icon(
+                            imageVector = AppIcons.TrendingDown,
+                            contentDescription = null,
+                            tint = ExpenseRed,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
                         Column {
                             Text(
-                                text = "EXPENSE",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = Color.White.copy(alpha = 0.75f),
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Bold,
-                                letterSpacing = 0.5.sp
+                                text = "Expense",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = SleekTextSecondary,
+                                fontSize = 12.sp
                             )
                             Text(
-                                text = if (shouldHideBalance) "$currencySymbol••••" else String.format("%s%,.0f", currencySymbol, animatedExpense),
+                                text = if (shouldHideBalance) "$currencySymbol••••" else String.format(Locale.getDefault(), "%s%,.0f", currencySymbol, animatedExpense),
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = Color.White,
-                                fontWeight = FontWeight.Bold,
+                                color = SleekTextPrimary,
+                                fontWeight = FontWeight.SemiBold,
                                 fontSize = 14.sp
                             )
                         }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     val isDecrease = thisMonthTotal <= lastMonthTotal
-                    val pillBg = if (isDecrease) Color(0xFF10B981).copy(alpha = 0.28f) else Color(0xFFEF4444).copy(alpha = 0.28f)
-                    val pillTextColor = Color.White
+                    val pillBg = if (isDecrease) IncomeGreenBg else ExpenseRedBg
+                    val pillTextColor = if (isDecrease) IncomeGreen else ExpenseRed
                     val prefixSign = if (isDecrease) "-" else "+"
 
                     Box(
                         modifier = Modifier
-                            .clip(CircleShape)
+                            .clip(RoundedCornerShape(8.dp))
                             .background(pillBg)
-                            .border(
-                                BorderStroke(1.dp, if (isDecrease) Color(0xFF10B981).copy(alpha = 0.5f) else Color(0xFFEF4444).copy(alpha = 0.5f)),
-                                CircleShape
-                            )
-                            .padding(horizontal = 9.dp, vertical = 3.dp)
+                            .padding(horizontal = 8.dp, vertical = 2.dp)
                     ) {
                         Text(
-                            text = String.format("%s%.1f%%", prefixSign, Math.abs(diffPct)),
+                            text = String.format(Locale.getDefault(), "%s%.1f%%", prefixSign, Math.abs(diffPct)),
                             color = pillTextColor,
-                            style = MaterialTheme.typography.labelSmall,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 11.sp
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 12.sp
                         )
                     }
                     Text(
-                        text = String.format("vs last month (%s%,.0f)", currencySymbol, lastMonthTotal),
-                        color = Color.White.copy(alpha = 0.85f),
-                        style = MaterialTheme.typography.labelSmall,
-                        fontSize = 11.sp
+                        text = String.format(Locale.getDefault(), "vs last month (%s%,.0f)", currencySymbol, lastMonthTotal),
+                        color = SleekTextSecondary,
+                        style = MaterialTheme.typography.bodySmall,
+                        fontSize = 12.sp
                     )
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(14.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         // 💡 1. Daily Smart Financial Insight
         DailyFinancialInsightWidget(
@@ -1404,7 +1329,7 @@ fun DashboardTab(
             currencySymbol = currencySymbol
         )
 
-        Spacer(modifier = Modifier.height(14.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         // ⚡ 2. Quick Shortcuts Feed (Non-repeating 1-tap actions + "More" to open All Shortcuts Launcher)
         QuickServicesCategorySection(
@@ -1417,7 +1342,7 @@ fun DashboardTab(
             onMoreClick = { showAllShortcutsScreen = true }
         )
 
-        Spacer(modifier = Modifier.height(14.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         // 🧾 4. Upcoming Bills Widget with inline "Pay Now"
         if (billShowUpcomingDashboard) {
@@ -1443,7 +1368,7 @@ fun DashboardTab(
                 },
                 onViewAllBills = { showBillsScreen = true }
             )
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
         // 6. Smart Budget Health Gauge Ring
@@ -1454,7 +1379,7 @@ fun DashboardTab(
                 currencySymbol = currencySymbol,
                 onUpdateBudget = { showAdjustBudgetDialog = true }
             )
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(16.dp))
         } else {
             MonthlyBudgetSnapshotCard(
                 monthlyBudget = monthlyBudget,
@@ -1462,7 +1387,7 @@ fun DashboardTab(
                 currencySymbol = currencySymbol,
                 onUpdateBudget = onUpdateBudget
             )
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
         // 🌟 Dynamic Financial Health Score & Diagnostics Widget
@@ -1486,7 +1411,7 @@ fun DashboardTab(
             currencySymbol = currencySymbol,
             onExploreBudget = { showAdjustBudgetDialog = true }
         )
-        Spacer(modifier = Modifier.height(14.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         // 🎯 7. Interactive Savings Goal Mini-Carousel
         if (savingsGoals.isNotEmpty()) {
@@ -1499,7 +1424,7 @@ fun DashboardTab(
                 },
                 onViewAllGoals = { showSavingGoalsScreen = true }
             )
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
         // 📊 8. Monthly Top Spending Categories Widget
@@ -1510,7 +1435,7 @@ fun DashboardTab(
                 currencySymbol = currencySymbol,
                 onNavigateToAnalytics = onNavigateToAnalytics
             )
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
         // Recent Activity List Header
@@ -1520,16 +1445,16 @@ fun DashboardTab(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Recent Activity",
+                text = "Recent activity",
                 style = MaterialTheme.typography.titleMedium,
                 color = SleekTextPrimary,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.SemiBold
             )
             Text(
-                text = "See All",
+                text = "See all",
                 color = SleekPrimary,
                 fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.SemiBold,
                 modifier = Modifier
                     .clickable { onNavigateToExpenses() }
                     .padding(4.dp)
@@ -1546,7 +1471,7 @@ fun DashboardTab(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "No activities recorded yet. Tap + to add!",
+                    text = "No activities recorded yet. Tap + to add.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = SleekTextSecondary
                 )
@@ -1755,9 +1680,9 @@ fun QuickServicesCategorySection(
     onMoreClick: () -> Unit
 ) {
     Card(
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = SleekSurface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         border = BorderStroke(1.dp, SleekBorder),
         modifier = Modifier
             .fillMaxWidth()
@@ -1780,13 +1705,13 @@ fun QuickServicesCategorySection(
                         imageVector = AppIcons.Bolt,
                         contentDescription = null,
                         tint = SleekPrimary,
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(18.dp)
                     )
                     Text(
-                        text = LanguageManager.tr("Quick Shortcuts", selectedLanguage),
+                        text = LanguageManager.tr("Shortcuts", selectedLanguage),
                         style = MaterialTheme.typography.titleMedium,
                         color = SleekTextPrimary,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.SemiBold
                     )
                 }
 
@@ -1795,12 +1720,13 @@ fun QuickServicesCategorySection(
                     contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
                 ) {
                     Text(
-                        text = "All Tools",
-                        style = MaterialTheme.typography.labelMedium,
+                        text = "All tools",
+                        style = MaterialTheme.typography.bodySmall,
                         color = SleekPrimary,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 12.sp
                     )
-                    Spacer(modifier = Modifier.width(2.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
                     Icon(
                         imageVector = AppIcons.ChevronRight,
                         contentDescription = null,
@@ -1812,28 +1738,28 @@ fun QuickServicesCategorySection(
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 CategoryFeedTile(
                     icon = AppIcons.TrendingDown,
-                    label = "+ Expense",
-                    tileColor = Color(0xFFEF4444),
+                    label = "Expense",
+                    tileColor = ExpenseRed,
                     onClick = onAddExpense,
                     modifier = Modifier.weight(1f)
                 )
 
                 CategoryFeedTile(
                     icon = AppIcons.TrendingUp,
-                    label = "+ Income",
-                    tileColor = Color(0xFF10B981),
+                    label = "Income",
+                    tileColor = IncomeGreen,
                     onClick = onAddIncome,
                     modifier = Modifier.weight(1f)
                 )
 
                 CategoryFeedTile(
                     icon = AppIcons.CallSplit,
-                    label = "Split Bill",
-                    tileColor = Color(0xFF6366F1),
+                    label = "Split",
+                    tileColor = SleekPrimary,
                     onClick = onQuickSplit,
                     modifier = Modifier.weight(1f)
                 )
@@ -1841,7 +1767,7 @@ fun QuickServicesCategorySection(
                 CategoryFeedTile(
                     icon = AppIcons.CurrencyExchange,
                     label = "Convert",
-                    tileColor = Color(0xFF0EA5E9),
+                    tileColor = SleekPrimary,
                     onClick = onQuickConvert,
                     modifier = Modifier.weight(1f)
                 )
@@ -1849,10 +1775,10 @@ fun QuickServicesCategorySection(
                 CategoryFeedTile(
                     icon = AppIcons.GridView,
                     label = "More",
-                    tileColor = Color(0xFFF59E0B),
+                    tileColor = SleekPrimary,
                     onClick = onMoreClick,
                     modifier = Modifier.weight(1f),
-                    hasBadge = true
+                    hasBadge = false
                 )
             }
         }
@@ -1873,11 +1799,8 @@ fun CategoryFeedTile(
     val isPressed by interactionSource.collectIsPressedAsState()
 
     val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.88f else 1.0f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessLow
-        ),
+        targetValue = if (isPressed) 0.95f else 1.0f,
+        animationSpec = tween(durationMillis = 150, easing = FastOutSlowInEasing),
         label = "tile_scale"
     )
 
@@ -1888,7 +1811,7 @@ fun CategoryFeedTile(
                 scaleX = scale
                 scaleY = scale
             }
-            .clip(RoundedCornerShape(18.dp))
+            .clip(RoundedCornerShape(8.dp))
             .clickable(
                 interactionSource = interactionSource,
                 indication = null
@@ -1896,42 +1819,31 @@ fun CategoryFeedTile(
                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 onClick()
             }
-            .padding(vertical = 6.dp, horizontal = 2.dp)
+            .padding(vertical = 4.dp)
     ) {
         Box(
             modifier = Modifier
-                .size(54.dp)
-                .clip(RoundedCornerShape(18.dp))
-                .background(tileColor.copy(alpha = 0.14f))
-                .border(BorderStroke(1.dp, tileColor.copy(alpha = 0.22f)), RoundedCornerShape(18.dp)),
+                .size(48.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(tileColor.copy(alpha = 0.12f))
+                .border(BorderStroke(1.dp, tileColor.copy(alpha = 0.2f)), RoundedCornerShape(8.dp)),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = label,
                 tint = tileColor,
-                modifier = Modifier.size(26.dp)
+                modifier = Modifier.size(22.dp)
             )
-            if (hasBadge) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .offset(x = 2.dp, y = (-2).dp)
-                        .size(12.dp)
-                        .clip(CircleShape)
-                        .background(Color(0xFFEF4444))
-                        .border(1.5.dp, SleekSurface, CircleShape)
-                )
-            }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(6.dp))
 
         Text(
             text = label,
-            fontSize = 11.sp,
+            fontSize = 12.sp,
             color = SleekTextPrimary,
-            fontWeight = FontWeight.SemiBold,
+            fontWeight = FontWeight.Normal,
             textAlign = TextAlign.Center,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
@@ -1949,16 +1861,16 @@ fun MonthlyBudgetSnapshotCard(
     var showEditBudgetDialog by remember { mutableStateOf(false) }
 
     Card(
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = SleekSurface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         border = BorderStroke(1.dp, SleekBorder),
         modifier = Modifier
             .fillMaxWidth()
             .testTag("dashboard_monthly_budget_card")
     ) {
         Column(
-            modifier = Modifier.padding(18.dp),
+            modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Row(
@@ -1968,12 +1880,12 @@ fun MonthlyBudgetSnapshotCard(
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(36.dp)
-                            .clip(RoundedCornerShape(12.dp))
+                            .size(32.dp)
+                            .clip(RoundedCornerShape(8.dp))
                             .background(SleekPrimary.copy(alpha = 0.12f)),
                         contentAlignment = Alignment.Center
                     ) {
@@ -1981,21 +1893,21 @@ fun MonthlyBudgetSnapshotCard(
                             imageVector = AppIcons.PieChart,
                             contentDescription = null,
                             tint = SleekPrimary,
-                            modifier = Modifier.size(20.dp)
+                            modifier = Modifier.size(18.dp)
                         )
                     }
                     Column {
                         Text(
-                            text = "Monthly Budget",
+                            text = "Monthly budget",
                             style = MaterialTheme.typography.titleMedium,
                             color = SleekTextPrimary,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.SemiBold
                         )
                         Text(
                             text = if (monthlyBudget > 0) "Current month burn rate" else "No target configured",
                             style = MaterialTheme.typography.bodySmall,
                             color = SleekTextSecondary,
-                            fontSize = 11.sp
+                            fontSize = 12.sp
                         )
                     }
                 }
@@ -2005,9 +1917,9 @@ fun MonthlyBudgetSnapshotCard(
                     contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     Text(
-                        text = if (monthlyBudget > 0) "Adjust" else "Set Target",
+                        text = if (monthlyBudget > 0) "Adjust" else "Set target",
                         color = SleekPrimary,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.SemiBold,
                         fontSize = 12.sp
                     )
                 }
@@ -2020,9 +1932,9 @@ fun MonthlyBudgetSnapshotCard(
                 val progressFraction = (currentMonthExpense / monthlyBudget).toFloat().coerceIn(0f, 1f)
 
                 val statusColor = when {
-                    isExceeded -> Color(0xFFEF4444)
-                    spentPct >= 80 -> Color(0xFFF59E0B)
-                    else -> Color(0xFF10B981)
+                    isExceeded -> ExpenseRed
+                    spentPct >= 80 -> WarningOrange
+                    else -> IncomeGreen
                 }
 
                 Row(
@@ -2035,13 +1947,13 @@ fun MonthlyBudgetSnapshotCard(
                             text = "Spent this month",
                             style = MaterialTheme.typography.bodySmall,
                             color = SleekTextSecondary,
-                            fontSize = 11.sp
+                            fontSize = 12.sp
                         )
                         Text(
-                            text = String.format("%s%,.0f", currencySymbol, currentMonthExpense),
+                            text = String.format(Locale.getDefault(), "%s%,.0f", currencySymbol, currentMonthExpense),
                             style = MaterialTheme.typography.titleLarge,
                             color = SleekTextPrimary,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.SemiBold
                         )
                     }
 
@@ -2050,52 +1962,47 @@ fun MonthlyBudgetSnapshotCard(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(8.dp))
                                 .background(statusColor.copy(alpha = 0.15f))
-                                .border(BorderStroke(1.dp, statusColor.copy(alpha = 0.3f)), RoundedCornerShape(8.dp))
-                                .padding(horizontal = 8.dp, vertical = 3.dp)
+                                .padding(horizontal = 8.dp, vertical = 2.dp)
                         ) {
                             Text(
-                                text = if (isExceeded) "Exceeded by ${String.format("%s%,.0f", currencySymbol, Math.abs(remaining))}"
-                                else String.format("%.0f%% used", spentPct),
+                                text = if (isExceeded) "Exceeded by ${String.format(Locale.getDefault(), "%s%,.0f", currencySymbol, Math.abs(remaining))}"
+                                else String.format(Locale.getDefault(), "%.0f%% used", spentPct),
                                 color = statusColor,
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.SemiBold
                             )
                         }
                         Spacer(modifier = Modifier.height(2.dp))
                         Text(
-                            text = if (!isExceeded) String.format("%s%,.0f remaining", currencySymbol, remaining) else "Limit: ${String.format("%s%,.0f", currencySymbol, monthlyBudget)}",
+                            text = if (!isExceeded) String.format(Locale.getDefault(), "%s%,.0f remaining", currencySymbol, remaining) else "Limit: ${String.format(Locale.getDefault(), "%s%,.0f", currencySymbol, monthlyBudget)}",
                             style = MaterialTheme.typography.bodySmall,
                             color = SleekTextSecondary,
-                            fontSize = 11.sp
+                            fontSize = 12.sp
                         )
                     }
                 }
 
-                // Sleek progress bar
+                // Clean flat progress bar
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(10.dp)
-                        .clip(RoundedCornerShape(5.dp))
+                        .height(8.dp)
+                        .clip(RoundedCornerShape(8.dp))
                         .background(SleekBorder.copy(alpha = 0.5f))
                 ) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth(fraction = progressFraction)
                             .fillMaxHeight()
-                            .clip(RoundedCornerShape(5.dp))
-                            .background(
-                                Brush.horizontalGradient(
-                                    colors = listOf(statusColor.copy(alpha = 0.8f), statusColor)
-                                )
-                            )
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(statusColor)
                     )
                 }
             } else {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(14.dp))
+                        .clip(RoundedCornerShape(8.dp))
                         .background(SleekBorder.copy(alpha = 0.25f))
                         .padding(12.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -2108,7 +2015,7 @@ fun MonthlyBudgetSnapshotCard(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Set a monthly target to visualize burn rate and receive pace alerts.",
+                        text = "Set a monthly target to visualize burn rate and track spending.",
                         style = MaterialTheme.typography.bodySmall,
                         color = SleekTextSecondary,
                         fontSize = 12.sp,
@@ -2393,7 +2300,7 @@ fun ExpensesTab(
                     OutlinedTextField(
                         value = searchQuery,
                         onValueChange = { searchQuery = it },
-                        placeholder = { Text("Search merchant, recipient, or category...", color = SleekTextSecondary) },
+                        placeholder = { Text("Search transactions...", color = SleekTextSecondary, fontSize = 14.sp) },
                         leadingIcon = { Icon(AppIcons.Search, contentDescription = null, tint = SleekTextSecondary) },
                         trailingIcon = {
                             if (searchQuery.isNotEmpty()) {
@@ -2403,7 +2310,7 @@ fun ExpensesTab(
                             }
                         },
                         singleLine = true,
-                        shape = RoundedCornerShape(16.dp),
+                        shape = SleekShapes.input,
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = SleekPrimary,
                             unfocusedBorderColor = SleekBorder,
@@ -2431,23 +2338,24 @@ fun ExpensesTab(
 
                     Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(14.dp))
+                            .clip(SleekShapes.chip)
                             .background(chipBg)
-                            .then(if (chipBorder != null) Modifier.border(chipBorder, RoundedCornerShape(14.dp)) else Modifier)
+                            .then(if (chipBorder != null) Modifier.border(chipBorder, SleekShapes.chip) else Modifier)
                             .clickable { selectedCategoryFilter = cat }
-                            .padding(horizontal = 14.dp, vertical = 7.dp)
+                            .padding(horizontal = 14.dp, vertical = 8.dp)
                     ) {
                         Text(
                             text = cat,
                             color = chipText,
                             style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.SemiBold
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 12.sp
                         )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             if (filteredExpenses.isEmpty()) {
                 Box(
@@ -2459,7 +2367,8 @@ fun ExpensesTab(
                     Text(
                         text = "No transactions found",
                         color = SleekTextSecondary,
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontSize = 14.sp
                     )
                 }
             } else {
@@ -2468,16 +2377,17 @@ fun ExpensesTab(
                         .fillMaxWidth()
                         .weight(1f),
                     contentPadding = PaddingValues(bottom = 120.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     groupedExpenses.forEach { (dateHeader, txList) ->
                         item {
-                            // Section Date Header (Image 1 Style: "Today", "Yesterday", "19 November")
+                            // Section Date Header
                             Text(
                                 text = dateHeader,
                                 style = MaterialTheme.typography.labelLarge,
                                 color = SleekTextSecondary,
                                 fontWeight = FontWeight.Medium,
+                                fontSize = 12.sp,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(vertical = 4.dp),
@@ -2523,12 +2433,12 @@ fun ExpensesTab(
             if (selectedExpenses.isNotEmpty()) {
                 Card(
                     colors = CardDefaults.cardColors(containerColor = SleekPrimary),
-                    shape = RoundedCornerShape(20.dp),
+                    shape = SleekShapes.dialog,
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .fillMaxWidth()
-                        .padding(horizontal = 24.dp, vertical = 16.dp)
-                        .shadow(12.dp, RoundedCornerShape(20.dp))
+                        .padding(horizontal = 16.dp, vertical = 16.dp)
                 ) {
                     Row(
                         modifier = Modifier
@@ -2541,7 +2451,8 @@ fun ExpensesTab(
                             text = "${selectedExpenses.size} items selected",
                             style = MaterialTheme.typography.bodyMedium,
                             color = Color.White,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 14.sp
                         )
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -2619,9 +2530,9 @@ fun Image1TransactionRow(
         colors = CardDefaults.cardColors(
             containerColor = SleekSurface
         ),
-        shape = RoundedCornerShape(22.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        border = if (isSelected) BorderStroke(2.dp, SleekPrimary) else BorderStroke(1.dp, SleekBorder),
+        shape = SleekShapes.card,
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = if (isSelected) BorderStroke(1.dp, SleekPrimary) else BorderStroke(1.dp, SleekBorder),
         modifier = Modifier
             .fillMaxWidth()
             .combinedClickable(
@@ -2632,13 +2543,13 @@ fun Image1TransactionRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 14.dp),
+                .padding(SleekSpacing.cardPadding),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Left Avatar / Brand Circle (Image 1 visual)
+            // Left Avatar / Brand Circle
             Box(
                 modifier = Modifier
-                    .size(46.dp)
+                    .size(40.dp)
                     .clip(CircleShape)
                     .background(
                         if (isIncome) IncomeGreenBg else SleekBg
@@ -2653,8 +2564,8 @@ fun Image1TransactionRow(
                     displayName.contains("Emilia", ignoreCase = true)) {
                     Text(
                         text = firstChar.toString(),
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
                         color = IncomeGreen
                     )
                 } else {
@@ -2662,20 +2573,21 @@ fun Image1TransactionRow(
                         imageVector = getCategoryIcon(expense.category, categoryIcons),
                         contentDescription = expense.category,
                         tint = if (isIncome) IncomeGreen else SleekTextPrimary,
-                        modifier = Modifier.size(22.dp)
+                        modifier = Modifier.size(20.dp)
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.width(14.dp))
+            Spacer(modifier = Modifier.width(12.dp))
 
-            // Center: Title + "Received ⏱" / "Paid ⏱"
+            // Center: Title + "Received" / "Paid"
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = displayName,
                     style = MaterialTheme.typography.titleMedium,
                     color = SleekTextPrimary,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -2685,14 +2597,15 @@ fun Image1TransactionRow(
                         text = if (isIncome) "Received" else "Paid",
                         style = MaterialTheme.typography.bodySmall,
                         color = SleekTextSecondary,
-                        fontWeight = FontWeight.Medium
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Normal
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Icon(
                         imageVector = AppIcons.Schedule,
                         contentDescription = null,
                         tint = SleekTextSecondary,
-                        modifier = Modifier.size(13.dp)
+                        modifier = Modifier.size(12.dp)
                     )
                 }
             }
@@ -2701,7 +2614,7 @@ fun Image1TransactionRow(
             Text(
                 text = String.format("%s%s%,.2f", if (isIncome) "+" else "-", currencySymbol, expense.amount),
                 fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.SemiBold,
                 color = if (isIncome) IncomeGreen else ExpenseRed
             )
         }
@@ -4869,19 +4782,20 @@ fun EditExpenseDialog(
         Card(
             colors = CardDefaults.cardColors(containerColor = SleekSurface),
             border = BorderStroke(1.dp, SleekBorder),
-            shape = RoundedCornerShape(24.dp),
+            shape = SleekShapes.dialog,
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
             modifier = Modifier.fillMaxWidth().testTag("edit_expense_dialog")
         ) {
             Column(
                 modifier = Modifier
-                    .padding(24.dp)
+                    .padding(SleekSpacing.cardPadding)
                     .verticalScroll(rememberScrollState())
             ) {
                 Text(
-                    text = if (type == "INCOME") "Edit Income" else "Edit Expense",
-                    style = MaterialTheme.typography.titleLarge,
+                    text = if (type == "INCOME") "Edit income" else "Edit expense",
+                    style = MaterialTheme.typography.titleMedium,
                     color = SleekTextPrimary,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.SemiBold
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -4890,47 +4804,48 @@ fun EditExpenseDialog(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(SleekBorder.copy(alpha = 0.5f))
+                        .clip(SleekShapes.chip)
+                        .background(SleekBg)
+                        .border(BorderStroke(1.dp, SleekBorder), SleekShapes.chip)
                         .padding(4.dp),
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(if (type == "EXPENSE") SleekPrimary else Color.Transparent)
+                            .clip(SleekShapes.chip)
+                            .background(if (type == "EXPENSE") ExpenseRedBg else Color.Transparent)
                             .clickable {
                                 haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                 type = "EXPENSE"
                             }
-                            .padding(vertical = 8.dp),
+                            .padding(vertical = 10.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = "Expense",
-                            color = if (type == "EXPENSE") Color.White else SleekTextPrimary,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 13.sp
+                            color = if (type == "EXPENSE") ExpenseRed else SleekTextPrimary,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 14.sp
                         )
                     }
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(if (type == "INCOME") Color(0xFF10B981) else Color.Transparent)
+                            .clip(SleekShapes.chip)
+                            .background(if (type == "INCOME") IncomeGreenBg else Color.Transparent)
                             .clickable {
                                 haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                 type = "INCOME"
                             }
-                            .padding(vertical = 8.dp),
+                            .padding(vertical = 10.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = "Income",
-                            color = if (type == "INCOME") Color.White else SleekTextPrimary,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 13.sp
+                            color = if (type == "INCOME") IncomeGreen else SleekTextPrimary,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 14.sp
                         )
                     }
                 }
@@ -4941,19 +4856,19 @@ fun EditExpenseDialog(
                 OutlinedTextField(
                     value = amountStr,
                     onValueChange = { amountStr = it },
-                    label = { Text("Amount ($currencySymbol)", color = SleekTextSecondary) },
+                    label = { Text("Amount ($currencySymbol)", color = SleekTextSecondary, fontSize = 12.sp) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Decimal,
                         imeAction = ImeAction.Next
                     ),
-                    shape = RoundedCornerShape(12.dp),
+                    shape = SleekShapes.input,
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = if (type == "INCOME") Color(0xFF10B981) else SleekPrimary,
+                        focusedBorderColor = if (type == "INCOME") IncomeGreen else SleekPrimary,
                         unfocusedBorderColor = SleekBorder,
-                        focusedContainerColor = SleekSurface,
-                        unfocusedContainerColor = SleekSurface,
-                        focusedLabelColor = if (type == "INCOME") Color(0xFF10B981) else SleekPrimary,
+                        focusedContainerColor = SleekBg,
+                        unfocusedContainerColor = SleekBg,
+                        focusedLabelColor = if (type == "INCOME") IncomeGreen else SleekPrimary,
                         unfocusedLabelColor = SleekTextSecondary
                     ),
                     modifier = Modifier.fillMaxWidth()
@@ -4967,29 +4882,31 @@ fun EditExpenseDialog(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "Available Balance: $currencySymbol${String.format(Locale.getDefault(), "%,.2f", availableBalanceForEdit)}",
+                            text = "Available: $currencySymbol${String.format(Locale.getDefault(), "%,.2f", availableBalanceForEdit)}",
                             style = MaterialTheme.typography.bodySmall,
                             color = if (isExceedingIncome) ExpenseRed else SleekTextSecondary,
-                            fontWeight = FontWeight.Medium
+                            fontSize = 12.sp
                         )
                         if (totalIncome > 0) {
                             Text(
-                                text = "Total Income: $currencySymbol${String.format(Locale.getDefault(), "%,.2f", totalIncome)}",
+                                text = "Total income: $currencySymbol${String.format(Locale.getDefault(), "%,.2f", totalIncome)}",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = SleekTextSecondary
+                                color = SleekTextSecondary,
+                                fontSize = 12.sp
                             )
                         }
                     }
                     if (isExceedingIncome) {
                         Card(
-                            colors = CardDefaults.cardColors(containerColor = ExpenseRed.copy(alpha = 0.1f)),
-                            shape = RoundedCornerShape(8.dp),
+                            colors = CardDefaults.cardColors(containerColor = ExpenseRedBg),
+                            shape = SleekShapes.chip,
+                            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 8.dp)
                         ) {
                             Row(
-                                modifier = Modifier.padding(8.dp),
+                                modifier = Modifier.padding(12.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
@@ -4998,37 +4915,37 @@ fun EditExpenseDialog(
                                     tint = ExpenseRed,
                                     modifier = Modifier.size(16.dp)
                                 )
-                                Spacer(modifier = Modifier.width(6.dp))
+                                Spacer(modifier = Modifier.width(8.dp))
                                 Text(
                                     text = if (totalIncome <= 0) 
-                                        "Expense cannot exceed total income. Income is ₹0.00." 
+                                        "Expense cannot exceed total income." 
                                     else 
-                                        "Expense (₹${String.format(Locale.getDefault(), "%,.2f", enteredAmount)}) exceeds available balance (₹${String.format(Locale.getDefault(), "%,.2f", availableBalanceForEdit)}).",
+                                        "Expense exceeds available balance.",
                                     color = ExpenseRed,
                                     style = MaterialTheme.typography.bodySmall,
-                                    fontWeight = FontWeight.Bold
+                                    fontSize = 12.sp
                                 )
                             }
                         }
                     }
                 } else {
                     Text(
-                        text = "Total Income: ₹${String.format(Locale.getDefault(), "%,.2f", totalIncome)}",
+                        text = "Total income: $currencySymbol${String.format(Locale.getDefault(), "%,.2f", totalIncome)}",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFF10B981),
-                        fontWeight = FontWeight.Medium,
+                        color = IncomeGreen,
+                        fontSize = 12.sp,
                         modifier = Modifier.padding(top = 4.dp, start = 4.dp)
                     )
                 }
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 // Category Selector
                 Text(
                     text = "Category",
                     style = MaterialTheme.typography.labelSmall,
                     color = SleekTextSecondary,
-                    fontWeight = FontWeight.Bold
+                    fontSize = 12.sp
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -5042,21 +4959,21 @@ fun EditExpenseDialog(
                     onEditCustomCategory = if (type == "EXPENSE") onEditCategory else null
                 )
 
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 // Note description input (Mandatory)
                 OutlinedTextField(
                     value = note,
                     onValueChange = { note = it },
-                    label = { Text("Note / Description *", color = SleekTextSecondary) },
+                    label = { Text("Note / Description *", color = SleekTextSecondary, fontSize = 12.sp) },
                     singleLine = true,
-                    shape = RoundedCornerShape(12.dp),
+                    shape = SleekShapes.input,
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = if (type == "INCOME") Color(0xFF10B981) else SleekPrimary,
+                        focusedBorderColor = if (type == "INCOME") IncomeGreen else SleekPrimary,
                         unfocusedBorderColor = SleekBorder,
-                        focusedContainerColor = SleekSurface,
-                        unfocusedContainerColor = SleekSurface,
-                        focusedLabelColor = if (type == "INCOME") Color(0xFF10B981) else SleekPrimary,
+                        focusedContainerColor = SleekBg,
+                        unfocusedContainerColor = SleekBg,
+                        focusedLabelColor = if (type == "INCOME") IncomeGreen else SleekPrimary,
                         unfocusedLabelColor = SleekTextSecondary
                     ),
                     modifier = Modifier.fillMaxWidth()
@@ -5066,6 +4983,7 @@ fun EditExpenseDialog(
                         "Description is required",
                         color = ExpenseRed,
                         style = MaterialTheme.typography.bodySmall,
+                        fontSize = 12.sp,
                         modifier = Modifier.padding(top = 4.dp, start = 4.dp)
                     )
                 }
@@ -5081,10 +4999,12 @@ fun EditExpenseDialog(
                         onClick = onDismiss,
                         border = BorderStroke(1.dp, SleekBorder),
                         colors = ButtonDefaults.outlinedButtonColors(contentColor = SleekTextSecondary),
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.weight(1f)
+                        shape = SleekShapes.chip,
+                        modifier = Modifier
+                            .weight(1f)
+                            .heightIn(min = 48.dp)
                     ) {
-                        Text("Cancel", fontWeight = FontWeight.Bold)
+                        Text("Cancel", fontSize = 14.sp)
                     }
 
                     Button(
@@ -5103,11 +5023,13 @@ fun EditExpenseDialog(
                             }
                         },
                         enabled = note.trim().isNotEmpty() && enteredAmount > 0.0 && !isExceedingIncome,
-                        colors = ButtonDefaults.buttonColors(containerColor = if (type == "INCOME") Color(0xFF10B981) else SleekPrimary),
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.weight(1f)
+                        colors = ButtonDefaults.buttonColors(containerColor = if (type == "INCOME") IncomeGreen else SleekPrimary),
+                        shape = SleekShapes.chip,
+                        modifier = Modifier
+                            .weight(1f)
+                            .heightIn(min = 48.dp)
                     ) {
-                        Text("Save", color = Color.White, fontWeight = FontWeight.Bold)
+                        Text("Save", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                     }
                 }
             }
@@ -6752,67 +6674,45 @@ fun SidebarGroupCard(
     if (items.isEmpty()) return
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
+        Text(
+            text = LanguageManager.tr(sectionTitle, selectedLanguage).lowercase().replaceFirstChar { it.uppercase() },
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = SleekTextSecondary,
+            fontSize = 12.sp,
             modifier = Modifier.padding(start = 6.dp, bottom = 8.dp, top = 16.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(6.dp)
-                    .clip(CircleShape)
-                    .background(SleekPrimary)
-            )
-            Text(
-                text = LanguageManager.tr(sectionTitle, selectedLanguage).uppercase(),
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.ExtraBold,
-                color = SleekTextSecondary,
-                letterSpacing = 1.1.sp
-            )
-        }
+        )
 
         Card(
             colors = CardDefaults.cardColors(containerColor = SleekSurface),
             border = BorderStroke(1.dp, SleekBorder),
-            shape = RoundedCornerShape(24.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+            shape = SleekShapes.card,
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 items.forEachIndexed { index, item ->
-                    var isPressed by remember { mutableStateOf(false) }
-                    val scale by animateFloatAsState(
-                        targetValue = if (isPressed) 0.98f else 1.0f,
-                        animationSpec = spring(stiffness = Spring.StiffnessHigh),
-                        label = "sidebarPressScale"
-                    )
-
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(14.dp),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .graphicsLayer {
-                                scaleX = scale
-                                scaleY = scale
-                            }
                             .clickable { item.onClick() }
                             .padding(horizontal = 16.dp, vertical = 14.dp)
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(42.dp)
-                                .clip(RoundedCornerShape(14.dp))
-                                .background(item.iconBgColor)
-                                .border(1.dp, item.iconColor.copy(alpha = 0.25f), RoundedCornerShape(14.dp)),
+                                .size(40.dp)
+                                .clip(SleekShapes.chip)
+                                .background(SleekBg)
+                                .border(1.dp, SleekBorder, SleekShapes.chip),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = item.icon,
                                 contentDescription = item.titleKey,
-                                tint = item.iconColor,
-                                modifier = Modifier.size(22.dp)
+                                tint = SleekPrimary,
+                                modifier = Modifier.size(20.dp)
                             )
                         }
                         Column(modifier = Modifier.weight(1f)) {
@@ -6821,6 +6721,7 @@ fun SidebarGroupCard(
                                 style = MaterialTheme.typography.titleSmall,
                                 fontWeight = FontWeight.SemiBold,
                                 color = SleekTextPrimary,
+                                fontSize = 14.sp,
                                 softWrap = true
                             )
                             Spacer(modifier = Modifier.height(2.dp))
@@ -6828,30 +6729,21 @@ fun SidebarGroupCard(
                                 text = LanguageManager.tr(item.subtitleKey, selectedLanguage),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = SleekTextSecondary,
-                                fontSize = 11.5.sp,
-                                lineHeight = 15.sp,
+                                fontSize = 12.sp,
                                 softWrap = true
                             )
                         }
-                        Box(
-                            modifier = Modifier
-                                .size(28.dp)
-                                .clip(CircleShape)
-                                .background(SleekBorder.copy(alpha = 0.35f)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = AppIcons.ChevronRight,
-                                contentDescription = null,
-                                tint = SleekTextSecondary,
-                                modifier = Modifier.size(16.dp)
-                            )
-                        }
+                        Icon(
+                            imageVector = AppIcons.ChevronRight,
+                            contentDescription = null,
+                            tint = SleekTextSecondary,
+                            modifier = Modifier.size(16.dp)
+                        )
                     }
 
                     if (index < items.size - 1) {
                         HorizontalDivider(
-                            color = SleekBorder.copy(alpha = 0.45f),
+                            color = SleekBorder,
                             modifier = Modifier.padding(horizontal = 16.dp)
                         )
                     }

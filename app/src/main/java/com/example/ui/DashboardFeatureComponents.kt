@@ -74,33 +74,33 @@ fun DashboardQuickActionHub(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 10.dp),
+                .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
             QuickActionButton(
                 icon = AppIcons.TrendingDown,
-                label = "+ Expense",
-                tintColor = Color(0xFFEF4444),
-                bgBrush = Brush.linearGradient(listOf(Color(0xFFEF4444).copy(alpha = 0.15f), Color(0xFFDC2626).copy(alpha = 0.08f))),
+                label = "Expense",
+                tintColor = ExpenseRed,
+                bgColor = ExpenseRedBg,
                 onClick = onAddExpense,
                 testTag = "home_quick_add_expense"
             )
 
             QuickActionButton(
                 icon = AppIcons.TrendingUp,
-                label = "+ Income",
-                tintColor = Color(0xFF10B981),
-                bgBrush = Brush.linearGradient(listOf(Color(0xFF10B981).copy(alpha = 0.15f), Color(0xFF059669).copy(alpha = 0.08f))),
+                label = "Income",
+                tintColor = IncomeGreen,
+                bgColor = IncomeGreenBg,
                 onClick = onAddIncome,
                 testTag = "home_quick_add_income"
             )
 
             QuickActionButton(
                 icon = AppIcons.CallSplit,
-                label = "Split Bill",
-                tintColor = Color(0xFF6366F1),
-                bgBrush = Brush.linearGradient(listOf(Color(0xFF6366F1).copy(alpha = 0.15f), Color(0xFF4F46E5).copy(alpha = 0.08f))),
+                label = "Split",
+                tintColor = SleekPrimary,
+                bgColor = SleekPrimaryContainer.copy(alpha = 0.35f),
                 onClick = onQuickSplit,
                 testTag = "home_quick_split_bill"
             )
@@ -108,8 +108,8 @@ fun DashboardQuickActionHub(
             QuickActionButton(
                 icon = AppIcons.CurrencyExchange,
                 label = "Convert",
-                tintColor = Color(0xFF0EA5E9),
-                bgBrush = Brush.linearGradient(listOf(Color(0xFF0EA5E9).copy(alpha = 0.15f), Color(0xFF0284C7).copy(alpha = 0.08f))),
+                tintColor = SleekPrimary,
+                bgColor = SleekPrimaryContainer.copy(alpha = 0.35f),
                 onClick = onQuickConvert,
                 testTag = "home_quick_convert"
             )
@@ -117,8 +117,8 @@ fun DashboardQuickActionHub(
             QuickActionButton(
                 icon = AppIcons.Savings,
                 label = "Goals",
-                tintColor = Color(0xFFF59E0B),
-                bgBrush = Brush.linearGradient(listOf(Color(0xFFF59E0B).copy(alpha = 0.15f), Color(0xFFD97706).copy(alpha = 0.08f))),
+                tintColor = WarningOrange,
+                bgColor = WarningOrange.copy(alpha = 0.12f),
                 onClick = onViewGoals,
                 testTag = "home_quick_goals"
             )
@@ -131,48 +131,31 @@ private fun QuickActionButton(
     icon: ImageVector,
     label: String,
     tintColor: Color,
-    bgBrush: Brush,
+    bgColor: Color,
     onClick: () -> Unit,
     testTag: String
 ) {
     val haptic = LocalHapticFeedback.current
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
-
-    val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.90f else 1.0f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMedium
-        ),
-        label = "btn_press_scale"
-    )
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .graphicsLayer {
-                scaleX = scale
-                scaleY = scale
-            }
-            .clip(SleekShapes.md)
+            .clip(SleekShapes.chip)
             .clickable(
-                interactionSource = interactionSource,
-                indication = null,
                 onClick = {
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                     onClick()
                 }
             )
-            .padding(horizontal = 6.dp, vertical = 4.dp)
+            .padding(horizontal = 4.dp, vertical = 4.dp)
             .testTag(testTag)
     ) {
         Box(
             modifier = Modifier
-                .size(46.dp)
-                .clip(SleekShapes.md)
-                .background(bgBrush)
-                .border(BorderStroke(1.dp, tintColor.copy(alpha = 0.3f)), SleekShapes.md),
+                .size(48.dp)
+                .clip(SleekShapes.chip)
+                .background(bgColor)
+                .border(BorderStroke(1.dp, tintColor.copy(alpha = 0.25f)), SleekShapes.chip),
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -186,7 +169,7 @@ private fun QuickActionButton(
         Text(
             text = label,
             fontSize = SleekSizes.textCaption,
-            fontWeight = FontWeight.SemiBold,
+            fontWeight = FontWeight.Normal,
             color = SleekTextPrimary,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
@@ -224,16 +207,16 @@ fun DailySpendingAllowanceWidget(
     } else 0f
 
     Card(
-        shape = RoundedCornerShape(24.dp),
+        shape = SleekShapes.card,
         colors = CardDefaults.cardColors(containerColor = SleekSurface),
         border = BorderStroke(1.dp, SleekBorder),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         modifier = modifier
             .fillMaxWidth()
             .testTag("dashboard_daily_allowance_card")
     ) {
         Column(
-            modifier = Modifier.padding(18.dp),
+            modifier = Modifier.padding(SleekSpacing.cardPadding),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Row(
@@ -243,50 +226,50 @@ fun DailySpendingAllowanceWidget(
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Box(
                         modifier = Modifier
                             .size(36.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(Color(0xFF0EA5E9).copy(alpha = 0.12f)),
+                            .clip(SleekShapes.chip)
+                            .background(SleekPrimaryContainer.copy(alpha = 0.35f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = AppIcons.Today,
                             contentDescription = null,
-                            tint = Color(0xFF0EA5E9),
-                            modifier = Modifier.size(20.dp)
+                            tint = SleekPrimary,
+                            modifier = Modifier.size(18.dp)
                         )
                     }
                     Column {
                         Text(
-                            text = "Daily Spending Pace",
+                            text = "Daily spending pace",
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.SemiBold,
                             color = SleekTextPrimary
                         )
                         Text(
                             text = "$remainingDays days remaining this month",
                             style = MaterialTheme.typography.bodySmall,
                             color = SleekTextSecondary,
-                            fontSize = 11.sp
+                            fontSize = 12.sp
                         )
                     }
                 }
 
                 if (monthlyBudget > 0) {
                     Surface(
-                        shape = RoundedCornerShape(20.dp),
-                        color = if (isOverToday) Color(0xFFEF4444).copy(alpha = 0.12f) else Color(0xFF10B981).copy(alpha = 0.12f),
-                        border = BorderStroke(1.dp, if (isOverToday) Color(0xFFEF4444).copy(alpha = 0.4f) else Color(0xFF10B981).copy(alpha = 0.4f))
+                        shape = SleekShapes.chip,
+                        color = if (isOverToday) ExpenseRedBg else IncomeGreenBg,
+                        border = BorderStroke(1.dp, if (isOverToday) ExpenseRed.copy(alpha = 0.3f) else IncomeGreen.copy(alpha = 0.3f))
                     ) {
                         Text(
-                            text = if (isOverToday) "Over Target" else "On Track",
-                            color = if (isOverToday) Color(0xFFDC2626) else Color(0xFF059669),
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                            text = if (isOverToday) "Over target" else "On track",
+                            color = if (isOverToday) ExpenseRed else IncomeGreen,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                         )
                     }
                 } else {
@@ -294,7 +277,7 @@ fun DailySpendingAllowanceWidget(
                         onClick = onAdjustBudget,
                         contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
                     ) {
-                        Text("Set Budget", fontSize = 12.sp, color = SleekPrimary, fontWeight = FontWeight.Bold)
+                        Text("Set budget", fontSize = 12.sp, color = SleekPrimary, fontWeight = FontWeight.SemiBold)
                     }
                 }
             }
@@ -310,12 +293,12 @@ fun DailySpendingAllowanceWidget(
                             text = "Safe to spend today",
                             style = MaterialTheme.typography.bodySmall,
                             color = SleekTextSecondary,
-                            fontSize = 11.sp
+                            fontSize = 12.sp
                         )
                         Text(
                             text = String.format(Locale.getDefault(), "%s%,.2f", currencySymbol, safeDailyAllowance),
                             style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.SemiBold,
                             color = SleekTextPrimary
                         )
                     }
@@ -324,8 +307,8 @@ fun DailySpendingAllowanceWidget(
                         Text(
                             text = if (isOverToday) "Over budget by" else "Remaining for today",
                             style = MaterialTheme.typography.bodySmall,
-                            color = if (isOverToday) Color(0xFFEF4444) else SleekTextSecondary,
-                            fontSize = 11.sp
+                            color = if (isOverToday) ExpenseRed else SleekTextSecondary,
+                            fontSize = 12.sp
                         )
                         Text(
                             text = if (isOverToday) {
@@ -334,8 +317,8 @@ fun DailySpendingAllowanceWidget(
                                 String.format(Locale.getDefault(), "%s%,.2f", currencySymbol, remainingToday)
                             },
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = if (isOverToday) Color(0xFFEF4444) else Color(0xFF10B981)
+                            fontWeight = FontWeight.SemiBold,
+                            color = if (isOverToday) ExpenseRed else IncomeGreen
                         )
                     }
                 }
@@ -346,9 +329,9 @@ fun DailySpendingAllowanceWidget(
                         progress = { todayProgress },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(8.dp)
-                            .clip(RoundedCornerShape(6.dp)),
-                        color = if (isOverToday) Color(0xFFEF4444) else Color(0xFF0EA5E9),
+                            .height(6.dp)
+                            .clip(SleekShapes.chip),
+                        color = if (isOverToday) ExpenseRed else SleekPrimary,
                         trackColor = SleekBorder.copy(alpha = 0.5f)
                     )
 
@@ -358,19 +341,19 @@ fun DailySpendingAllowanceWidget(
                     ) {
                         Text(
                             text = "Spent: ${String.format(Locale.getDefault(), "%s%,.2f", currencySymbol, todayExpense)}",
-                            fontSize = 10.sp,
+                            fontSize = 12.sp,
                             color = SleekTextSecondary
                         )
                         Text(
                             text = "Target: ${String.format(Locale.getDefault(), "%s%,.2f", currencySymbol, safeDailyAllowance)}/day",
-                            fontSize = 10.sp,
+                            fontSize = 12.sp,
                             color = SleekTextSecondary
                         )
                     }
                 }
             } else {
                 Text(
-                    text = "Configure a monthly budget target to unlock smart daily spending allowances and stay on track!",
+                    text = "Configure a monthly budget target to unlock smart daily spending allowances and stay on track.",
                     style = MaterialTheme.typography.bodySmall,
                     color = SleekTextSecondary
                 )
@@ -394,16 +377,16 @@ fun UpcomingBillsDashboardWidget(
     val todayStr = remember { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date()) }
 
     Card(
-        shape = RoundedCornerShape(24.dp),
+        shape = SleekShapes.card,
         colors = CardDefaults.cardColors(containerColor = SleekSurface),
         border = BorderStroke(1.dp, SleekBorder),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         modifier = modifier
             .fillMaxWidth()
             .testTag("dashboard_upcoming_bills_widget")
     ) {
         Column(
-            modifier = Modifier.padding(18.dp),
+            modifier = Modifier.padding(SleekSpacing.cardPadding),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Row(
@@ -413,34 +396,34 @@ fun UpcomingBillsDashboardWidget(
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Box(
                         modifier = Modifier
                             .size(36.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(Color(0xFFF59E0B).copy(alpha = 0.12f)),
+                            .clip(SleekShapes.chip)
+                            .background(WarningOrange.copy(alpha = 0.12f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = AppIcons.Receipt,
                             contentDescription = null,
-                            tint = Color(0xFFF59E0B),
-                            modifier = Modifier.size(20.dp)
+                            tint = WarningOrange,
+                            modifier = Modifier.size(18.dp)
                         )
                     }
                     Column {
                         Text(
-                            text = "Upcoming Bills",
+                            text = "Upcoming bills",
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.SemiBold,
                             color = SleekTextPrimary
                         )
                         Text(
                             text = if (bills.isNotEmpty()) "${bills.size} pending due" else "No pending dues",
                             style = MaterialTheme.typography.bodySmall,
                             color = SleekTextSecondary,
-                            fontSize = 11.sp
+                            fontSize = 12.sp
                         )
                     }
                 }
@@ -449,33 +432,33 @@ fun UpcomingBillsDashboardWidget(
                     onClick = onViewAllBills,
                     contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
                 ) {
-                    Text("View All", fontSize = 12.sp, color = SleekPrimary, fontWeight = FontWeight.Bold)
+                    Text("View all", fontSize = 12.sp, color = SleekPrimary, fontWeight = FontWeight.SemiBold)
                 }
             }
 
             if (bills.isEmpty()) {
                 Surface(
-                    shape = RoundedCornerShape(14.dp),
-                    color = Color(0xFF10B981).copy(alpha = 0.08f),
-                    border = BorderStroke(1.dp, Color(0xFF10B981).copy(alpha = 0.2f)),
+                    shape = SleekShapes.chip,
+                    color = IncomeGreenBg,
+                    border = BorderStroke(1.dp, IncomeGreen.copy(alpha = 0.2f)),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
                         modifier = Modifier.padding(12.dp),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Icon(
                             imageVector = AppIcons.CheckCircle,
                             contentDescription = null,
-                            tint = Color(0xFF10B981),
-                            modifier = Modifier.size(22.dp)
+                            tint = IncomeGreen,
+                            modifier = Modifier.size(18.dp)
                         )
                         Text(
-                            text = "All caught up! No bills pending right now.",
+                            text = "All caught up. No pending bills.",
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color(0xFF047857),
-                            fontWeight = FontWeight.Medium
+                            color = IncomeGreen,
+                            fontWeight = FontWeight.Normal
                         )
                     }
                 }
@@ -484,9 +467,9 @@ fun UpcomingBillsDashboardWidget(
                     bills.take(3).forEach { bill ->
                         val isDueToday = bill.dueDate == todayStr
                         Surface(
-                            shape = RoundedCornerShape(14.dp),
-                            color = if (isDueToday) Color(0xFFF59E0B).copy(alpha = 0.08f) else SleekBg,
-                            border = BorderStroke(1.dp, if (isDueToday) Color(0xFFF59E0B).copy(alpha = 0.4f) else SleekBorder),
+                            shape = SleekShapes.chip,
+                            color = if (isDueToday) WarningOrange.copy(alpha = 0.08f) else SleekBg,
+                            border = BorderStroke(1.dp, if (isDueToday) WarningOrange.copy(alpha = 0.35f) else SleekBorder),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Row(
@@ -498,19 +481,19 @@ fun UpcomingBillsDashboardWidget(
                             ) {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
                                     Box(
                                         modifier = Modifier
                                             .size(34.dp)
                                             .clip(CircleShape)
-                                            .background(if (isDueToday) Color(0xFFF59E0B).copy(alpha = 0.2f) else SleekSurface),
+                                            .background(if (isDueToday) WarningOrange.copy(alpha = 0.15f) else SleekSurface),
                                         contentAlignment = Alignment.Center
                                     ) {
                                         Icon(
                                             imageVector = AppIcons.Payment,
                                             contentDescription = null,
-                                            tint = if (isDueToday) Color(0xFFD97706) else SleekPrimary,
+                                            tint = if (isDueToday) WarningOrange else SleekPrimary,
                                             modifier = Modifier.size(18.dp)
                                         )
                                     }
@@ -518,7 +501,7 @@ fun UpcomingBillsDashboardWidget(
                                         Text(
                                             text = bill.title,
                                             style = MaterialTheme.typography.bodyMedium,
-                                            fontWeight = FontWeight.Bold,
+                                            fontWeight = FontWeight.SemiBold,
                                             color = SleekTextPrimary
                                         )
                                         Row(
@@ -526,10 +509,10 @@ fun UpcomingBillsDashboardWidget(
                                             horizontalArrangement = Arrangement.spacedBy(4.dp)
                                         ) {
                                             Text(
-                                                text = if (isDueToday) "Due Today!" else "Due ${bill.dueDate}",
-                                                fontSize = 11.sp,
-                                                color = if (isDueToday) Color(0xFFD97706) else SleekTextSecondary,
-                                                fontWeight = if (isDueToday) FontWeight.Bold else FontWeight.Normal
+                                                text = if (isDueToday) "Due today" else "Due ${bill.dueDate}",
+                                                fontSize = 12.sp,
+                                                color = if (isDueToday) WarningOrange else SleekTextSecondary,
+                                                fontWeight = if (isDueToday) FontWeight.SemiBold else FontWeight.Normal
                                             )
                                         }
                                     }
@@ -542,18 +525,18 @@ fun UpcomingBillsDashboardWidget(
                                     Text(
                                         text = String.format(Locale.getDefault(), "%s%,.2f", currencySymbol, bill.amount),
                                         style = MaterialTheme.typography.bodyMedium,
-                                        fontWeight = FontWeight.Bold,
+                                        fontWeight = FontWeight.SemiBold,
                                         color = SleekTextPrimary
                                     )
 
                                     Button(
                                         onClick = { onPayBill(bill) },
-                                        shape = RoundedCornerShape(10.dp),
-                                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF10B981)),
-                                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
-                                        modifier = Modifier.height(30.dp)
+                                        shape = SleekShapes.chip,
+                                        colors = ButtonDefaults.buttonColors(containerColor = SleekPrimary),
+                                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+                                        modifier = Modifier.heightIn(min = 48.dp)
                                     ) {
-                                        Text("Pay", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                                        Text("Pay", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
                                     }
                                 }
                             }
@@ -590,16 +573,16 @@ fun SavingsGoalSpotlightWidget(
     val percentInt = remember(progressFraction) { (progressFraction * 100).roundToInt() }
 
     Card(
-        shape = RoundedCornerShape(24.dp),
+        shape = SleekShapes.card,
         colors = CardDefaults.cardColors(containerColor = SleekSurface),
         border = BorderStroke(1.dp, SleekBorder),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         modifier = modifier
             .fillMaxWidth()
             .testTag("dashboard_savings_goal_spotlight")
     ) {
         Column(
-            modifier = Modifier.padding(18.dp),
+            modifier = Modifier.padding(SleekSpacing.cardPadding),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Row(
@@ -609,29 +592,34 @@ fun SavingsGoalSpotlightWidget(
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Box(
                         modifier = Modifier
                             .size(36.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(Color(0xFFF59E0B).copy(alpha = 0.12f)),
+                            .clip(SleekShapes.chip)
+                            .background(WarningOrange.copy(alpha = 0.12f)),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(topGoal.iconTag.ifEmpty { "🎯" }, fontSize = 20.sp)
+                        Icon(
+                            imageVector = AppIcons.Savings,
+                            contentDescription = null,
+                            tint = WarningOrange,
+                            modifier = Modifier.size(18.dp)
+                        )
                     }
                     Column {
                         Text(
                             text = topGoal.name,
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.SemiBold,
                             color = SleekTextPrimary
                         )
                         Text(
-                            text = "Savings Target • $percentInt% saved",
+                            text = "Savings target • $percentInt% saved",
                             style = MaterialTheme.typography.bodySmall,
                             color = SleekTextSecondary,
-                            fontSize = 11.sp
+                            fontSize = 12.sp
                         )
                     }
                 }
@@ -640,7 +628,7 @@ fun SavingsGoalSpotlightWidget(
                     onClick = onViewAllGoals,
                     contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
                 ) {
-                    Text("All Goals", fontSize = 12.sp, color = SleekPrimary, fontWeight = FontWeight.Bold)
+                    Text("All goals", fontSize = 12.sp, color = SleekPrimary, fontWeight = FontWeight.SemiBold)
                 }
             }
 
@@ -655,27 +643,27 @@ fun SavingsGoalSpotlightWidget(
                         text = "Saved so far",
                         style = MaterialTheme.typography.bodySmall,
                         color = SleekTextSecondary,
-                        fontSize = 11.sp
+                        fontSize = 12.sp
                     )
                     Text(
                         text = String.format(Locale.getDefault(), "%s%,.2f", currencySymbol, topGoal.currentAmount),
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFFF59E0B)
+                        fontWeight = FontWeight.SemiBold,
+                        color = WarningOrange
                     )
                 }
 
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
-                        text = "Goal Target",
+                        text = "Goal target",
                         style = MaterialTheme.typography.bodySmall,
                         color = SleekTextSecondary,
-                        fontSize = 11.sp
+                        fontSize = 12.sp
                     )
                     Text(
                         text = String.format(Locale.getDefault(), "%s%,.2f", currencySymbol, topGoal.targetAmount),
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.SemiBold,
                         color = SleekTextPrimary
                     )
                 }
@@ -686,25 +674,28 @@ fun SavingsGoalSpotlightWidget(
                 progress = { progressFraction },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(8.dp)
-                    .clip(RoundedCornerShape(6.dp)),
-                color = Color(0xFFF59E0B),
+                    .height(6.dp)
+                    .clip(SleekShapes.chip),
+                color = WarningOrange,
                 trackColor = SleekBorder.copy(alpha = 0.5f)
             )
 
             // Quick Deposit Button
             FilledTonalButton(
                 onClick = { onQuickDeposit(topGoal) },
-                shape = RoundedCornerShape(12.dp),
+                shape = SleekShapes.chip,
                 colors = ButtonDefaults.filledTonalButtonColors(
-                    containerColor = Color(0xFFF59E0B).copy(alpha = 0.14f),
-                    contentColor = Color(0xFFB45309)
+                    containerColor = WarningOrange.copy(alpha = 0.12f),
+                    contentColor = WarningOrange
                 ),
-                modifier = Modifier.fillMaxWidth()
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 48.dp)
             ) {
-                Icon(AppIcons.AddCircleOutline, contentDescription = null, modifier = Modifier.size(16.dp))
-                Spacer(modifier = Modifier.width(6.dp))
-                Text("Deposit to this Goal", fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                Icon(AppIcons.AddCircleOutline, contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Deposit to goal", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
             }
         }
     }
@@ -739,26 +730,17 @@ fun TopSpendingCategoriesWidget(
             .take(4)
     }
 
-    val palette = remember {
-        listOf(
-            Color(0xFF6366F1), // Indigo
-            Color(0xFF0EA5E9), // Sky
-            Color(0xFFF59E0B), // Amber
-            Color(0xFFEC4899)  // Pink
-        )
-    }
-
     Card(
-        shape = RoundedCornerShape(24.dp),
+        shape = SleekShapes.card,
         colors = CardDefaults.cardColors(containerColor = SleekSurface),
         border = BorderStroke(1.dp, SleekBorder),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         modifier = modifier
             .fillMaxWidth()
             .testTag("dashboard_top_categories_widget")
     ) {
         Column(
-            modifier = Modifier.padding(18.dp),
+            modifier = Modifier.padding(SleekSpacing.cardPadding),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Row(
@@ -768,34 +750,34 @@ fun TopSpendingCategoriesWidget(
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Box(
                         modifier = Modifier
                             .size(36.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(Color(0xFF6366F1).copy(alpha = 0.12f)),
+                            .clip(SleekShapes.chip)
+                            .background(SleekPrimaryContainer.copy(alpha = 0.35f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = AppIcons.Category,
                             contentDescription = null,
-                            tint = Color(0xFF6366F1),
-                            modifier = Modifier.size(20.dp)
+                            tint = SleekPrimary,
+                            modifier = Modifier.size(18.dp)
                         )
                     }
                     Column {
                         Text(
-                            text = "Top Spending This Month",
+                            text = "Top spending this month",
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.SemiBold,
                             color = SleekTextPrimary
                         )
                         Text(
-                            text = "Where your money went",
+                            text = "Category breakdown",
                             style = MaterialTheme.typography.bodySmall,
                             color = SleekTextSecondary,
-                            fontSize = 11.sp
+                            fontSize = 12.sp
                         )
                     }
                 }
@@ -804,15 +786,14 @@ fun TopSpendingCategoriesWidget(
                     onClick = onNavigateToAnalytics,
                     contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
                 ) {
-                    Text("Analytics", fontSize = 12.sp, color = SleekPrimary, fontWeight = FontWeight.Bold)
+                    Text("Analytics", fontSize = 12.sp, color = SleekPrimary, fontWeight = FontWeight.SemiBold)
                 }
             }
 
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 topCategories.forEachIndexed { index, (category, amount) ->
                     val pct = ((amount / totalSpent) * 100).coerceIn(0.0, 100.0)
-                    val color = palette[index % palette.size]
-                    val iconStr = categoryIcons[category] ?: "💳"
+                    val catColor = if (index == 0) ExpenseRed else SleekPrimary
 
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Row(
@@ -820,18 +801,12 @@ fun TopSpendingCategoriesWidget(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                Text(iconStr, fontSize = 16.sp)
-                                Text(
-                                    text = category,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = SleekTextPrimary
-                                )
-                            }
+                            Text(
+                                text = category,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Normal,
+                                color = SleekTextPrimary
+                            )
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -839,24 +814,23 @@ fun TopSpendingCategoriesWidget(
                                 Text(
                                     text = String.format(Locale.getDefault(), "%s%,.0f", currencySymbol, amount),
                                     style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Bold,
+                                    fontWeight = FontWeight.SemiBold,
                                     color = SleekTextPrimary
                                 )
                                 Text(
                                     text = "(${pct.roundToInt()}%)",
-                                    fontSize = 11.sp,
+                                    fontSize = 12.sp,
                                     color = SleekTextSecondary
                                 )
                             }
                         }
-
                         LinearProgressIndicator(
-                            progress = { (pct / 100.0).toFloat() },
+                            progress = { (pct / 100f).toFloat().coerceIn(0f, 1f) },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(6.dp)
-                                .clip(RoundedCornerShape(4.dp)),
-                            color = color,
+                                .height(4.dp)
+                                .clip(SleekShapes.chip),
+                            color = catColor,
                             trackColor = SleekBorder.copy(alpha = 0.5f)
                         )
                     }
@@ -885,40 +859,40 @@ fun DailyFinancialInsightWidget(
     val insightMessage = remember(thisMonthIncome, thisMonthExpense, monthlyBudget, streakCount) {
         when {
             monthlyBudget > 0 && thisMonthExpense > monthlyBudget -> {
-                "⚠️ You have exceeded your monthly budget by ${currencySymbol}${String.format(Locale.getDefault(), "%,.0f", thisMonthExpense - monthlyBudget)}. Review discretionary categories to rebalance."
+                "Monthly budget exceeded by ${currencySymbol}${String.format(Locale.getDefault(), "%,.0f", thisMonthExpense - monthlyBudget)}. Review discretionary categories to rebalance."
             }
             monthlyBudget > 0 && (thisMonthExpense / monthlyBudget) >= 0.85 -> {
-                "⚡ You've utilized ${((thisMonthExpense / monthlyBudget) * 100).roundToInt()}% of your budget. Pacing yourself for the rest of the month will keep you in the green!"
+                "You have used ${((thisMonthExpense / monthlyBudget) * 100).roundToInt()}% of your budget for this month."
             }
             thisMonthIncome > 0 && (thisMonthIncome - thisMonthExpense) > 0 -> {
                 val savingsRate = (((thisMonthIncome - thisMonthExpense) / thisMonthIncome) * 100).roundToInt()
-                "🌟 Outstanding! You're currently saving $savingsRate% of your income this month. Consider locking a portion into a Savings Goal."
+                "Net savings rate is currently $savingsRate% of monthly income."
             }
             streakCount >= 3 -> {
-                "🔥 Impressive consistency! You're on a $streakCount-day tracking streak. Regular logging is the #1 predictor of financial freedom."
+                "Tracking streak active: $streakCount consecutive days logged."
             }
             else -> {
-                "💡 Pro-Tip: Log transactions as soon as they happen. Accurate tracking gives you full control over your cash flow."
+                "Log transactions regularly to maintain clear visibility into your cash flow."
             }
         }
     }
 
     Surface(
-        shape = RoundedCornerShape(18.dp),
-        color = SleekPrimaryContainer.copy(alpha = 0.5f),
-        border = BorderStroke(1.dp, SleekPrimary.copy(alpha = 0.3f)),
+        shape = SleekShapes.card,
+        color = SleekSurface,
+        border = BorderStroke(1.dp, SleekBorder),
         modifier = modifier.fillMaxWidth()
     ) {
         Row(
-            modifier = Modifier.padding(14.dp),
+            modifier = Modifier.padding(SleekSpacing.cardPadding),
             verticalAlignment = Alignment.Top,
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Box(
                 modifier = Modifier
                     .size(28.dp)
-                    .clip(CircleShape)
-                    .background(SleekPrimary.copy(alpha = 0.15f)),
+                    .clip(SleekShapes.chip)
+                    .background(SleekPrimaryContainer.copy(alpha = 0.35f)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -933,19 +907,19 @@ fun DailyFinancialInsightWidget(
                 text = insightMessage,
                 style = MaterialTheme.typography.bodySmall,
                 color = SleekTextPrimary,
-                lineHeight = 18.sp,
+                fontSize = 12.sp,
                 modifier = Modifier.weight(1f)
             )
 
             IconButton(
                 onClick = { isDismissed = true },
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(24.dp)
             ) {
                 Icon(
                     imageVector = AppIcons.Close,
                     contentDescription = "Dismiss",
                     tint = SleekTextSecondary,
-                    modifier = Modifier.size(14.dp)
+                    modifier = Modifier.size(16.dp)
                 )
             }
         }
@@ -1501,30 +1475,30 @@ fun SmartBudgetHealthGaugeWidget(
     val progressFraction = (currentMonthExpense / monthlyBudget).toFloat().coerceIn(0f, 1f)
 
     val gaugeColor = when {
-        isExceeded -> Color(0xFFEF4444)
-        spentPct >= 80 -> Color(0xFFF59E0B)
-        else -> Color(0xFF10B981)
+        isExceeded -> ExpenseRed
+        spentPct >= 80 -> WarningOrange
+        else -> IncomeGreen
     }
 
     val statusText = when {
-        isExceeded -> "Budget Exceeded!"
-        spentPct >= 90 -> "Critical (90%+ Spent)"
-        spentPct >= 80 -> "Warning (80%+ Spent)"
-        else -> "Healthy & On Track"
+        isExceeded -> "Budget exceeded"
+        spentPct >= 90 -> "Critical (90%+ spent)"
+        spentPct >= 80 -> "Warning (80%+ spent)"
+        else -> "On track"
     }
 
     Card(
-        shape = RoundedCornerShape(24.dp),
+        shape = SleekShapes.card,
         colors = CardDefaults.cardColors(containerColor = SleekSurface),
         border = BorderStroke(1.dp, SleekBorder),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         modifier = modifier
             .fillMaxWidth()
             .testTag("dashboard_budget_health_gauge")
     ) {
         Column(
-            modifier = Modifier.padding(18.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
+            modifier = Modifier.padding(SleekSpacing.cardPadding),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -1533,35 +1507,35 @@ fun SmartBudgetHealthGaugeWidget(
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Box(
                         modifier = Modifier
                             .size(36.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(gaugeColor.copy(alpha = 0.15f)),
+                            .clip(SleekShapes.chip)
+                            .background(gaugeColor.copy(alpha = 0.12f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = AppIcons.Speed,
                             contentDescription = null,
                             tint = gaugeColor,
-                            modifier = Modifier.size(20.dp)
+                            modifier = Modifier.size(18.dp)
                         )
                     }
                     Column {
                         Text(
-                            text = "Smart Budget Health Gauge",
+                            text = "Budget pace",
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.SemiBold,
                             color = SleekTextPrimary
                         )
                         Text(
                             text = statusText,
                             style = MaterialTheme.typography.bodySmall,
                             color = gaugeColor,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 11.sp
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 12.sp
                         )
                     }
                 }
@@ -1570,7 +1544,7 @@ fun SmartBudgetHealthGaugeWidget(
                     onClick = onUpdateBudget,
                     contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
                 ) {
-                    Text("Adjust", fontSize = 12.sp, color = SleekPrimary, fontWeight = FontWeight.Bold)
+                    Text("Adjust", fontSize = 12.sp, color = SleekPrimary, fontWeight = FontWeight.SemiBold)
                 }
             }
 
@@ -1583,28 +1557,29 @@ fun SmartBudgetHealthGaugeWidget(
                     Text(
                         text = "Spent this month",
                         style = MaterialTheme.typography.bodySmall,
-                        color = SleekTextSecondary
+                        color = SleekTextSecondary,
+                        fontSize = 12.sp
                     )
                     Text(
                         text = String.format("%s%,.2f", currencySymbol, currentMonthExpense),
                         style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.SemiBold,
                         color = SleekTextPrimary
                     )
                     Text(
                         text = String.format("Limit: %s%,.2f (%d%%)", currencySymbol, monthlyBudget, spentPct.toInt()),
                         style = MaterialTheme.typography.bodySmall,
                         color = SleekTextSecondary,
-                        fontSize = 11.sp
+                        fontSize = 12.sp
                     )
                 }
 
                 Box(
-                    modifier = Modifier.size(80.dp),
+                    modifier = Modifier.size(72.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Canvas(modifier = Modifier.fillMaxSize()) {
-                        val strokeWidth = 8.dp.toPx()
+                        val strokeWidth = 6.dp.toPx()
                         drawArc(
                             color = SleekBorder,
                             startAngle = 0f,
@@ -1624,15 +1599,15 @@ fun SmartBudgetHealthGaugeWidget(
                         Text(
                             text = "${spentPct.toInt()}%",
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.SemiBold,
                             color = SleekTextPrimary,
-                            fontSize = 15.sp
+                            fontSize = 14.sp
                         )
                         Text(
                             text = "Used",
                             style = MaterialTheme.typography.labelSmall,
                             color = SleekTextSecondary,
-                            fontSize = 9.sp
+                            fontSize = 12.sp
                         )
                     }
                 }
@@ -1673,36 +1648,36 @@ fun FinancialHealthScoreWidget(
     val overallScore = ((savingsRatio * 40) + (budgetScore * 40) + (billScore * 20)).roundToInt().coerceIn(15, 99)
 
     val (badgeText, badgeColor, tipText) = when {
-        overallScore >= 80 -> Triple("EXCELLENT", Color(0xFF10B981), "Outstanding financial discipline! You're saving consistently and well within your limits.")
-        overallScore >= 65 -> Triple("STABLE", Color(0xFF0EA5E9), "Good financial position. Try increasing your monthly savings rate to reach 'Excellent'.")
-        overallScore >= 45 -> Triple("MODERATE", Color(0xFFF59E0B), "Caution advised: High budget burn rate detected this cycle. Review non-essential expenses.")
-        else -> Triple("ACTION NEEDED", Color(0xFFEF4444), "Immediate action needed: Expenses exceed safe thresholds or overdue bills need settlement.")
+        overallScore >= 80 -> Triple("Excellent", IncomeGreen, "Consistent savings and spending within limits.")
+        overallScore >= 65 -> Triple("Stable", SleekPrimary, "Balanced spending with active monthly savings.")
+        overallScore >= 45 -> Triple("Moderate", WarningOrange, "Review discretionary spending to preserve budget margin.")
+        else -> Triple("Action needed", ExpenseRed, "Expenses or overdue dues exceed recommended targets.")
     }
 
     val animatedScore by animateIntAsState(
         targetValue = overallScore,
-        animationSpec = androidx.compose.animation.core.tween(1200, easing = androidx.compose.animation.core.FastOutSlowInEasing),
+        animationSpec = androidx.compose.animation.core.tween(200),
         label = "health_score"
     )
 
     val sweepProgress by animateFloatAsState(
         targetValue = overallScore / 100f,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessLow),
+        animationSpec = androidx.compose.animation.core.tween(200),
         label = "gauge_sweep"
     )
 
     Card(
-        shape = RoundedCornerShape(24.dp),
+        shape = SleekShapes.card,
         colors = CardDefaults.cardColors(containerColor = SleekSurface),
         border = BorderStroke(1.dp, SleekBorder),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         modifier = modifier
             .fillMaxWidth()
             .testTag("dashboard_financial_health_score")
     ) {
         Column(
-            modifier = Modifier.padding(18.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
+            modifier = Modifier.padding(SleekSpacing.cardPadding),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -1711,45 +1686,46 @@ fun FinancialHealthScoreWidget(
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(40.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(badgeColor.copy(alpha = 0.15f)),
+                            .size(36.dp)
+                            .clip(SleekShapes.chip)
+                            .background(badgeColor.copy(alpha = 0.12f)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = AppIcons.HealthAndSafety,
                             contentDescription = null,
                             tint = badgeColor,
-                            modifier = Modifier.size(22.dp)
+                            modifier = Modifier.size(18.dp)
                         )
                     }
                     Column {
                         Text(
-                            text = "Financial Wellness Score",
+                            text = "Financial wellness",
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.SemiBold,
                             color = SleekTextPrimary
                         )
                         Text(
-                            text = "Real-time AI Health Diagnostic",
+                            text = "Health diagnostic",
                             style = MaterialTheme.typography.bodySmall,
-                            color = SleekTextSecondary
+                            color = SleekTextSecondary,
+                            fontSize = 12.sp
                         )
                     }
                 }
 
                 Surface(
-                    shape = RoundedCornerShape(8.dp),
-                    color = badgeColor.copy(alpha = 0.15f)
+                    shape = SleekShapes.chip,
+                    color = badgeColor.copy(alpha = 0.12f)
                 ) {
                     Text(
                         text = badgeText,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.SemiBold,
                         color = badgeColor,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                     )
@@ -1766,14 +1742,14 @@ fun FinancialHealthScoreWidget(
                         Text(
                             text = "$animatedScore",
                             style = MaterialTheme.typography.displayMedium,
-                            fontWeight = FontWeight.ExtraBold,
+                            fontWeight = FontWeight.SemiBold,
                             color = badgeColor
                         )
                         Text(
                             text = " / 100",
                             style = MaterialTheme.typography.titleMedium,
                             color = SleekTextSecondary,
-                            modifier = Modifier.padding(bottom = 6.dp)
+                            modifier = Modifier.padding(bottom = 4.dp)
                         )
                     }
                     Spacer(modifier = Modifier.height(4.dp))
@@ -1781,19 +1757,18 @@ fun FinancialHealthScoreWidget(
                         text = tipText,
                         style = MaterialTheme.typography.bodySmall,
                         color = SleekTextSecondary,
-                        lineHeight = 16.sp
+                        fontSize = 12.sp
                     )
                 }
 
                 Spacer(modifier = Modifier.width(16.dp))
 
-                // Custom Canvas Radial Gauge
                 Box(
-                    modifier = Modifier.size(80.dp),
+                    modifier = Modifier.size(72.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Canvas(modifier = Modifier.fillMaxSize()) {
-                        val stroke = 8.dp.toPx()
+                        val stroke = 6.dp.toPx()
                         drawArc(
                             color = SleekBorder,
                             startAngle = 135f,
@@ -1802,9 +1777,7 @@ fun FinancialHealthScoreWidget(
                             style = androidx.compose.ui.graphics.drawscope.Stroke(width = stroke, cap = androidx.compose.ui.graphics.StrokeCap.Round)
                         )
                         drawArc(
-                            brush = Brush.sweepGradient(
-                                listOf(Color(0xFF6366F1), badgeColor, badgeColor)
-                            ),
+                            color = badgeColor,
                             startAngle = 135f,
                             sweepAngle = 270f * sweepProgress,
                             useCenter = false,
@@ -1815,13 +1788,12 @@ fun FinancialHealthScoreWidget(
                         imageVector = AppIcons.AutoGraph,
                         contentDescription = null,
                         tint = badgeColor,
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(20.dp)
                     )
                 }
             }
 
-            // Diagnostic Drilldown Expand Toggle
-            HorizontalDivider(color = SleekBorder.copy(alpha = 0.6f))
+            HorizontalDivider(color = SleekBorder)
 
             Row(
                 modifier = Modifier
@@ -1831,7 +1803,7 @@ fun FinancialHealthScoreWidget(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = if (expandedDiagnostics) "Hide Diagnostic Pillars" else "View Diagnostic Breakdown",
+                    text = if (expandedDiagnostics) "Hide details" else "View breakdown",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = SleekPrimary
@@ -1853,21 +1825,20 @@ fun FinancialHealthScoreWidget(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    HealthPillarRow("Savings Efficiency", "${(savingsRatio * 100).toInt()}% Net Saved", if (savingsRatio >= 0.2) Color(0xFF10B981) else Color(0xFFF59E0B))
-                    HealthPillarRow("Budget Burn Rate", if (monthlyBudget > 0) "${((expenseThisMonth / monthlyBudget) * 100).toInt()}% Utilized" else "No limit set", if (budgetScore >= 0.8) Color(0xFF10B981) else Color(0xFFEF4444))
-                    HealthPillarRow("Bill Punctuality", if (overdueBillsCount == 0) "100% On-Time" else "$overdueBillsCount Overdue Bill(s)", if (overdueBillsCount == 0) Color(0xFF10B981) else Color(0xFFEF4444))
+                    HealthPillarRow("Savings efficiency", "${(savingsRatio * 100).toInt()}% net saved", if (savingsRatio >= 0.2) IncomeGreen else WarningOrange)
+                    HealthPillarRow("Budget utilization", if (monthlyBudget > 0) "${((expenseThisMonth / monthlyBudget) * 100).toInt()}% utilized" else "No limit set", if (budgetScore >= 0.8) IncomeGreen else ExpenseRed)
+                    HealthPillarRow("Bill punctuality", if (overdueBillsCount == 0) "100% on time" else "$overdueBillsCount overdue bill(s)", if (overdueBillsCount == 0) IncomeGreen else ExpenseRed)
                 }
             }
         }
     }
 }
-
 @Composable
 private fun HealthPillarRow(title: String, value: String, indicatorColor: Color) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(10.dp))
+            .clip(SleekShapes.chip)
             .background(SleekBg)
             .padding(horizontal = 12.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -1875,8 +1846,8 @@ private fun HealthPillarRow(title: String, value: String, indicatorColor: Color)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Box(modifier = Modifier.size(8.dp).clip(CircleShape).background(indicatorColor))
-            Text(title, style = MaterialTheme.typography.bodySmall, color = SleekTextPrimary, fontWeight = FontWeight.Medium)
+            Text(title, style = MaterialTheme.typography.bodySmall, color = SleekTextPrimary, fontSize = 12.sp, fontWeight = FontWeight.Normal)
         }
-        Text(value, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = indicatorColor)
+        Text(value, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.SemiBold, fontSize = 12.sp, color = indicatorColor)
     }
 }

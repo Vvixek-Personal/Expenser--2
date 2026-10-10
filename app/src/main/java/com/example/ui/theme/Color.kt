@@ -153,35 +153,31 @@ val SleekGlassBorder: Color get() = if (isDarkModeActive) {
 
 val SleekNeutralLight: Color get() = if (isDarkModeActive) Color(0xFF2C3242) else Color(0xFFE2E6EE)
 
-// Dynamic Hero Net Balance Card Gradient
+// Calm, premium flat surface gradient for hero net balance card
 fun getHeroCardGradient(): Brush {
-    val p = activeSleekPrimary
     return if (isDarkModeActive) {
-        val darkEnd = mixPrimaryWithColor(p, Color(0xFF080D18), 0.55f)
-        val darkStart = mixPrimaryWithColor(p, Color(0xFF1A2234), 0.85f)
         Brush.linearGradient(
-            colors = listOf(darkStart, darkEnd),
+            colors = listOf(SleekSurfaceElevated, SleekSurface),
             start = Offset(0f, 0f),
-            end = Offset(1000f, 1000f)
+            end = Offset(0f, 600f)
         )
     } else {
-        val lightEnd = mixPrimaryWithColor(p, Color(0xFF0B192E), 0.65f)
         Brush.linearGradient(
-            colors = listOf(p, lightEnd),
+            colors = listOf(SleekSurface, SleekSurfaceElevated),
             start = Offset(0f, 0f),
-            end = Offset(1000f, 1000f)
+            end = Offset(0f, 600f)
         )
     }
 }
 
-// Semantic Alerts (Modern Fintech Palette)
-val ExpenseRed = Color(0xFFEF4444)
-val ExpenseRedBg: Color get() = if (isDarkModeActive) Color(0xFFEF4444).copy(alpha = 0.20f) else Color(0xFFEF4444).copy(alpha = 0.12f)
-val IncomeGreen = Color(0xFF10B981)
-val IncomeGreenBg: Color get() = if (isDarkModeActive) Color(0xFF10B981).copy(alpha = 0.20f) else Color(0xFF10B981).copy(alpha = 0.12f)
-val SavingGold = Color(0xFFF59E0B)
-val WarningOrange = Color(0xFFF97316)
-val InfoBlue = Color(0xFF3B82F6)
+// Semantic Alerts (Strict Fintech Palette: green=income, red=expense, amber=warning)
+val ExpenseRed = Color(0xFFDC2626)
+val ExpenseRedBg: Color get() = if (isDarkModeActive) Color(0xFFDC2626).copy(alpha = 0.15f) else Color(0xFFDC2626).copy(alpha = 0.08f)
+val IncomeGreen = Color(0xFF16A34A)
+val IncomeGreenBg: Color get() = if (isDarkModeActive) Color(0xFF16A34A).copy(alpha = 0.15f) else Color(0xFF16A34A).copy(alpha = 0.08f)
+val SavingGold = Color(0xFFD97706)
+val WarningOrange = Color(0xFFD97706)
+val InfoBlue = Color(0xFF0284C7)
 
 // Backward-compatible aliases for "Sleek Interface" look
 val SlateDarkBg: Color get() = SleekBg

@@ -109,6 +109,11 @@ fun getAppUpdatesHistory(): List<AppReleaseUpdate> {
             isLatest = true,
             specifications = listOf(
                 UpdateSpecification(
+                    category = SpecCategory.UI_UX,
+                    title = "Minimal, Calm & Premium Design System Polish Across Core Screens",
+                    description = "Refined Dashboard, Add/Edit Transaction, Transactions List, Analytics, and Settings screens with an uncompromising minimal, calm, and premium design system. Standardized to 3 corner radii (8dp chips/inputs, 12dp cards, 20dp dialogs/sheets), flat elevation (0dp with 1dp border), strict 4/8/12/16/24 spacing grid, 5-step type scale (12sp caption, 14sp body, 16sp title, 22sp heading, 32sp hero amount) with maximum 2 font weights, tabular right-aligned currency figures, 48dp touch targets, semantic colors (income green, expense red, amber warning), and sentence-case copy without decorative slop or gradients."
+                ),
+                UpdateSpecification(
                     category = SpecCategory.SYSTEM,
                     title = "Structured Log.w Audit Across All Empty Catch Blocks",
                     description = "Eliminated all silent exception swallows across app/src/main/java (PinSecurityComponents, DataExporter, StreakComponents, FinanceAppScreen, FinanceViewModel, FinanceDatabase, PreMigrationBackup, ReminderNotificationHelper). Every catch block is explicitly equipped with Log.w(TAG, msg, e) while strictly preserving control flow and existing user feedback mechanisms."
