@@ -1,6 +1,7 @@
 package com.example.ui
 
 import android.content.Context
+import android.util.Log
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -47,6 +48,8 @@ import androidx.fragment.app.FragmentActivity
 import androidx.compose.material.icons.filled.Fingerprint
 import com.example.data.AppSettingsManager
 import com.example.data.PinSecurityUtils
+
+private const val TAG = "PinSecurityComponents"
 
 /**
  * Full Screen 4-Digit PIN Lock Screen.
@@ -154,7 +157,9 @@ fun PinLockScreen(
                 @Suppress("DEPRECATION")
                 vibrator?.vibrate(150)
             }
-        } catch (_: Exception) {}
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to vibrate device on PIN error", e)
+        }
     }
 
     LaunchedEffect(enteredPin) {

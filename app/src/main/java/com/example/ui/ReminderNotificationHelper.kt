@@ -1,6 +1,7 @@
 package com.example.ui
 
 import android.app.NotificationChannel
+import android.util.Log
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
@@ -12,6 +13,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
+
+private const val TAG = "ReminderNotification"
 
 class BillReminderWorker(
     appContext: Context,
@@ -51,7 +54,7 @@ class BillReminderWorker(
                 }
             }
         } catch (e: Exception) {
-            // Ignore failure
+            Log.w(TAG, "Failed to show reminder notification", e)
         }
         return Result.success()
     }
@@ -80,7 +83,7 @@ object ReminderScheduler {
                 request
             )
         } catch (e: Exception) {
-            // WorkManager fallback
+            Log.w(TAG, "Failed to schedule reminder with WorkManager", e)
         }
     }
 
@@ -88,7 +91,7 @@ object ReminderScheduler {
         try {
             WorkManager.getInstance(context).cancelUniqueWork("reminder_$reminderId")
         } catch (e: Exception) {
-            // Ignore
+            Log.w(TAG, "Failed to cancel reminder with WorkManager", e)
         }
     }
 }
@@ -134,7 +137,7 @@ object ReminderNotificationHelper {
             try {
                 notify(notificationId, builder.build())
             } catch (e: SecurityException) {
-                // Permission not granted
+                Log.w(TAG, "Notification permission not granted to post reminder", e)
             }
         }
     }
@@ -209,7 +212,7 @@ object RecurringBillReminderScheduler {
                 request
             )
         } catch (e: Exception) {
-            // WorkManager unavailable; silently skip rather than crash a background path.
+            Log.w(TAG, "Failed to schedule recurring bill reminder with WorkManager", e)
         }
     }
 
@@ -217,7 +220,7 @@ object RecurringBillReminderScheduler {
         try {
             WorkManager.getInstance(context).cancelUniqueWork(workName(ruleId))
         } catch (e: Exception) {
-            // Ignore
+            Log.w(TAG, "Failed to cancel recurring bill reminder with WorkManager", e)
         }
     }
 

@@ -1,5 +1,6 @@
 package com.example.ui
 
+import android.util.Log
 import com.example.data.*
 import com.example.R
 import java.util.*
@@ -92,6 +93,8 @@ import androidx.activity.result.launch
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
+
+private const val TAG = "FinanceAppScreen"
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
     object Dashboard : Screen("dashboard", "Dashboard", AppIcons.Dashboard)
@@ -7912,7 +7915,9 @@ fun TransactionSuccessDialog(
         )
         try {
             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-        } catch (_: Exception) {}
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to perform celebration haptic feedback", e)
+        }
         animPhase = 2
 
         // Step 3: Reveal text card

@@ -1,11 +1,14 @@
 package com.example.data
 
 import android.content.Context
+import android.util.Log
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
+
+private const val TAG = "PreMigrationBackup"
 
 object PreMigrationBackup {
 
@@ -33,7 +36,7 @@ object PreMigrationBackup {
                 version = db.version
                 db.close()
             } catch (e: Exception) {
-                // Ignore
+                Log.w(TAG, "Failed to read database version for pre-migration backup", e)
             }
 
             val backupDir = getBackupDir(context)
@@ -50,7 +53,7 @@ object PreMigrationBackup {
                 db.rawQuery("PRAGMA wal_checkpoint(FULL)", null).use { it.moveToFirst() }
                 db.close()
             } catch (e: Exception) {
-                // Ignore
+                Log.w(TAG, "Failed to checkpoint WAL during pre-migration backup", e)
             }
 
             FileInputStream(dbFile).use { input ->
@@ -60,6 +63,7 @@ object PreMigrationBackup {
             }
             true
         } catch (e: Exception) {
+            Log.w(TAG, "Pre-migration database backup failed", e)
             false
         }
     }

@@ -109,6 +109,11 @@ fun getAppUpdatesHistory(): List<AppReleaseUpdate> {
             isLatest = true,
             specifications = listOf(
                 UpdateSpecification(
+                    category = SpecCategory.SYSTEM,
+                    title = "Structured Log.w Audit Across All Empty Catch Blocks",
+                    description = "Eliminated all silent exception swallows across app/src/main/java (PinSecurityComponents, DataExporter, StreakComponents, FinanceAppScreen, FinanceViewModel, FinanceDatabase, PreMigrationBackup, ReminderNotificationHelper). Every catch block is explicitly equipped with Log.w(TAG, msg, e) while strictly preserving control flow and existing user feedback mechanisms."
+                ),
+                UpdateSpecification(
                     category = SpecCategory.SECURITY,
                     title = "Production Release Firebase App Check Isolation (Play Integrity Only in Release)",
                     description = "Scoped libs.firebase.appcheck.debug to debugImplementation in build.gradle.kts and decoupled DebugAppCheckProviderFactory from the main source set. Debug provider setup is encapsulated in src/debug/AppCheckDebugHelper with a no-op counterpart in src/release/AppCheckDebugHelper, guaranteeing release builds compile and enforce Play Integrity exclusively without debug artifact leakage."

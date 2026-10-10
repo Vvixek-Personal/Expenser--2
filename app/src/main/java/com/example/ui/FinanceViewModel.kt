@@ -28,6 +28,8 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
+private const val TAG = "FinanceViewModel"
+
 data class ChatMessage(
     val text: String,
     val isUser: Boolean,
@@ -141,7 +143,9 @@ class FinanceViewModel(
                 // (processRecurringRules may have already advanced nextDueDate if it was overdue).
                 val saved = db.financeDao().getRecurringRuleById(newId) ?: rule.copy(id = newId)
                 RecurringBillReminderScheduler.scheduleForRule(getApplication(), saved)
-            } catch (_: Exception) {}
+            } catch (e: Exception) {
+                Log.w(TAG, "Failed to process recurring rules or schedule reminder after inserting rule", e)
+            }
         }
     }
 
@@ -153,7 +157,9 @@ class FinanceViewModel(
                 RecurringProcessor.processRecurringRules(getApplication(), db)
                 val saved = db.financeDao().getRecurringRuleById(rule.id) ?: rule
                 RecurringBillReminderScheduler.scheduleForRule(getApplication(), saved)
-            } catch (_: Exception) {}
+            } catch (e: Exception) {
+                Log.w(TAG, "Failed to process recurring rules or schedule reminder after updating rule", e)
+            }
         }
     }
 
@@ -953,7 +959,9 @@ class FinanceViewModel(
                 val db = FinanceDatabase.getDatabase(getApplication())
                 RecurringProcessor.processRecurringRules(getApplication(), db)
             }
-        } catch (_: Exception) {}
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to schedule recurring worker or process rules in init", e)
+        }
 
         viewModelScope.launch {
             appSettingsManager.state.collect { settings ->
@@ -1705,12 +1713,16 @@ class FinanceViewModel(
                 ctx.filesDir?.listFiles()?.forEach { file ->
                     file.deleteRecursively()
                 }
-            } catch (_: Throwable) {}
+            } catch (e: Throwable) {
+                Log.w(TAG, "Failed to delete filesDir contents during clearAllData", e)
+            }
             try {
                 ctx.cacheDir?.listFiles()?.forEach { file ->
                     file.deleteRecursively()
                 }
-            } catch (_: Throwable) {}
+            } catch (e: Throwable) {
+                Log.w(TAG, "Failed to delete cacheDir contents during clearAllData", e)
+            }
             withContext(Dispatchers.Main) {
                 _toastMessage.value = "All data cleared successfully"
             }

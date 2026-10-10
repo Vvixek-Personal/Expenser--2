@@ -1,5 +1,6 @@
 package com.example.ui
 
+import android.util.Log
 import android.graphics.Paint
 import android.graphics.Typeface
 import androidx.compose.animation.*
@@ -37,6 +38,8 @@ import kotlinx.coroutines.delay
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.random.Random
+
+private const val TAG = "StreakComponents"
 
 /**
  * Data class representing a celebratory confetti / ember particle
@@ -341,7 +344,9 @@ fun DailyStreakCelebrationDialog(
             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
             delay(250)
             haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-        } catch (_: Exception) {}
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to perform streak celebration haptics", e)
+        }
     }
 
     // Animation progress states

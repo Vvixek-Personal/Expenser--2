@@ -1,11 +1,14 @@
 package com.example.data
 
 import android.content.Context
+import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+
+private const val TAG = "FinanceDatabase"
 
 const val FINANCE_DB_VERSION = 13
 const val DATABASE_NAME = "finance_database"
@@ -52,7 +55,9 @@ abstract class FinanceDatabase : RoomDatabase() {
                             )
                             existingVersion = helperDb.version
                             helperDb.close()
-                        } catch (_: Exception) {}
+                        } catch (e: Exception) {
+                            Log.w(TAG, "Failed to read database version before migration", e)
+                        }
 
                         if (existingVersion in 1 until FINANCE_DB_VERSION) {
                             PreMigrationBackup.backupDatabaseBeforeMigration(appContext, DATABASE_NAME)

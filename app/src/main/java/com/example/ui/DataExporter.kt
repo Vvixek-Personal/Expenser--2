@@ -2,6 +2,7 @@ package com.example.ui
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.graphics.*
 import android.graphics.pdf.PdfDocument
 import androidx.core.content.FileProvider
@@ -11,6 +12,8 @@ import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
+
+private const val TAG = "DataExporter"
 
 object DataExporter {
 
@@ -628,6 +631,8 @@ object DataExporter {
                     }
                 }
             }
-        } catch (_: Exception) {}
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to clean old cached reports", e)
+        }
     }
 }
