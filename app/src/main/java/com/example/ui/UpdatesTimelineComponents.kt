@@ -155,8 +155,8 @@ fun getAppUpdatesHistory(): List<AppReleaseUpdate> {
                 ),
                 UpdateSpecification(
                     category = SpecCategory.SECURITY,
-                    title = "PIN Brute-Force Lockout & Keystore HMAC Verification",
-                    description = "Wired calculateLockoutStatus and lockoutDelayMs directly into unlockAppWithPin: failed attempts are counted and synchronously committed to prevent evasion, escalating lockout delays are strictly enforced, PBKDF2 iterations are raised to 210,000, AndroidKeyStore HMAC signing is restored, and cross-version compatibility verifies both Keystore HMAC and legacy hashes."
+                    title = "PIN Brute-Force Lockout, Constant-Time MessageDigest & Keystore Recovery Routing",
+                    description = "Hardened PIN verification across PinSecurityUtils, FinanceViewModel, and PinLockScreen: replaced all hash/PIN comparisons (including legacy plaintext) with constant-time MessageDigest.isEqual to eliminate timing side-channels. For v3 hashes where AndroidKeyStore HMAC keys are missing or invalidated, verifyPin returns a distinct KeystoreKeyCorrupted result instead of failing silently; this routes directly to the LocalRecoveryScreen flow and suppresses failed attempt increments to prevent permanent lockouts while preserving full backward compatibility for legacy hashes."
                 ),
                 UpdateSpecification(
                     category = SpecCategory.SECURITY,

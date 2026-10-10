@@ -1,6 +1,7 @@
 package com.example.data
 
 import android.util.Base64
+import java.security.MessageDigest
 import java.security.SecureRandom
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
@@ -13,6 +14,36 @@ object PinSecurityUtils {
     private const val DEFAULT_ITERATIONS = 210000
     private const val KEYSTORE_ALIAS = "financer_pin_keystore_hmac"
     private const val ANDROID_KEYSTORE = "AndroidKeyStore"
+
+    sealed class PinVerifyResult {
+        object Success : PinVerifyResult()
+        object Failed : PinVerifyResult()
+        object KeystoreKeyCorrupted : PinVerifyResult()
+
+        val isSuccess: Boolean get() = this is Success
+    }
+
+    private sealed class HmacVerificationResult {
+        data class Success(val hmac: ByteArray) : HmacVerificationResult()
+        object KeyMissingOrInvalid : HmacVerificationResult()
+    }
+
+    private fun computeKeystoreHmacForVerification(data: ByteArray): HmacVerificationResult {
+        return try {
+            val keyStore = java.security.KeyStore.getInstance(ANDROID_KEYSTORE)
+            keyStore.load(null)
+            if (!keyStore.containsAlias(KEYSTORE_ALIAS)) {
+                return HmacVerificationResult.KeyMissingOrInvalid
+            }
+            val secretKey = keyStore.getKey(KEYSTORE_ALIAS, null) as? javax.crypto.SecretKey
+                ?: return HmacVerificationResult.KeyMissingOrInvalid
+            val mac = javax.crypto.Mac.getInstance("HmacSHA256")
+            mac.init(secretKey)
+            HmacVerificationResult.Success(mac.doFinal(data))
+        } catch (_: Throwable) {
+            HmacVerificationResult.KeyMissingOrInvalid
+        }
+    }
 
     private fun signWithKeystoreHmac(data: ByteArray): ByteArray? {
         return try {
@@ -52,11 +83,17 @@ object PinSecurityUtils {
         return "$CURRENT_VERSION:$iterations:${encodeBase64(salt)}:${encodeBase64(finalHash)}"
     }
 
-    fun verifyPin(pin: String, storedHash: String): Boolean {
-        if (pin.isBlank() || storedHash.isBlank()) return false
+    fun verifyPin(pin: String, storedHash: String): PinVerifyResult {
+        if (pin.isBlank() || storedHash.isBlank()) return PinVerifyResult.Failed
         
-        // Handle legacy plaintext
-        if (!storedHash.contains(":")) return pin == storedHash
+        // Handle legacy plaintext with constant-time MessageDigest comparison
+        if (!storedHash.contains(":")) {
+            val isMatch = MessageDigest.isEqual(
+                pin.toByteArray(Charsets.UTF_8),
+                storedHash.toByteArray(Charsets.UTF_8)
+            )
+            return if (isMatch) PinVerifyResult.Success else PinVerifyResult.Failed
+        }
         
         val parts = storedHash.split(":")
         try {
@@ -65,26 +102,51 @@ object PinSecurityUtils {
                     val salt = decodeBase64(parts[0])
                     val hash = decodeBase64(parts[1])
                     val testHash = pbkdf2(pin.toCharArray(), salt, 10000)
-                    return hash.contentEquals(testHash)
+                    return if (MessageDigest.isEqual(hash, testHash)) {
+                        PinVerifyResult.Success
+                    } else {
+                        PinVerifyResult.Failed
+                    }
                 }
                 4 -> { // Modern version:iterations:salt:hash
+                    val version = parts[0]
                     val iterations = parts[1].toInt()
                     val salt = decodeBase64(parts[2])
                     val expectedHash = decodeBase64(parts[3])
                     val testPbkdf2 = pbkdf2(pin.toCharArray(), salt, iterations)
 
-                    // Verify against Keystore HMAC first if available
-                    val testHmac = signWithKeystoreHmac(testPbkdf2)
-                    if (testHmac != null && expectedHash.contentEquals(testHmac)) {
-                        return true
+                    if (version == "v3") {
+                        when (val hmacResult = computeKeystoreHmacForVerification(testPbkdf2)) {
+                            is HmacVerificationResult.Success -> {
+                                if (MessageDigest.isEqual(expectedHash, hmacResult.hmac)) {
+                                    return PinVerifyResult.Success
+                                }
+                                if (MessageDigest.isEqual(expectedHash, testPbkdf2)) {
+                                    return PinVerifyResult.Success
+                                }
+                                return PinVerifyResult.Failed
+                            }
+                            is HmacVerificationResult.KeyMissingOrInvalid -> {
+                                if (MessageDigest.isEqual(expectedHash, testPbkdf2)) {
+                                    return PinVerifyResult.Success
+                                }
+                                // Keystore HMAC key is missing or invalid for a v3 hash - distinct result for recovery flow
+                                return PinVerifyResult.KeystoreKeyCorrupted
+                            }
+                        }
+                    } else {
+                        // Modern v2 or other versions
+                        return if (MessageDigest.isEqual(expectedHash, testPbkdf2)) {
+                            PinVerifyResult.Success
+                        } else {
+                            PinVerifyResult.Failed
+                        }
                     }
-                    // Fallback to plain PBKDF2 verification for cross-version compatibility
-                    return expectedHash.contentEquals(testPbkdf2)
                 }
-                else -> return false
+                else -> return PinVerifyResult.Failed
             }
-        } catch (e: Exception) {
-            return false
+        } catch (_: Exception) {
+            return PinVerifyResult.Failed
         }
     }
 

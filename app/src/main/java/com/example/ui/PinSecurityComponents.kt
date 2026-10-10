@@ -57,6 +57,15 @@ fun PinLockScreen(
     viewModel: FinanceViewModel,
     modifier: Modifier = Modifier
 ) {
+    val routeToLocalRecovery by viewModel.routeToLocalRecovery.collectAsStateWithLifecycle()
+    if (routeToLocalRecovery) {
+        LocalRecoveryScreen(
+            viewModel = viewModel,
+            onBack = { viewModel.resetRouteToLocalRecovery() }
+        )
+        return
+    }
+
     val context = LocalContext.current
     val haptic = LocalHapticFeedback.current
     val appSettingsState by AppSettingsManager.getInstance(context).state.collectAsStateWithLifecycle()
@@ -150,17 +159,25 @@ fun PinLockScreen(
 
     LaunchedEffect(enteredPin) {
         if (!isLockedOut && enteredPin.length == 4) {
-            val success = viewModel.unlockAppWithPin(enteredPin)
-            if (success) {
-                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                enteredPin = ""
-                isErrorState = false
-                errorMessage = ""
-            } else {
-                vibrateOnError()
-                isErrorState = true
-                errorMessage = "Incorrect Passcode. Please try again."
-                enteredPin = ""
+            when (val result = viewModel.unlockAppWithPin(enteredPin)) {
+                PinSecurityUtils.PinVerifyResult.Success -> {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    enteredPin = ""
+                    isErrorState = false
+                    errorMessage = ""
+                }
+                PinSecurityUtils.PinVerifyResult.KeystoreKeyCorrupted -> {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    enteredPin = ""
+                    isErrorState = true
+                    errorMessage = "Security key missing/invalid. Routing to Local Recovery..."
+                }
+                PinSecurityUtils.PinVerifyResult.Failed -> {
+                    vibrateOnError()
+                    isErrorState = true
+                    errorMessage = "Incorrect Passcode. Please try again."
+                    enteredPin = ""
+                }
             }
         } else if (enteredPin.isNotEmpty()) {
             isErrorState = false
@@ -759,11 +776,18 @@ fun ChangePinDialog(
                                     enteredCurrent += digit
                                     errorText = ""
                                     if (enteredCurrent.length == 4) {
-                                        if (PinSecurityUtils.verifyPin(enteredCurrent, currentAppPin ?: "")) {
-                                            step = 2
-                                        } else {
-                                            errorText = "Incorrect current passcode."
-                                            enteredCurrent = ""
+                                        when (PinSecurityUtils.verifyPin(enteredCurrent, currentAppPin ?: "")) {
+                                            PinSecurityUtils.PinVerifyResult.Success -> {
+                                                step = 2
+                                            }
+                                            PinSecurityUtils.PinVerifyResult.KeystoreKeyCorrupted -> {
+                                                errorText = "Security key missing/invalid. Use Local Recovery to reset."
+                                                enteredCurrent = ""
+                                            }
+                                            PinSecurityUtils.PinVerifyResult.Failed -> {
+                                                errorText = "Incorrect current passcode."
+                                                enteredCurrent = ""
+                                            }
                                         }
                                     }
                                 }
@@ -819,12 +843,18 @@ fun ChangePinDialog(
                 if (currentAppPin != null && step == 1) {
                     TextButton(
                         onClick = {
-                            if (PinSecurityUtils.verifyPin(enteredCurrent, currentAppPin ?: "")) {
-                                onSavePin(null)
-                                Toast.makeText(context, "Passcode removed.", Toast.LENGTH_SHORT).show()
-                                onDismiss()
-                            } else {
-                                errorText = "Type current passcode first to remove."
+                            when (PinSecurityUtils.verifyPin(enteredCurrent, currentAppPin ?: "")) {
+                                PinSecurityUtils.PinVerifyResult.Success -> {
+                                    onSavePin(null)
+                                    Toast.makeText(context, "Passcode removed.", Toast.LENGTH_SHORT).show()
+                                    onDismiss()
+                                }
+                                PinSecurityUtils.PinVerifyResult.KeystoreKeyCorrupted -> {
+                                    errorText = "Security key missing/invalid. Reset via Local Recovery."
+                                }
+                                PinSecurityUtils.PinVerifyResult.Failed -> {
+                                    errorText = "Type current passcode first to remove."
+                                }
                             }
                         }
                     ) {

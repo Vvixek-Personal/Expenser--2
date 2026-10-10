@@ -354,25 +354,43 @@ class FinanceViewModel(
         sharedPrefs.edit().putBoolean("pin_prompted_first_run", true).apply()
     }
 
-    fun unlockAppWithPin(enteredPin: String): Boolean {
+    private val _routeToLocalRecovery = MutableStateFlow(false)
+    val routeToLocalRecovery: StateFlow<Boolean> = _routeToLocalRecovery.asStateFlow()
+
+    fun triggerLocalRecovery() {
+        _routeToLocalRecovery.value = true
+    }
+
+    fun resetRouteToLocalRecovery() {
+        _routeToLocalRecovery.value = false
+    }
+
+    fun unlockAppWithPin(enteredPin: String): PinSecurityUtils.PinVerifyResult {
         val lockoutStatus = appSettingsManager.getLockoutStatus()
         if (lockoutStatus.isLocked) {
-            return false
+            return PinSecurityUtils.PinVerifyResult.Failed
         }
 
         val storedHash = appSettingsManager.state.value.appPin ?: ""
-        val success = PinSecurityUtils.verifyPin(enteredPin, storedHash)
-        if (success) {
-            appSettingsManager.resetPinLockoutAndAttempts()
-            _isAppLocked.value = false
-            if (PinSecurityUtils.needsRehash(storedHash)) {
-                val upgradedHash = PinSecurityUtils.hashPin(enteredPin)
-                setAppPin(upgradedHash)
+        val result = PinSecurityUtils.verifyPin(enteredPin, storedHash)
+        when (result) {
+            PinSecurityUtils.PinVerifyResult.Success -> {
+                appSettingsManager.resetPinLockoutAndAttempts()
+                _isAppLocked.value = false
+                if (PinSecurityUtils.needsRehash(storedHash)) {
+                    val upgradedHash = PinSecurityUtils.hashPin(enteredPin)
+                    setAppPin(upgradedHash)
+                }
             }
-        } else {
-            appSettingsManager.recordFailedPinAttempt()
+            PinSecurityUtils.PinVerifyResult.KeystoreKeyCorrupted -> {
+                // Do not increment failed attempts (avoids permanent lockout), route to LocalRecovery flow
+                _routeToLocalRecovery.value = true
+            }
+            PinSecurityUtils.PinVerifyResult.Failed -> {
+                appSettingsManager.recordFailedPinAttempt()
+            }
         }
-        return success
+        return result
     }
 
     fun resetAppLockAndWipeData(targetContext: Context? = null) {
