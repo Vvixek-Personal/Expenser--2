@@ -37,9 +37,18 @@ data class ChatMessage(
 data class BillEntry(
     val id: String,
     val title: String,
-    val amount: Double,
-    val dueDate: String
-)
+    val amountMinor: Long = 0L,
+    val dueDate: String,
+    val amount: Double = Money.toDouble(amountMinor, "INR")
+) {
+    constructor(id: String, title: String, amount: Double, dueDate: String) : this(
+        id = id,
+        title = title,
+        amountMinor = Money.fromDouble(amount, "INR"),
+        dueDate = dueDate,
+        amount = amount
+    )
+}
 
 data class ReminderEntry(
     val id: String,
@@ -1975,7 +1984,18 @@ class FinanceViewModel(
 
     fun addAccount(name: String, balance: Double, type: String) {
         viewModelScope.launch {
-            repository.insertAccount(Account(name = name, openingBalance = balance, type = type, currencyCode = _selectedCurrencyCode.value))
+            val cur = _selectedCurrencyCode.value
+            repository.insertAccount(
+                Account(
+                    name = name,
+                    openingBalance = balance,
+                    openingBalanceMinor = Money.fromDouble(balance, cur),
+                    balance = balance,
+                    balanceMinor = Money.fromDouble(balance, cur),
+                    type = type,
+                    currencyCode = cur
+                )
+            )
         }
     }
 
@@ -2018,6 +2038,7 @@ class FinanceViewModel(
             repository.insertExpense(
                 Expense(
                     amount = amount,
+                    amountMinor = Money.fromDouble(amount, cur),
                     category = category,
                     date = System.currentTimeMillis(),
                     note = title.ifBlank { null },
@@ -2052,9 +2073,9 @@ class FinanceViewModel(
             val existing = budgets.value.find { it.category.equals(category, ignoreCase = true) }
             val cur = _selectedCurrencyCode.value
             if (existing != null) {
-                repository.insertBudget(existing.copy(amountLimitMinor = Money.fromDouble(amountLimit, cur), monthYear = mYear))
+                repository.insertBudget(existing.copy(amountLimit = amountLimit, amountLimitMinor = Money.fromDouble(amountLimit, cur), monthYear = mYear))
             } else {
-                repository.insertBudget(Budget(category = category, amountLimit = amountLimit, monthYear = mYear, currencyCode = cur))
+                repository.insertBudget(Budget(category = category, amountLimit = amountLimit, amountLimitMinor = Money.fromDouble(amountLimit, cur), monthYear = mYear, currencyCode = cur))
             }
         }
     }
@@ -2085,29 +2106,35 @@ class FinanceViewModel(
         imageUri: String? = null
     ) {
         viewModelScope.launch {
+            val cur = _selectedCurrencyCode.value
             repository.insertSavingsGoal(
                 SavingsGoal(
                     name = name,
                     targetAmount = targetAmount,
+                    targetAmountMinor = Money.fromDouble(targetAmount, cur),
                     currentAmount = initialAmount,
+                    currentAmountMinor = Money.fromDouble(initialAmount, cur),
                     targetDate = targetDate,
                     frequency = frequency,
                     contributionAmount = contributionAmount,
+                    contributionAmountMinor = Money.fromDouble(contributionAmount, cur),
                     isAutoGap = isAutoGap,
                     iconTag = iconTag,
                     category = category,
-                    imageUri = imageUri
+                    imageUri = imageUri,
+                    currencyCode = cur
                 )
             )
             if (initialAmount > 0) {
                 repository.insertExpense(
                     Expense(
                         amount = initialAmount,
+                        amountMinor = Money.fromDouble(initialAmount, cur),
                         category = "Locked Savings",
                         date = System.currentTimeMillis(),
                         note = "🔒 Initial savings locked in goal: $name",
                         type = "EXPENSE",
-                        currencyCode = _selectedCurrencyCode.value
+                        currencyCode = cur
                     )
                 )
             }
@@ -2134,54 +2161,81 @@ class FinanceViewModel(
             _toastMessage.value = "🔒 Goal Deposit Locked: Cannot deposit %s%,.2f! Exceeds available net balance (%s%,.2f)".format(symbol, amount, symbol, available.coerceAtLeast(0.0))
             return
         }
+        val depositMinor = Money.fromDouble(amount, goal.currencyCode)
         viewModelScope.launch {
-            val newCurr = goal.currentAmount + amount
-            val updated = goal.copy(currentAmountMinor = Money.fromDouble(newCurr, goal.currencyCode))
+            val newCurrMinor = goal.currentAmountMinor + depositMinor
+            val updated = goal.copy(
+                currentAmountMinor = newCurrMinor,
+                currentAmount = Money.toDouble(newCurrMinor, goal.currencyCode)
+            )
             repository.updateSavingsGoal(updated)
 
+            val cur = _selectedCurrencyCode.value
+            val expMinor = Money.fromDouble(amount, cur)
             repository.insertExpense(
                 Expense(
                     amount = amount,
+                    amountMinor = expMinor,
                     category = "Locked Savings",
                     date = System.currentTimeMillis(),
                     note = "🔒 Saved & locked in ${goal.name}",
                     type = "EXPENSE",
-                    currencyCode = _selectedCurrencyCode.value
+                    currencyCode = cur
                 )
             )
 
             val primaryAccount = accounts.value.firstOrNull()
             if (primaryAccount != null) {
-                val newBal = (primaryAccount.openingBalance - amount).coerceAtLeast(0.0)
-                val updatedAcc = primaryAccount.copy(openingBalanceMinor = Money.fromDouble(newBal, primaryAccount.currencyCode))
+                val accDepositMinor = Money.convert(depositMinor, goal.currencyCode, primaryAccount.currencyCode)
+                val newBalMinor = (primaryAccount.openingBalanceMinor - accDepositMinor).coerceAtLeast(0L)
+                val updatedAcc = primaryAccount.copy(
+                    openingBalanceMinor = newBalMinor,
+                    openingBalance = Money.toDouble(newBalMinor, primaryAccount.currencyCode),
+                    balanceMinor = newBalMinor,
+                    balance = Money.toDouble(newBalMinor, primaryAccount.currencyCode)
+                )
                 repository.updateAccount(updatedAcc)
             }
         }
     }
 
     fun quickDeductFromGoal(goal: SavingsGoal, amount: Double) {
-        if (amount <= 0 || goal.currentAmount <= 0) return
-        val deductAmount = amount.coerceAtMost(goal.currentAmount)
+        if (amount <= 0 || goal.currentAmountMinor <= 0L) return
+        val reqMinor = Money.fromDouble(amount, goal.currencyCode)
+        val deductMinor = reqMinor.coerceAtMost(goal.currentAmountMinor)
         viewModelScope.launch {
-            val newCurr = (goal.currentAmount - deductAmount).coerceAtLeast(0.0)
-            val updated = goal.copy(currentAmountMinor = Money.fromDouble(newCurr, goal.currencyCode))
+            val newCurrMinor = (goal.currentAmountMinor - deductMinor).coerceAtLeast(0L)
+            val updated = goal.copy(
+                currentAmountMinor = newCurrMinor,
+                currentAmount = Money.toDouble(newCurrMinor, goal.currencyCode)
+            )
             repository.updateSavingsGoal(updated)
 
+            val cur = _selectedCurrencyCode.value
+            val deductAmount = Money.toDouble(deductMinor, goal.currencyCode)
+            val expMinor = Money.fromDouble(deductAmount, cur)
             repository.insertExpense(
                 Expense(
                     amount = deductAmount,
+                    amountMinor = expMinor,
                     category = "Goal Withdrawal",
                     date = System.currentTimeMillis(),
                     note = "🔓 Deducted/unlocked from ${goal.name}",
                     type = "INCOME",
-                    currencyCode = _selectedCurrencyCode.value
+                    currencyCode = cur
                 )
             )
 
             val primaryAccount = accounts.value.firstOrNull()
             if (primaryAccount != null) {
-                val newBal = primaryAccount.openingBalance + deductAmount
-                val updatedAcc = primaryAccount.copy(openingBalanceMinor = Money.fromDouble(newBal, primaryAccount.currencyCode))
+                val accDeductMinor = Money.convert(deductMinor, goal.currencyCode, primaryAccount.currencyCode)
+                val newBalMinor = primaryAccount.openingBalanceMinor + accDeductMinor
+                val updatedAcc = primaryAccount.copy(
+                    openingBalanceMinor = newBalMinor,
+                    openingBalance = Money.toDouble(newBalMinor, primaryAccount.currencyCode),
+                    balanceMinor = newBalMinor,
+                    balance = Money.toDouble(newBalMinor, primaryAccount.currencyCode)
+                )
                 repository.updateAccount(updatedAcc)
             }
         }
@@ -2223,9 +2277,9 @@ class FinanceViewModel(
         val totalInc = allExp.realIncome(curCode)
         val totalExp = allExp.realExpense(curCode)
         val net = totalInc - totalExp
-        val topCat = allExp.filter { it.type != "INCOME" && it.category != "Locked Savings" }
+        val topCat = allExp.filter { it.type != "INCOME" && it.category != "Locked Savings" && it.kind != "SAVINGS_LOCK" && it.kind != "SAVINGS_RELEASE" }
             .groupBy { it.category }
-            .mapValues { entry -> entry.value.sumOf { CurrencyManager.convert(it.amount, it.currencyCode, curCode) } }
+            .mapValues { entry -> entry.value.sumOf { Money.convert(it.amountMinor, it.currencyCode, curCode) } }
             .maxByOrNull { it.value }
 
         return FinancialTotalsContext(
@@ -2370,7 +2424,7 @@ class FinanceViewModel(
             accObj.put("id", acc.id)
             accObj.put("name", acc.name)
             accObj.put("balanceMinor", acc.balanceMinor)
-            accObj.put("balance", acc.balance)
+            accObj.put("balance", Money.toDouble(acc.balanceMinor, acc.currencyCode))
             accObj.put("type", acc.type)
             accObj.put("currencyCode", acc.currencyCode)
             accountsArr.put(accObj)
@@ -2387,7 +2441,7 @@ class FinanceViewModel(
             val expObj = JSONObject()
             expObj.put("id", exp.id)
             expObj.put("amountMinor", exp.amountMinor)
-            expObj.put("amount", exp.amount)
+            expObj.put("amount", Money.toDouble(exp.amountMinor, exp.currencyCode))
             expObj.put("category", exp.category)
             expObj.put("date", exp.date)
             expObj.put("note", exp.note ?: "")
@@ -2406,7 +2460,7 @@ class FinanceViewModel(
             bObj.put("id", b.id)
             bObj.put("category", b.category)
             bObj.put("amountLimitMinor", b.amountLimitMinor)
-            bObj.put("amountLimit", b.amountLimit)
+            bObj.put("amountLimit", Money.toDouble(b.amountLimitMinor, b.currencyCode))
             bObj.put("monthYear", b.monthYear)
             bObj.put("currencyCode", b.currencyCode)
             budgetsArr.put(bObj)
@@ -2421,13 +2475,13 @@ class FinanceViewModel(
             gObj.put("id", g.id)
             gObj.put("name", g.name)
             gObj.put("targetAmountMinor", g.targetAmountMinor)
-            gObj.put("targetAmount", g.targetAmount)
+            gObj.put("targetAmount", Money.toDouble(g.targetAmountMinor, g.currencyCode))
             gObj.put("currentAmountMinor", g.currentAmountMinor)
-            gObj.put("currentAmount", g.currentAmount)
+            gObj.put("currentAmount", Money.toDouble(g.currentAmountMinor, g.currencyCode))
             gObj.put("targetDate", g.targetDate)
             gObj.put("frequency", g.frequency)
             gObj.put("contributionAmountMinor", g.contributionAmountMinor)
-            gObj.put("contributionAmount", g.contributionAmount)
+            gObj.put("contributionAmount", Money.toDouble(g.contributionAmountMinor, g.currencyCode))
             gObj.put("isAutoGap", g.isAutoGap)
             gObj.put("iconTag", g.iconTag)
             gObj.put("category", g.category)
@@ -2443,7 +2497,8 @@ class FinanceViewModel(
             val bObj = JSONObject()
             bObj.put("id", bill.id)
             bObj.put("title", bill.title)
-            bObj.put("amount", bill.amount)
+            bObj.put("amountMinor", bill.amountMinor)
+            bObj.put("amount", Money.toDouble(bill.amountMinor, "INR"))
             bObj.put("dueDate", bill.dueDate)
             billsArr.put(bObj)
         }
@@ -2682,12 +2737,14 @@ class FinanceViewModel(
                     billsList.clear()
                     for (i in 0 until billsArr.length()) {
                         val o = billsArr.getJSONObject(i)
+                        val amtMinor = if (o.has("amountMinor")) o.optLong("amountMinor", 0L) else Money.fromDouble(o.optDouble("amount", 0.0), "INR")
                         billsList.add(
                             BillEntry(
                                 id = o.optString("id", System.currentTimeMillis().toString()),
                                 title = o.optString("title", "Bill"),
-                                amount = o.optDouble("amount", 0.0),
-                                dueDate = o.optString("dueDate", "")
+                                amountMinor = amtMinor,
+                                dueDate = o.optString("dueDate", ""),
+                                amount = Money.toDouble(amtMinor, "INR")
                             )
                         )
                     }

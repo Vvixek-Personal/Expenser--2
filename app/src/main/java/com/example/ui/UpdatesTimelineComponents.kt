@@ -105,9 +105,19 @@ fun getAppUpdatesHistory(): List<AppReleaseUpdate> {
             timestamp = tsV129,
             startDate = "7th Oct",
             endDate = "7th Oct",
-            headline = "Zero-Data-Loss Universal Migration Engine (v13), Pre-Migration Auto-Backups, Animated Money Suite, Deep Insights Crash Guards, Enhanced Streak Flame Physics & 3D Branded Logos, 210,000 Iteration PBKDF2 PIN Security, Claude-Style Outlined Icon Architecture",
+            headline = "Zero-Data-Loss Universal Migration Engine (v13), Pre-Migration Auto-Backups, Animated Money Suite, Deep Insights Crash Guards, Enhanced Streak Flame Physics & 3D Branded Logos, 210,000 Iteration PBKDF2 PIN Security, Claude-Style Outlined Icon Architecture, 400-Batch Subcollection Cloud Sync, Universal amountMinor Accounting",
             isLatest = true,
             specifications = listOf(
+                UpdateSpecification(
+                    category = SpecCategory.SYSTEM,
+                    title = "Subcollection Partitioning & 400-Chunk WriteBatch Cloud Sync",
+                    description = "Eliminated Firestore 1 MiB single-document overflow by moving all collections (expenses, accounts, budgets, goals, recurringRules, reminders) to users/{uid}/<name>/{id} subcollections committed in WriteBatch chunks of max 400 operations. Retained root doc strictly for user settings metadata, preserved full backwards compatibility on cloud restore, and fortified firestore.rules with match /users/{userId}/{document=**}."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SYSTEM,
+                    title = "Universal amountMinor Accounting & Export Normalization",
+                    description = "Enforced amountMinor as the single source of truth across all financial calculations, category sums, cross-currency conversions, and JSON/PDF statement exports in FinanceViewModel and DataExporter. All entity write paths synchronously populate minor units and convert to Double strictly at display time via Money.kt, avoiding floating-point precision drift."
+                ),
                 UpdateSpecification(
                     category = SpecCategory.UI_UX,
                     title = "Animated Financial Component Suite (AnimatedMoneyComponents)",

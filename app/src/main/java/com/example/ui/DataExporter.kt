@@ -295,7 +295,8 @@ object DataExporter {
                 canvas.drawText(if (isIncome) "INCOME" else "EXPENSE", 225f, y + 14f, if (isIncome) incomePaint else expensePaint)
                 canvas.drawText((item.note ?: "No note").take(24), 300f, y + 14f, bodyPaint)
 
-                val amtStr = String.format(Locale.getDefault(), "%s₹%,.2f", if (isIncome) "+" else "-", item.amount)
+                val itemAmt = Money.toDouble(item.amountMinor, item.currencyCode)
+                val amtStr = String.format(Locale.getDefault(), "%s₹%,.2f", if (isIncome) "+" else "-", itemAmt)
                 canvas.drawText(amtStr, 475f, y + 14f, if (isIncome) incomePaint else expensePaint)
 
                 y += 20f
@@ -401,7 +402,7 @@ object DataExporter {
             sb.append("        \"date\": \"${sdf.format(Date(exp.date))}\",\n")
             sb.append("        \"timestamp\": ${exp.date},\n")
             sb.append("        \"category\": \"${exp.category.replace("\"", "\\\"")}\",\n")
-            sb.append("        \"amount\": ${exp.amount},\n")
+            sb.append("        \"amount\": ${Money.toDouble(exp.amountMinor, exp.currencyCode)},\n")
             sb.append("        \"amountMinor\": ${exp.amountMinor},\n")
             sb.append("        \"currencyCode\": \"${exp.currencyCode}\",\n")
             sb.append("        \"type\": \"${exp.type}\",\n")
@@ -582,7 +583,8 @@ object DataExporter {
             canvas.drawText("${item.category} • ${(item.note ?: "No description").take(22)}", 200f, y + 24f, Paint().apply { color = Color.WHITE; textSize = 12f; typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD) })
             canvas.drawText(if (isIncome) "INCOME" else "EXPENSE", 520f, y + 24f, Paint().apply { color = Color.parseColor(if (isIncome) "#34D399" else "#F8FAFC"); textSize = 11f })
 
-            val amtStr = String.format(Locale.getDefault(), "%s₹%,.2f", if (isIncome) "+" else "-", item.amount)
+            val itemAmt = Money.toDouble(item.amountMinor, item.currencyCode)
+            val amtStr = String.format(Locale.getDefault(), "%s₹%,.2f", if (isIncome) "+" else "-", itemAmt)
             canvas.drawText(amtStr, 630f, y + 24f, Paint().apply { color = Color.parseColor(if (isIncome) "#34D399" else "#F8FAFC"); textSize = 12f; typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD) })
 
             y += 38f
