@@ -109,6 +109,11 @@ fun getAppUpdatesHistory(): List<AppReleaseUpdate> {
             isLatest = true,
             specifications = listOf(
                 UpdateSpecification(
+                    category = SpecCategory.SECURITY,
+                    title = "Production Release Firebase App Check Isolation (Play Integrity Only in Release)",
+                    description = "Scoped libs.firebase.appcheck.debug to debugImplementation in build.gradle.kts and decoupled DebugAppCheckProviderFactory from the main source set. Debug provider setup is encapsulated in src/debug/AppCheckDebugHelper with a no-op counterpart in src/release/AppCheckDebugHelper, guaranteeing release builds compile and enforce Play Integrity exclusively without debug artifact leakage."
+                ),
+                UpdateSpecification(
                     category = SpecCategory.SYSTEM,
                     title = "Subcollection Partitioning & 400-Chunk WriteBatch Cloud Sync",
                     description = "Eliminated Firestore 1 MiB single-document overflow by moving all collections (expenses, accounts, budgets, goals, recurringRules, reminders) to users/{uid}/<name>/{id} subcollections committed in WriteBatch chunks of max 400 operations. Retained root doc strictly for user settings metadata, preserved full backwards compatibility on cloud restore, and fortified firestore.rules with match /users/{userId}/{document=**}."
