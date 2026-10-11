@@ -110,6 +110,11 @@ fun getAppUpdatesHistory(): List<AppReleaseUpdate> {
             specifications = listOf(
                 UpdateSpecification(
                     category = SpecCategory.UI_UX,
+                    title = "Standardized Profile Silhouette Icon on Welcome & Unconfigured Avatars",
+                    description = "Integrated the official silhouette profile icon (AppIcons.Person) consistently across the 'Welcome to Finance' onboarding greeting and all unconfigured profile avatar fallbacks (Dashboard header, Analytics header, and Sidebar drawer header)."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.UI_UX,
                     title = "Minimal, Calm & Premium Design System Polish Across Core Screens",
                     description = "Refined Dashboard, Add/Edit Transaction, Transactions List, Analytics, and Settings screens with an uncompromising minimal, calm, and premium design system. Standardized to 3 corner radii (8dp chips/inputs, 12dp cards, 20dp dialogs/sheets), flat elevation (0dp with 1dp border), strict 4/8/12/16/24 spacing grid, 5-step type scale (12sp caption, 14sp body, 16sp title, 22sp heading, 32sp hero amount) with maximum 2 font weights, tabular right-aligned currency figures, 48dp touch targets, semantic colors (income green, expense red, amber warning), and sentence-case copy without decorative slop or gradients."
                 ),

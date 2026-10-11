@@ -1055,11 +1055,11 @@ fun DashboardTab(
                             modifier = Modifier.fillMaxSize()
                         )
                     } else {
-                        Text(
-                            text = initials,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = SleekOnPrimaryContainer,
-                            fontWeight = FontWeight.Bold
+                        Icon(
+                            imageVector = AppIcons.Person,
+                            contentDescription = "Profile",
+                            tint = SleekPrimary,
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 }
@@ -3258,11 +3258,11 @@ fun AnalyticsTab(
                         modifier = Modifier.fillMaxSize()
                     )
                 } else {
-                    Text(
-                        text = initials,
-                        fontWeight = FontWeight.Bold,
-                        color = SleekPrimary,
-                        fontSize = 15.sp
+                    Icon(
+                        imageVector = AppIcons.Person,
+                        contentDescription = "Profile",
+                        tint = SleekPrimary,
+                        modifier = Modifier.size(22.dp)
                     )
                 }
             }
@@ -7101,11 +7101,11 @@ fun SidebarDrawerContent(
                             modifier = Modifier.fillMaxSize()
                         )
                     } else {
-                        Text(
-                            text = initials,
-                            style = MaterialTheme.typography.titleLarge,
-                            color = SleekOnPrimaryContainer,
-                            fontWeight = FontWeight.ExtraBold
+                        Icon(
+                            imageVector = AppIcons.Person,
+                            contentDescription = "Profile",
+                            tint = SleekOnPrimaryContainer,
+                            modifier = Modifier.size(32.dp)
                         )
                     }
                 }
