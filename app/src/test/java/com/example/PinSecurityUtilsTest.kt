@@ -31,7 +31,7 @@ class PinSecurityUtilsTest {
         val storedHash = PinSecurityUtils.hashPin(pin, iterations = 2000)
 
         val isValid = PinSecurityUtils.verifyPin(pin, storedHash)
-        assertTrue("Correct PIN must verify successfully", isValid)
+        assertTrue("Correct PIN must verify successfully", isValid.isSuccess)
     }
 
     @Test
@@ -41,33 +41,33 @@ class PinSecurityUtilsTest {
         val storedHash = PinSecurityUtils.hashPin(pin, iterations = 2000)
 
         val isValid = PinSecurityUtils.verifyPin(wrongPin, storedHash)
-        assertFalse("Wrong PIN must fail verification", isValid)
+        assertFalse("Wrong PIN must fail verification", isValid.isSuccess)
     }
 
     @Test
     fun blankOrEmptyPinFails() {
         val storedHash = PinSecurityUtils.hashPin("1234", iterations = 1000)
-        assertFalse("Blank PIN should fail", PinSecurityUtils.verifyPin("", storedHash))
-        assertFalse("Whitespace PIN should fail", PinSecurityUtils.verifyPin("   ", storedHash))
-        assertFalse("Blank stored hash should fail", PinSecurityUtils.verifyPin("1234", ""))
+        assertFalse("Blank PIN should fail", PinSecurityUtils.verifyPin("", storedHash).isSuccess)
+        assertFalse("Whitespace PIN should fail", PinSecurityUtils.verifyPin("   ", storedHash).isSuccess)
+        assertFalse("Blank stored hash should fail", PinSecurityUtils.verifyPin("1234", "").isSuccess)
     }
 
     @Test
     fun malformedStoredStringsDoNotCrashAndReturnFalse() {
-        assertFalse(PinSecurityUtils.verifyPin("1234", "invalid_format_no_colons_mismatch"))
-        assertFalse(PinSecurityUtils.verifyPin("1234", "v2:notanumber:salt:hash"))
-        assertFalse(PinSecurityUtils.verifyPin("1234", "v3:notanumber:salt:hash"))
-        assertFalse(PinSecurityUtils.verifyPin("1234", "v2:1000:badbase64:::"))
-        assertFalse(PinSecurityUtils.verifyPin("1234", "::::"))
-        assertFalse(PinSecurityUtils.verifyPin("1234", "v2:1000"))
-        assertFalse(PinSecurityUtils.verifyPin("1234", "part1:part2:part3")) // 3 parts, invalid
+        assertFalse(PinSecurityUtils.verifyPin("1234", "invalid_format_no_colons_mismatch").isSuccess)
+        assertFalse(PinSecurityUtils.verifyPin("1234", "v2:notanumber:salt:hash").isSuccess)
+        assertFalse(PinSecurityUtils.verifyPin("1234", "v3:notanumber:salt:hash").isSuccess)
+        assertFalse(PinSecurityUtils.verifyPin("1234", "v2:1000:badbase64:::").isSuccess)
+        assertFalse(PinSecurityUtils.verifyPin("1234", "::::").isSuccess)
+        assertFalse(PinSecurityUtils.verifyPin("1234", "v2:1000").isSuccess)
+        assertFalse(PinSecurityUtils.verifyPin("1234", "part1:part2:part3").isSuccess) // 3 parts, invalid
     }
 
     @Test
     fun legacyPlaintextPinVerifiesAndNeedsRehash() {
         val plaintextPin = "9876"
-        assertTrue("Plaintext exact match should verify", PinSecurityUtils.verifyPin("9876", plaintextPin))
-        assertFalse("Plaintext mismatch should fail", PinSecurityUtils.verifyPin("1234", plaintextPin))
+        assertTrue("Plaintext exact match should verify", PinSecurityUtils.verifyPin("9876", plaintextPin).isSuccess)
+        assertFalse("Plaintext mismatch should fail", PinSecurityUtils.verifyPin("1234", plaintextPin).isSuccess)
         assertTrue("Plaintext format needs rehash", PinSecurityUtils.needsRehash(plaintextPin))
     }
 
@@ -83,8 +83,8 @@ class PinSecurityUtilsTest {
 
         val legacyStored = "${PinSecurityUtils.encodeBase64(salt)}:${PinSecurityUtils.encodeBase64(rawHash)}"
 
-        assertTrue("Legacy v1 salt:hash format must verify", PinSecurityUtils.verifyPin("4321", legacyStored))
-        assertFalse("Wrong PIN against legacy format must fail", PinSecurityUtils.verifyPin("9999", legacyStored))
+        assertTrue("Legacy v1 salt:hash format must verify", PinSecurityUtils.verifyPin("4321", legacyStored).isSuccess)
+        assertFalse("Wrong PIN against legacy format must fail", PinSecurityUtils.verifyPin("9999", legacyStored).isSuccess)
         assertTrue("Legacy hash must require rehash to modern standard", PinSecurityUtils.needsRehash(legacyStored))
     }
 
@@ -195,8 +195,8 @@ class PinSecurityUtilsTest {
         assertNotNull("Stored PIN in prefs must not be null", storedPinInPrefs)
         assertNotEquals("Stored PIN in prefs must NOT be plaintext '4821'", "4821", storedPinInPrefs)
         assertTrue("Stored PIN must start with v2: or v3:", storedPinInPrefs!!.startsWith("v2:") || storedPinInPrefs.startsWith("v3:"))
-        assertTrue("Stored PIN must verify successfully with '4821'", PinSecurityUtils.verifyPin("4821", storedPinInPrefs))
-        assertFalse("Stored PIN must fail verification with wrong PIN", PinSecurityUtils.verifyPin("0000", storedPinInPrefs))
+        assertTrue("Stored PIN must verify successfully with '4821'", PinSecurityUtils.verifyPin("4821", storedPinInPrefs).isSuccess)
+        assertFalse("Stored PIN must fail verification with wrong PIN", PinSecurityUtils.verifyPin("0000", storedPinInPrefs).isSuccess)
     }
 
     @Test
@@ -214,6 +214,6 @@ class PinSecurityUtilsTest {
         assertNotEquals("Legacy plaintext '7392' in SharedPreferences must be upgraded", "7392", prefsPin)
         assertTrue("Upgraded PIN in SharedPreferences must start with v2: or v3:", prefsPin!!.startsWith("v2:") || prefsPin.startsWith("v3:"))
         assertEquals("State appPin and prefsPin should match", prefsPin, statePin)
-        assertTrue("Upgraded PIN must verify successfully with '7392'", PinSecurityUtils.verifyPin("7392", prefsPin))
+        assertTrue("Upgraded PIN must verify successfully with '7392'", PinSecurityUtils.verifyPin("7392", prefsPin).isSuccess)
     }
 }

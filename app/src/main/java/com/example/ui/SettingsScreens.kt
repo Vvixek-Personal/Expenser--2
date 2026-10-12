@@ -12,8 +12,11 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.background
+import androidx.compose.ui.res.painterResource
+import com.example.R
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -187,20 +190,14 @@ fun PersonalDataScreen(
                             .clip(CircleShape)
                     )
                 } else {
-                    Box(
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_default_profile_avatar),
+                        contentDescription = "Profile Picture",
+                        contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .size(100.dp)
                             .clip(CircleShape)
-                            .background(SleekPrimary.copy(alpha = 0.15f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = AppIcons.Person,
-                            contentDescription = null,
-                            tint = SleekPrimary,
-                            modifier = Modifier.size(50.dp)
-                        )
-                    }
+                    )
                 }
 
                 Surface(

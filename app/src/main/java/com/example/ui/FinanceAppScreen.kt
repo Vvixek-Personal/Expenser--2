@@ -1055,11 +1055,11 @@ fun DashboardTab(
                             modifier = Modifier.fillMaxSize()
                         )
                     } else {
-                        Icon(
-                            imageVector = AppIcons.Person,
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_default_profile_avatar),
                             contentDescription = "Profile",
-                            tint = SleekPrimary,
-                            modifier = Modifier.size(24.dp)
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
                         )
                     }
                 }
@@ -3258,11 +3258,11 @@ fun AnalyticsTab(
                         modifier = Modifier.fillMaxSize()
                     )
                 } else {
-                    Icon(
-                        imageVector = AppIcons.Person,
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_default_profile_avatar),
                         contentDescription = "Profile",
-                        tint = SleekPrimary,
-                        modifier = Modifier.size(22.dp)
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
             }
@@ -5500,16 +5500,17 @@ fun OnboardingNameDialog(
             ) {
                 Box(
                     modifier = Modifier
-                        .size(64.dp)
+                        .size(76.dp)
                         .clip(CircleShape)
-                        .background(SleekPrimaryContainer),
+                        .background(SleekPrimaryContainer)
+                        .border(2.dp, SleekBorder, CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = AppIcons.Person,
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_default_profile_avatar),
                         contentDescription = "Welcome User",
-                        tint = SleekPrimary,
-                        modifier = Modifier.size(36.dp)
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
 
@@ -7101,11 +7102,11 @@ fun SidebarDrawerContent(
                             modifier = Modifier.fillMaxSize()
                         )
                     } else {
-                        Icon(
-                            imageVector = AppIcons.Person,
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_default_profile_avatar),
                             contentDescription = "Profile",
-                            tint = SleekOnPrimaryContainer,
-                            modifier = Modifier.size(32.dp)
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
                         )
                     }
                 }

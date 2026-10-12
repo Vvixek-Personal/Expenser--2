@@ -105,13 +105,13 @@ fun getAppUpdatesHistory(): List<AppReleaseUpdate> {
             timestamp = tsV129,
             startDate = "7th Oct",
             endDate = "7th Oct",
-            headline = "Zero-Data-Loss Universal Migration Engine (v13), Pre-Migration Auto-Backups, Animated Money Suite, Deep Insights Crash Guards, Enhanced Streak Flame Physics & 3D Branded Logos, 210,000 Iteration PBKDF2 PIN Security, Claude-Style Outlined Icon Architecture, 400-Batch Subcollection Cloud Sync, Universal amountMinor Accounting",
+            headline = "Signature Character Profile Avatar Integration, Zero-Data-Loss Universal Migration Engine (v13), Pre-Migration Auto-Backups, Animated Money Suite, Deep Insights Crash Guards, Enhanced Streak Flame Physics & 3D Branded Logos, 210,000 Iteration PBKDF2 PIN Security, Claude-Style Outlined Icon Architecture, 400-Batch Subcollection Cloud Sync, Universal amountMinor Accounting",
             isLatest = true,
             specifications = listOf(
                 UpdateSpecification(
                     category = SpecCategory.UI_UX,
-                    title = "Standardized Profile Silhouette Icon on Welcome & Unconfigured Avatars",
-                    description = "Integrated the official silhouette profile icon (AppIcons.Person) consistently across the 'Welcome to Finance' onboarding greeting and all unconfigured profile avatar fallbacks (Dashboard header, Analytics header, and Sidebar drawer header)."
+                    title = "Signature Character Profile Avatar Integration on Welcome & Default Avatars",
+                    description = "Integrated the bespoke character profile avatar (ic_default_profile_avatar) with sharp circular clipping, high-contrast studio portrait rendering, and 2dp border treatment across the 'Welcome to Finance' first-run dialog, top app bar greeting avatar, Analytics tab header, Sidebar drawer user profile card, and Settings Personal Data profile photo fallback when no custom picture is set."
                 ),
                 UpdateSpecification(
                     category = SpecCategory.UI_UX,
