@@ -306,9 +306,9 @@ fun FinanceAppScreen(viewModel: FinanceViewModel) {
 
     BackHandler(enabled = canHandleBack) {
         when {
+            activeSettingsSubScreen != null -> activeSettingsSubScreen = null
             drawerFullscreen -> drawerFullscreen = false
             drawerState.isOpen -> scope.launch { drawerState.close() }
-            activeSettingsSubScreen != null -> activeSettingsSubScreen = null
             viewingDetailExpense != null -> viewingDetailExpense = null
             editingExpense != null -> editingExpense = null
             showAddExpenseDialog -> showAddExpenseDialog = false
@@ -331,12 +331,19 @@ fun FinanceAppScreen(viewModel: FinanceViewModel) {
             gesturesEnabled = !locked && activeSettingsSubScreen == null,
             drawerContent = {
                 val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-                val sheetSpec = spring<androidx.compose.ui.unit.Dp>(stiffness = Spring.StiffnessMediumLow)
-                val sheetWidth by animateDpAsState(if (drawerFullscreen) screenWidth else 330.dp, sheetSpec, label = "sheetWidth")
-                val padTop by animateDpAsState(if (drawerFullscreen) 0.dp else 44.dp, sheetSpec, label = "sheetPadTop")
-                val padBottom by animateDpAsState(if (drawerFullscreen) 0.dp else 44.dp, sheetSpec, label = "sheetPadBottom")
-                val padEnd by animateDpAsState(if (drawerFullscreen) 0.dp else 12.dp, sheetSpec, label = "sheetPadEnd")
-                val corner by animateDpAsState(if (drawerFullscreen) 0.dp else 24.dp, sheetSpec, label = "sheetCorner")
+                val fullscreenProgress by animateFloatAsState(
+                    targetValue = if (drawerFullscreen) 1f else 0f,
+                    animationSpec = tween(
+                        durationMillis = 280,
+                        easing = CubicBezierEasing(0.25f, 0.1f, 0.25f, 1.0f)
+                    ),
+                    label = "sidebar_fullscreen_progress"
+                )
+                val sheetWidth = 330.dp + (screenWidth - 330.dp) * fullscreenProgress
+                val padTop = 44.dp * (1f - fullscreenProgress)
+                val padBottom = 44.dp * (1f - fullscreenProgress)
+                val padEnd = 12.dp * (1f - fullscreenProgress)
+                val corner = 24.dp * (1f - fullscreenProgress)
 
                 ModalDrawerSheet(
                     drawerContainerColor = Color.Transparent,
@@ -356,12 +363,10 @@ fun FinanceAppScreen(viewModel: FinanceViewModel) {
                             .fillMaxSize()
                             .pointerInput(drawerState.currentValue, drawerFullscreen) {
                                 if (drawerState.currentValue != DrawerValue.Open) return@pointerInput
-                                val trigger = 48.dp.toPx()
+                                val trigger = 36.dp.toPx()
                                 awaitEachGesture {
                                     val down = awaitFirstDown(requireUnconsumed = false)
                                     val first = awaitHorizontalTouchSlopOrCancellation(down.id) { change, overSlop ->
-                                        // Only claim the swipe we care about; everything else
-                                        // passes through so normal swipe-to-close still works.
                                         if ((!drawerFullscreen && overSlop > 0f) ||
                                             (drawerFullscreen && overSlop < 0f)) change.consume()
                                     }
@@ -381,12 +386,15 @@ fun FinanceAppScreen(viewModel: FinanceViewModel) {
                             viewModel = viewModel,
                             onCloseDrawer = { scope.launch { drawerState.close() } },
                             onOpenSettingsScreen = { subScreen ->
-                                scope.launch { drawerState.close() }
                                 activeSettingsSubScreen = subScreen
+                                scope.launch { drawerState.snapTo(DrawerValue.Closed) }
+                                drawerFullscreen = false
                             },
                             onChangePasswordClick = {
                                 showChangePinDialog = true
-                            }
+                            },
+                            isFullscreen = drawerFullscreen,
+                            onToggleFullscreen = { drawerFullscreen = !drawerFullscreen }
                         )
                     }
                 }
@@ -580,26 +588,65 @@ fun FinanceAppScreen(viewModel: FinanceViewModel) {
                 )
             }
         }
+    } // End ModalNavigationDrawer
 
-        AnimatedContent(
-            targetState = activeSettingsSubScreen,
-            transitionSpec = {
-                if (targetState != null) {
-                    (slideInHorizontally(
-                        initialOffsetX = { it },
-                        animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessMediumLow)
-                    ) + fadeIn()).togetherWith(
-                        slideOutHorizontally(targetOffsetX = { -it / 3 }) + fadeOut()
+    // 🍎 Apple Settings Native Push & Pop Navigation Transition Suite
+    AnimatedContent(
+        targetState = activeSettingsSubScreen,
+        transitionSpec = {
+            if (targetState != null) {
+                // Apple iOS Push: Subscreen slides in from right edge (100% width) with subtle fade in,
+                // while underlying screen shifts left with 25% parallax and subtle fade out.
+                (slideInHorizontally(
+                    initialOffsetX = { fullWidth -> fullWidth },
+                    animationSpec = tween(
+                        durationMillis = 320,
+                        easing = CubicBezierEasing(0.25f, 0.1f, 0.25f, 1.0f)
                     )
-                } else {
-                    fadeIn().togetherWith(
-                        slideOutHorizontally(targetOffsetX = { it }) + fadeOut()
+                ) + fadeIn(
+                    animationSpec = tween(durationMillis = 180)
+                )).togetherWith(
+                    slideOutHorizontally(
+                        targetOffsetX = { fullWidth -> -fullWidth / 4 },
+                        animationSpec = tween(
+                            durationMillis = 320,
+                            easing = CubicBezierEasing(0.25f, 0.1f, 0.25f, 1.0f)
+                        )
+                    ) + fadeOut(
+                        animationSpec = tween(durationMillis = 180)
                     )
-                }
-            },
-            label = "settings_subscreen_transition"
-        ) { targetScreen ->
-            if (targetScreen != null) {
+                )
+            } else {
+                // Apple iOS Pop / Back: Exiting subscreen slides out to right (100% width) with subtle fade out,
+                // while returning screen returns from left (-25% width) with reverse parallax.
+                (slideInHorizontally(
+                    initialOffsetX = { fullWidth -> -fullWidth / 4 },
+                    animationSpec = tween(
+                        durationMillis = 280,
+                        easing = CubicBezierEasing(0.25f, 0.1f, 0.25f, 1.0f)
+                    )
+                ) + fadeIn(
+                    animationSpec = tween(durationMillis = 180)
+                )).togetherWith(
+                    slideOutHorizontally(
+                        targetOffsetX = { fullWidth -> fullWidth },
+                        animationSpec = tween(
+                            durationMillis = 280,
+                            easing = CubicBezierEasing(0.25f, 0.1f, 0.25f, 1.0f)
+                        )
+                    ) + fadeOut(
+                        animationSpec = tween(durationMillis = 180)
+                    )
+                )
+            }
+        },
+        label = "apple_settings_navigation_transition"
+    ) { targetScreen ->
+        if (targetScreen != null) {
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = SleekBg
+            ) {
                 when (targetScreen) {
                     SettingsSubScreen.PersonalData -> PersonalDataScreen(
                         viewModel = viewModel,
@@ -697,11 +744,11 @@ fun FinanceAppScreen(viewModel: FinanceViewModel) {
                 }
             }
         }
+    }
 
-        // Full Screen Lock Overlay if app is locked with a PIN
-        if (locked) {
-            PinLockScreen(viewModel = viewModel)
-        }
+    // Full Screen Lock Overlay if app is locked with a PIN
+    if (locked) {
+        PinLockScreen(viewModel = viewModel)
     }
 
     // First Run Optional PIN Setup Prompt
@@ -1720,7 +1767,7 @@ fun QuickServicesCategorySection(
                     contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
                 ) {
                     Text(
-                        text = "All tools",
+                        text = LanguageManager.tr("All Tools", selectedLanguage),
                         style = MaterialTheme.typography.bodySmall,
                         color = SleekPrimary,
                         fontWeight = FontWeight.SemiBold,
@@ -1742,7 +1789,7 @@ fun QuickServicesCategorySection(
             ) {
                 CategoryFeedTile(
                     icon = AppIcons.TrendingDown,
-                    label = "Expense",
+                    label = LanguageManager.tr("Expense", selectedLanguage),
                     tileColor = ExpenseRed,
                     onClick = onAddExpense,
                     modifier = Modifier.weight(1f)
@@ -1750,7 +1797,7 @@ fun QuickServicesCategorySection(
 
                 CategoryFeedTile(
                     icon = AppIcons.TrendingUp,
-                    label = "Income",
+                    label = LanguageManager.tr("Income", selectedLanguage),
                     tileColor = IncomeGreen,
                     onClick = onAddIncome,
                     modifier = Modifier.weight(1f)
@@ -1758,23 +1805,23 @@ fun QuickServicesCategorySection(
 
                 CategoryFeedTile(
                     icon = AppIcons.CallSplit,
-                    label = "Split",
-                    tileColor = SleekPrimary,
+                    label = LanguageManager.tr("Split", selectedLanguage),
+                    tileColor = Color(0xFF6366F1),
                     onClick = onQuickSplit,
                     modifier = Modifier.weight(1f)
                 )
 
                 CategoryFeedTile(
                     icon = AppIcons.CurrencyExchange,
-                    label = "Convert",
-                    tileColor = SleekPrimary,
+                    label = LanguageManager.tr("Convert", selectedLanguage),
+                    tileColor = Color(0xFF0EA5E9),
                     onClick = onQuickConvert,
                     modifier = Modifier.weight(1f)
                 )
 
                 CategoryFeedTile(
                     icon = AppIcons.GridView,
-                    label = "More",
+                    label = LanguageManager.tr("More", selectedLanguage),
                     tileColor = SleekPrimary,
                     onClick = onMoreClick,
                     modifier = Modifier.weight(1f),
@@ -1799,10 +1846,33 @@ fun CategoryFeedTile(
     val isPressed by interactionSource.collectIsPressedAsState()
 
     val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.95f else 1.0f,
-        animationSpec = tween(durationMillis = 150, easing = FastOutSlowInEasing),
+        targetValue = if (isPressed) 0.92f else 1.0f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        ),
         label = "tile_scale"
     )
+
+    val isDark = isDarkModeActive
+    val bgBrush = if (isDark) {
+        Brush.radialGradient(
+            listOf(
+                tileColor.copy(alpha = 0.32f),
+                tileColor.copy(alpha = 0.14f),
+                Color(0xFF0F172A)
+            )
+        )
+    } else {
+        Brush.linearGradient(
+            listOf(
+                tileColor.copy(alpha = 0.20f),
+                tileColor.copy(alpha = 0.08f)
+            )
+        )
+    }
+    val rimBorder = if (isDark) tileColor.copy(alpha = 0.50f) else tileColor.copy(alpha = 0.32f)
+    val iconTint = if (isDark) tileColor.copy(alpha = 0.98f) else tileColor
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -1811,7 +1881,7 @@ fun CategoryFeedTile(
                 scaleX = scale
                 scaleY = scale
             }
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(14.dp))
             .clickable(
                 interactionSource = interactionSource,
                 indication = null
@@ -1823,17 +1893,17 @@ fun CategoryFeedTile(
     ) {
         Box(
             modifier = Modifier
-                .size(48.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .background(tileColor.copy(alpha = 0.12f))
-                .border(BorderStroke(1.dp, tileColor.copy(alpha = 0.2f)), RoundedCornerShape(8.dp)),
+                .size(52.dp)
+                .clip(RoundedCornerShape(14.dp))
+                .background(bgBrush)
+                .border(BorderStroke(1.2.dp, rimBorder), RoundedCornerShape(14.dp)),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = label,
-                tint = tileColor,
-                modifier = Modifier.size(22.dp)
+                tint = iconTint,
+                modifier = Modifier.size(24.dp)
             )
         }
 
@@ -1843,7 +1913,7 @@ fun CategoryFeedTile(
             text = label,
             fontSize = 12.sp,
             color = SleekTextPrimary,
-            fontWeight = FontWeight.Normal,
+            fontWeight = FontWeight.SemiBold,
             textAlign = TextAlign.Center,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
@@ -6760,7 +6830,9 @@ fun SidebarDrawerContent(
     viewModel: FinanceViewModel,
     onCloseDrawer: () -> Unit,
     onOpenSettingsScreen: (SettingsSubScreen) -> Unit,
-    onChangePasswordClick: () -> Unit
+    onChangePasswordClick: () -> Unit,
+    isFullscreen: Boolean = false,
+    onToggleFullscreen: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val userName by viewModel.userName.collectAsStateWithLifecycle()
@@ -7039,20 +7111,41 @@ fun SidebarDrawerContent(
                 }
             }
 
-            IconButton(
-                onClick = onCloseDrawer,
-                modifier = Modifier
-                    .size(36.dp)
-                    .clip(CircleShape)
-                    .background(SleekBorder.copy(alpha = 0.4f))
-                    .bouncyPress()
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Icon(
-                    imageVector = AppIcons.Close,
-                    contentDescription = "Close Drawer",
-                    tint = SleekTextPrimary,
-                    modifier = Modifier.size(18.dp)
-                )
+                IconButton(
+                    onClick = onToggleFullscreen,
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .background(SleekBorder.copy(alpha = 0.4f))
+                        .bouncyPress()
+                ) {
+                    Icon(
+                        imageVector = if (isFullscreen) AppIcons.FullscreenExit else AppIcons.Fullscreen,
+                        contentDescription = if (isFullscreen) "Collapse Sidebar" else "Expand Fullscreen",
+                        tint = SleekTextPrimary,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+
+                IconButton(
+                    onClick = onCloseDrawer,
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .background(SleekBorder.copy(alpha = 0.4f))
+                        .bouncyPress()
+                ) {
+                    Icon(
+                        imageVector = AppIcons.Close,
+                        contentDescription = "Close Drawer",
+                        tint = SleekTextPrimary,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
             }
         }
         

@@ -87,6 +87,8 @@ object AppIcons {
     val FlashOn: ImageVector get() = Icons.Outlined.FlashOn
     val Flight: ImageVector get() = Icons.Outlined.Flight
     val FormatListBulleted: ImageVector get() = Icons.Outlined.FormatListBulleted
+    val Fullscreen: ImageVector get() = Icons.Outlined.Fullscreen
+    val FullscreenExit: ImageVector get() = Icons.Outlined.FullscreenExit
     val GridView: ImageVector get() = Icons.Outlined.GridView
     val HealthAndSafety: ImageVector get() = Icons.Outlined.HealthAndSafety
     val Help: ImageVector get() = Icons.Outlined.Help

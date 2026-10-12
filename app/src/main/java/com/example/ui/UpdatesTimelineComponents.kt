@@ -140,6 +140,21 @@ fun getAppUpdatesHistory(): List<AppReleaseUpdate> {
                 ),
                 UpdateSpecification(
                     category = SpecCategory.UI_UX,
+                    title = "Fluid Fullscreen Navigation Sidebar with Apple Ease-Out Geometry & Header Toggle",
+                    description = "Streamlined the sidebar expand-to-fullscreen interaction using unified single-phase float interpolation across width, margins, and corner radii (0.25f, 0.1f, 0.25f, 1.0f Apple cubic-bezier curve), eliminating layout remeasurement stutter. Added a dedicated one-tap Fullscreen/Collapse toggle icon button directly in the sidebar drawer header with tactile spring feedback alongside smooth 36dp horizontal swipe gestures."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.UI_UX,
+                    title = "Apple Settings Native Push & Pop Navigation Transition Suite",
+                    description = "Replaced the sluggish, wobbly middle bounce animation when opening settings with authentic Apple iOS Settings UINavigationController transitions: a smooth 320ms horizontal push from the right edge with 25% background parallax slide-out and subtle crossfade, and a 280ms pop slide-out to the right with reverse parallax. Settings subscreens render on the root layer above the sidebar, and system back presses immediately pop settings without drawer conflicts."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.UI_UX,
+                    title = "Cohesive Quick Shortcut Preview & App Launcher Icon Suite Polish",
+                    description = "Upgraded the Dashboard Quick Services category feed and All Shortcuts launcher with radiant, high-contrast squircle icon tiles (14dp/18dp corner radii), dual-stop ambient gradients with dark-mode glow, 24dp/28dp icon sizing, and localized multilingual labels (Expense, Income, Split, Convert, More, All Tools) matching the Financer design system."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.UI_UX,
                     title = "Minimal, Calm & Premium Design System Polish Across Core Screens",
                     description = "Refined Dashboard, Add/Edit Transaction, Transactions List, Analytics, and Settings screens with an uncompromising minimal, calm, and premium design system. Standardized to 3 corner radii (8dp chips/inputs, 12dp cards, 20dp dialogs/sheets), flat elevation (0dp with 1dp border), strict 4/8/12/16/24 spacing grid, 5-step type scale (12sp caption, 14sp body, 16sp title, 22sp heading, 32sp hero amount) with maximum 2 font weights, tabular right-aligned currency figures, 48dp touch targets, semantic colors (income green, expense red, amber warning), and sentence-case copy without decorative slop or gradients."
                 ),

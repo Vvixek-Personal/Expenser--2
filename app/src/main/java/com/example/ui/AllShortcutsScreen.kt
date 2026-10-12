@@ -38,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.example.ui.theme.isDarkModeActive
 import androidx.compose.ui.unit.sp
 import com.example.ui.theme.*
 
@@ -186,7 +187,7 @@ fun AllShortcutsTabScreen(
                 id = "monthly_budget",
                 title = "Monthly Budget",
                 subtitle = "Adjust limits & alerts",
-                icon = AppIcons.AccountBalance,
+                icon = AppIcons.DonutLarge,
                 iconTint = Color(0xFF3B82F6),
                 gradientColors = listOf(Color(0xFF3B82F6), Color(0xFF2563EB)),
                 category = "Planning",
@@ -504,30 +505,43 @@ fun HomeScreenAppIconTile(
             .padding(vertical = 6.dp, horizontal = 2.dp)
     ) {
         Box(contentAlignment = Alignment.Center) {
+            val isDark = isDarkModeActive
+            val iconBgBrush = if (isDark) {
+                Brush.radialGradient(
+                    listOf(
+                        item.gradientColors.first().copy(alpha = 0.38f),
+                        item.gradientColors.last().copy(alpha = 0.16f),
+                        Color(0xFF0F172A)
+                    )
+                )
+            } else {
+                Brush.linearGradient(
+                    listOf(
+                        item.gradientColors.first().copy(alpha = 0.22f),
+                        item.gradientColors.last().copy(alpha = 0.10f)
+                    )
+                )
+            }
+            val rimColor = if (isDark) item.gradientColors.first().copy(alpha = 0.55f) else item.gradientColors.first().copy(alpha = 0.38f)
+            val iconColor = if (isDark) item.gradientColors.first().copy(alpha = 0.98f) else item.iconTint
+
             // Squircle app icon container
             Box(
                 modifier = Modifier
                     .size(60.dp)
-                    .clip(SleekShapes.xl)
-                    .background(
-                        Brush.linearGradient(
-                            listOf(
-                                item.gradientColors.first().copy(alpha = 0.22f),
-                                item.gradientColors.last().copy(alpha = 0.10f)
-                            )
-                        )
-                    )
+                    .clip(RoundedCornerShape(18.dp))
+                    .background(iconBgBrush)
                     .border(
-                        BorderStroke(1.5.dp, item.gradientColors.first().copy(alpha = 0.45f)),
-                        SleekShapes.xl
+                        BorderStroke(1.5.dp, rimColor),
+                        RoundedCornerShape(18.dp)
                     ),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = item.icon,
                     contentDescription = item.title,
-                    tint = item.iconTint,
-                    modifier = Modifier.size(SleekSizes.iconLarge)
+                    tint = iconColor,
+                    modifier = Modifier.size(28.dp)
                 )
             }
 
