@@ -1,5 +1,6 @@
 package com.example.data
 
+import androidx.room.withTransaction
 import kotlinx.coroutines.flow.Flow
 
 class FinanceRepository(private val dao: FinanceDao, private val database: FinanceDatabase) {
@@ -202,13 +203,17 @@ class FinanceRepository(private val dao: FinanceDao, private val database: Finan
         accounts: List<Account>,
         budgets: List<Budget>,
         goals: List<SavingsGoal>,
-        reminders: List<ReminderEntity>
+        reminders: List<ReminderEntity>,
+        rules: List<RecurringRule> = emptyList()
     ) {
-        dao.clearAllData()
-        accounts.forEach { insertAccount(it) }
-        expenses.forEach { insertExpense(it) }
-        budgets.forEach { insertBudget(it) }
-        goals.forEach { insertSavingsGoal(it) }
-        reminders.forEach { insertReminder(it) }
+        database.withTransaction {
+            dao.clearAllData()
+            accounts.forEach { insertAccount(it) }
+            rules.forEach { insertRecurringRule(it) }
+            expenses.forEach { insertExpense(it) }
+            budgets.forEach { insertBudget(it) }
+            goals.forEach { insertSavingsGoal(it) }
+            reminders.forEach { insertReminder(it) }
+        }
     }
 }

@@ -105,9 +105,34 @@ fun getAppUpdatesHistory(): List<AppReleaseUpdate> {
             timestamp = tsV129,
             startDate = "7th Oct",
             endDate = "7th Oct",
-            headline = "Signature Character Profile Avatar Integration, Zero-Data-Loss Universal Migration Engine (v13), Pre-Migration Auto-Backups, Animated Money Suite, Deep Insights Crash Guards, Enhanced Streak Flame Physics & 3D Branded Logos, 210,000 Iteration PBKDF2 PIN Security, Claude-Style Outlined Icon Architecture, 400-Batch Subcollection Cloud Sync, Universal amountMinor Accounting",
+            headline = "Production-Grade Master Engineering Fixes: Real Local Data Recovery, Safe Currency Conversion, Locale-Aware Money Parser, Cloud Deletion Reconciliation, Analytics Statistical Accuracy, Zero-Data-Loss Universal Migration Engine (v13), Pre-Migration Auto-Backups, Animated Money Suite, 210,000 Iteration PBKDF2 PIN Security, Claude-Style Outlined Icon Architecture",
             isLatest = true,
             specifications = listOf(
+                UpdateSpecification(
+                    category = SpecCategory.SYSTEM,
+                    title = "Production Local Backup & Recovery Engine (LocalRecoveryManager)",
+                    description = "Replaced stubbed snapshot operations with a complete, production-grade JSON backup & recovery engine. Captures all accounts, expenses, budgets, savings goals, reminders, recurring rules, and preferences with SHA-256 integrity verification, atomic file replacement, automatic rolling retention (10 snapshots), pre-restore safety snapshots, and transactional database restoration."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SYSTEM,
+                    title = "Safe Currency Conversion & Explicit Typed Error Results (Money.kt)",
+                    description = "Eliminated dangerous silent 1:1 fallbacks on missing or invalid exchange rates. Implemented tryConvert returning typed ConversionResult (Success, MissingRate, InvalidRate) and convertOrNull, enforcing strict rate positivity and finiteness checks before any cross-currency calculation."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.UI_UX,
+                    title = "Locale-Aware Money Parser (Indian Grouping & Multilingual Support)",
+                    description = "Redesigned Money.parse() using DecimalFormatSymbols to accurately parse Indian lakh/crore formats (1,23,456.78), European comma-decimal formats (1.234,56 / 12,5), US standard grouping (1,234.50), and negative amounts without floating-point drift or misinterpreted decimal separators."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SYSTEM,
+                    title = "Cloud Sync Deletion Reconciliation & Zombie Prevention",
+                    description = "Integrated bidirectional deletion reconciliation into CloudSyncManager.performSync(). Compares local snapshot IDs against remote Firestore subcollections and issues batch deletes for pruned local entities, permanently eliminating zombie resurrection during cloud restores."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.UI_UX,
+                    title = "Analytics Accuracy & Dynamic Currency-Aware Anomaly Detection",
+                    description = "Refactored AnalyticsCalculator to compute true weekday averages based on unique calendar date occurrences, excluded internal transfers and savings lock transactions from expense metrics, and replaced the hardcoded 500 anomaly threshold with dynamic currency-scaled statistical anomaly detection."
+                ),
                 UpdateSpecification(
                     category = SpecCategory.UI_UX,
                     title = "Signature Character Profile Avatar Integration on Welcome & Default Avatars",

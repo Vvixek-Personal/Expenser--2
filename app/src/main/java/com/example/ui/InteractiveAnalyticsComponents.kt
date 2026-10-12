@@ -154,19 +154,19 @@ object AnalyticsCalculator {
         prevLabel: String
     ): PeriodComparisonSummary {
         val curSpent = currentExpenses
-            .filter { it.type != "INCOME" && it.category != "Locked Savings" }
+            .filter { it.type != "INCOME" && it.kind != "INCOME" && it.kind != "SAVINGS_LOCK" && it.kind != "SAVINGS_RELEASE" && it.category != "Locked Savings" && it.category != "Transfer" }
             .sumOf { normalize(it, statsCurrencyCode) }
 
         val prevSpent = previousExpenses
-            .filter { it.type != "INCOME" && it.category != "Locked Savings" }
+            .filter { it.type != "INCOME" && it.kind != "INCOME" && it.kind != "SAVINGS_LOCK" && it.kind != "SAVINGS_RELEASE" && it.category != "Locked Savings" && it.category != "Transfer" }
             .sumOf { normalize(it, statsCurrencyCode) }
 
         val curIncome = currentExpenses
-            .filter { it.type == "INCOME" && it.category != "Goal Withdrawal" }
+            .filter { (it.type == "INCOME" || it.kind == "INCOME") && it.kind != "SAVINGS_LOCK" && it.kind != "SAVINGS_RELEASE" && it.category != "Goal Withdrawal" && it.category != "Transfer" }
             .sumOf { normalize(it, statsCurrencyCode) }
 
         val prevIncome = previousExpenses
-            .filter { it.type == "INCOME" && it.category != "Goal Withdrawal" }
+            .filter { (it.type == "INCOME" || it.kind == "INCOME") && it.kind != "SAVINGS_LOCK" && it.kind != "SAVINGS_RELEASE" && it.category != "Goal Withdrawal" && it.category != "Transfer" }
             .sumOf { normalize(it, statsCurrencyCode) }
 
         val curNet = curIncome - curSpent
@@ -204,8 +204,8 @@ object AnalyticsCalculator {
         previousExpenses: List<Expense>,
         statsCurrencyCode: String
     ): List<CategoryTrendSummary> {
-        val curNonIncome = currentExpenses.filter { it.type != "INCOME" && it.category != "Locked Savings" }
-        val prevNonIncome = previousExpenses.filter { it.type != "INCOME" && it.category != "Locked Savings" }
+        val curNonIncome = currentExpenses.filter { it.type != "INCOME" && it.kind != "INCOME" && it.kind != "SAVINGS_LOCK" && it.kind != "SAVINGS_RELEASE" && it.category != "Locked Savings" && it.category != "Transfer" }
+        val prevNonIncome = previousExpenses.filter { it.type != "INCOME" && it.kind != "INCOME" && it.kind != "SAVINGS_LOCK" && it.kind != "SAVINGS_RELEASE" && it.category != "Locked Savings" && it.category != "Transfer" }
 
         val totalCurSpent = curNonIncome.sumOf { normalize(it, statsCurrencyCode) }.coerceAtLeast(1.0)
 
@@ -249,17 +249,29 @@ object AnalyticsCalculator {
         expenses: List<Expense>,
         statsCurrencyCode: String
     ): SpendingPatternSummary {
-        val nonIncome = expenses.filter { it.type != "INCOME" && it.category != "Locked Savings" }
-        val totalSpent = nonIncome.sumOf { normalize(it, statsCurrencyCode) }.coerceAtLeast(1.0)
+        val nonIncome = expenses.filter { 
+            it.type != "INCOME" && 
+            it.kind != "INCOME" && 
+            it.kind != "SAVINGS_LOCK" && 
+            it.kind != "SAVINGS_RELEASE" && 
+            it.category != "Locked Savings" && 
+            it.category != "Transfer" 
+        }
+        val totalSpent = nonIncome.sumOf { normalize(it, statsCurrencyCode) }
 
         val dayNames = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
         val daySums = mutableMapOf<String, Double>()
-        dayNames.forEach { daySums[it] = 0.0 }
+        val weekdayDates = mutableMapOf<String, MutableSet<String>>()
+        dayNames.forEach { 
+            daySums[it] = 0.0 
+            weekdayDates[it] = mutableSetOf()
+        }
 
         val cal = Calendar.getInstance()
         nonIncome.forEach { exp ->
             cal.timeInMillis = exp.date
             val dayOfWeek = cal.get(Calendar.DAY_OF_WEEK)
+            val dateKey = "${cal.get(Calendar.YEAR)}-${cal.get(Calendar.DAY_OF_YEAR)}"
             val name = when (dayOfWeek) {
                 Calendar.MONDAY -> "Mon"
                 Calendar.TUESDAY -> "Tue"
@@ -271,12 +283,19 @@ object AnalyticsCalculator {
                 else -> "Mon"
             }
             daySums[name] = (daySums[name] ?: 0.0) + normalize(exp, statsCurrencyCode)
+            weekdayDates[name]?.add(dateKey)
+        }
+
+        val dayAverages = mutableMapOf<String, Double>()
+        dayNames.forEach { name ->
+            val count = weekdayDates[name]?.size ?: 0
+            dayAverages[name] = if (count > 0) (daySums[name] ?: 0.0) / count else 0.0
         }
 
         val peakDay = daySums.maxByOrNull { it.value } ?: java.util.AbstractMap.SimpleEntry("Fri", 0.0)
         val peakDayName = peakDay.key
         val peakDayTotal = peakDay.value
-        val peakDayPct = (peakDayTotal / totalSpent) * 100.0
+        val peakDayPct = if (totalSpent > 0.0) (peakDayTotal / totalSpent) * 100.0 else 0.0
 
         // Daily average for anomaly detection
         val uniqueDaysCount = nonIncome.map {
@@ -284,11 +303,17 @@ object AnalyticsCalculator {
             "${c.get(Calendar.YEAR)}-${c.get(Calendar.DAY_OF_YEAR)}"
         }.distinct().size.coerceAtLeast(1)
 
-        val dailyAvg = totalSpent / uniqueDaysCount
-        // Anomaly threshold: 2.5x daily average or top single transactions
-        val spikes = nonIncome.filter { normalize(it, statsCurrencyCode) >= dailyAvg * 2.0 && normalize(it, statsCurrencyCode) > 500.0 }
-            .sortedByDescending { normalize(it, statsCurrencyCode) }
-            .take(5)
+        val dailyAvg = if (totalSpent > 0.0) totalSpent / uniqueDaysCount else 0.0
+        // Currency-aware anomaly threshold: scaled dynamically to 2.5x daily average or currency base unit floor
+        val minAnomalyFloor = Money.factor(statsCurrencyCode) * 5.0
+        val anomalyThreshold = maxOf(dailyAvg * 2.5, minAnomalyFloor)
+        val spikes = if (totalSpent > 0.0) {
+            nonIncome.filter { normalize(it, statsCurrencyCode) >= anomalyThreshold }
+                .sortedByDescending { normalize(it, statsCurrencyCode) }
+                .take(5)
+        } else {
+            emptyList()
+        }
 
         // Recurring candidate detection: matching notes/amounts
         val recurring = nonIncome.groupBy { (it.note ?: it.category).lowercase().trim() }
@@ -301,7 +326,7 @@ object AnalyticsCalculator {
             peakDayName = peakDayName,
             peakDayTotal = peakDayTotal,
             peakDayPercentage = peakDayPct,
-            dayAverages = daySums,
+            dayAverages = dayAverages,
             unusualSpikes = spikes,
             recurringCandidates = recurring
         )

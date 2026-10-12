@@ -127,4 +127,30 @@ class AnalyticsCalculatorTest {
         assertNotNull(pattern)
         assertTrue(pattern.peakDayTotal > 0.0)
     }
+
+    @Test
+    fun testTransfersAndSavingsLocksAreExcludedFromSpendingPatterns() {
+        val mixedExpenses = listOf(
+            Expense(id = 1L, amountMinor = 50000L, amount = 500.0, category = "Food", date = 1700000000000L, type = "EXPENSE", currencyCode = "INR"),
+            Expense(id = 2L, amountMinor = 100000L, amount = 1000.0, category = "Transfer", kind = "TRANSFER", date = 1700000000000L, type = "EXPENSE", currencyCode = "INR"),
+            Expense(id = 3L, amountMinor = 200000L, amount = 2000.0, category = "Locked Savings", kind = "SAVINGS_LOCK", date = 1700000000000L, type = "EXPENSE", currencyCode = "INR")
+        )
+        val pattern = AnalyticsCalculator.computeSpendingPatterns(mixedExpenses, "INR")
+        assertNotNull(pattern)
+        // Only Food (500.0) should be included!
+        assertEquals(500.0, pattern.peakDayTotal, 0.01)
+        assertEquals(100.0, pattern.peakDayPercentage, 0.01)
+    }
+
+    @Test
+    fun testCurrencyAwareAnomalyDetectionDoesNotFlagOrdinaryPurchases() {
+        // In JPY, 600 JPY is an ordinary purchase (~$4 USD), not an anomaly!
+        val jpyExpenses = listOf(
+            Expense(id = 1L, amountMinor = 600L, amount = 600.0, category = "Coffee", date = 1700000000000L, type = "EXPENSE", currencyCode = "JPY"),
+            Expense(id = 2L, amountMinor = 700L, amount = 700.0, category = "Lunch", date = 1700000000000L, type = "EXPENSE", currencyCode = "JPY")
+        )
+        val pattern = AnalyticsCalculator.computeSpendingPatterns(jpyExpenses, "JPY")
+        // Since both 600 and 700 are ordinary daily spending, neither should be flagged as an anomaly spike
+        assertTrue("Ordinary JPY purchases must not be flagged as anomalies", pattern.unusualSpikes.isEmpty())
+    }
 }

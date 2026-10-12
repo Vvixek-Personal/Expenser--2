@@ -2547,6 +2547,26 @@ class FinanceViewModel(
         }
         json.put("reminders", remindersArr)
 
+        // Recurring Rules
+        val rulesArr = JSONArray()
+        val rulesList = repository.allRecurringRules.firstOrNull() ?: emptyList()
+        rulesList.forEach { r ->
+            val rObj = JSONObject()
+            rObj.put("id", r.id)
+            rObj.put("title", r.title)
+            rObj.put("amountMinor", r.amountMinor)
+            rObj.put("category", r.category)
+            rObj.put("frequency", r.frequency)
+            rObj.put("startDate", r.startDate)
+            rObj.put("nextDueDate", r.nextDueDate)
+            rObj.put("isActive", r.isActive)
+            rObj.put("currencyCode", r.currencyCode)
+            rObj.put("accountId", r.accountId)
+            rObj.put("note", r.note ?: "")
+            rulesArr.put(rObj)
+        }
+        json.put("recurringRules", rulesArr)
+
         // Settings
         val settingsObj = JSONObject()
         settingsObj.put("monthlyBudget", _monthlyBudget.value)
@@ -2729,8 +2749,31 @@ class FinanceViewModel(
                 )
             }
 
+            val newRules = mutableListOf<RecurringRule>()
+            val rulesArr = json.optJSONArray("recurringRules")
+            if (rulesArr != null) {
+                for (i in 0 until rulesArr.length()) {
+                    val o = rulesArr.getJSONObject(i)
+                    newRules.add(
+                        RecurringRule(
+                            id = o.optLong("id", 0L),
+                            title = o.optString("title", "Recurring"),
+                            amountMinor = o.optLong("amountMinor", 0L),
+                            category = o.optString("category", "General"),
+                            frequency = o.optString("frequency", "MONTHLY"),
+                            startDate = o.optLong("startDate", System.currentTimeMillis()),
+                            nextDueDate = o.optLong("nextDueDate", System.currentTimeMillis()),
+                            isActive = o.optBoolean("isActive", true),
+                            currencyCode = o.optString("currencyCode", "INR"),
+                            accountId = o.optLong("accountId", 0L),
+                            note = o.optString("note", "")
+                        )
+                    )
+                }
+            }
+
             // Execute DB restore
-            repository.restoreAllData(newExpenses, newAccounts, newBudgets, newGoals, emptyList())
+            repository.restoreAllData(newExpenses, newAccounts, newBudgets, newGoals, emptyList(), newRules)
 
             // Restore Profile
             val prof = json.optJSONObject("profile")

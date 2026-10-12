@@ -68,6 +68,84 @@ class MoneyTest {
     }
 
     @Test
+    fun testMasterEngineeringRequiredParseCases() {
+        val localeIn = Locale.forLanguageTag("en-IN")
+        val localeDe = Locale.GERMANY
+        val localeUs = Locale.US
+
+        // 1,234 -> 1234
+        val p1 = Money.parse("1,234", "INR", localeIn)
+        assertNotNull(p1)
+        assertEquals(1234.0, Money.toDouble(p1!!, "INR"), 0.001)
+
+        // 1,234.50 -> 1234.50
+        val p2 = Money.parse("1,234.50", "INR", localeIn)
+        assertNotNull(p2)
+        assertEquals(1234.50, Money.toDouble(p2!!, "INR"), 0.001)
+
+        // 1,23,456.78 -> 123456.78
+        val p3 = Money.parse("1,23,456.78", "INR", localeIn)
+        assertNotNull(p3)
+        assertEquals(123456.78, Money.toDouble(p3!!, "INR"), 0.001)
+
+        // 12.5 -> 12.5
+        val p4 = Money.parse("12.5", "INR", localeUs)
+        assertNotNull(p4)
+        assertEquals(12.5, Money.toDouble(p4!!, "INR"), 0.001)
+
+        // 12,5 (locale de-DE) -> 12.5
+        val p5 = Money.parse("12,5", "EUR", localeDe)
+        assertNotNull(p5)
+        assertEquals(12.5, Money.toDouble(p5!!, "EUR"), 0.001)
+
+        // 1.234,56 (locale de-DE) -> 1234.56
+        val p6 = Money.parse("1.234,56", "EUR", localeDe)
+        assertNotNull(p6)
+        assertEquals(1234.56, Money.toDouble(p6!!, "EUR"), 0.001)
+
+        // -45.10 -> -45.10
+        val p7 = Money.parse("-45.10", "INR", localeUs)
+        assertNotNull(p7)
+        assertEquals(-45.10, Money.toDouble(p7!!, "INR"), 0.001)
+
+        // "" (blank) / abc -> null
+        assertNull(Money.parse("", "INR", localeUs))
+        assertNull(Money.parse("   ", "INR", localeUs))
+        assertNull(Money.parse("abc", "INR", localeUs))
+    }
+
+    @Test
+    fun testSafeCurrencyConversionWithExplicitValidation() {
+        val rates = mapOf(
+            "USD" to 1.0,
+            "INR" to 83.5,
+            "EUR" to 0.92
+        )
+
+        // Same currency
+        val sameResult = Money.tryConvert(10000L, "USD", "USD", rates)
+        assertTrue(sameResult is Money.ConversionResult.Success)
+        assertEquals(10000L, (sameResult as Money.ConversionResult.Success).amountMinor)
+
+        // Missing rate
+        val missingResult = Money.tryConvert(10000L, "USD", "UNKNOWN", rates)
+        assertTrue(missingResult is Money.ConversionResult.MissingRate)
+        assertEquals("UNKNOWN", (missingResult as Money.ConversionResult.MissingRate).missingCurrency)
+        assertNull(Money.convertOrNull(10000L, "USD", "UNKNOWN", rates))
+
+        // Invalid negative or non-finite rate
+        val badRates = mapOf("USD" to 1.0, "EUR" to -0.5, "JPY" to Double.NaN)
+        val badResult = Money.tryConvert(10000L, "USD", "EUR", badRates)
+        assertTrue(badResult is Money.ConversionResult.InvalidRate)
+        assertNull(Money.convertOrNull(10000L, "USD", "EUR", badRates))
+
+        // Valid conversion
+        val validResult = Money.tryConvert(10000L, "USD", "INR", rates)
+        assertTrue(validResult is Money.ConversionResult.Success)
+        assertEquals(835000L, (validResult as Money.ConversionResult.Success).amountMinor)
+    }
+
+    @Test
     fun testExactnessNoBinaryFloatDrift() {
         // In IEEE-754 Double: 0.10 + 0.10 + ... 1,000 times drift away from 100.00
         // In Money Long minor units: 10 cents = 10L

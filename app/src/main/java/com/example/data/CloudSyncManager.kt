@@ -92,19 +92,42 @@ class CloudSyncManager private constructor(private val context: Context) {
                 "reminders" to reminders.map { it.id.toString() to it.toMap() }
             )
 
-            val batchOperations = mutableListOf<Pair<com.google.firebase.firestore.DocumentReference, Map<String, Any?>>>()
+            val batchSets = mutableListOf<Pair<com.google.firebase.firestore.DocumentReference, Map<String, Any?>>>()
+            val batchDeletes = mutableListOf<com.google.firebase.firestore.DocumentReference>()
+
             for ((subcollectionName, items) in subcollections) {
+                val localIds = items.map { it.first }.toSet()
+                // Fetch remote snapshot for this subcollection to reconcile deletions
+                try {
+                    val remoteSnapshot = userDocRef.collection(subcollectionName).get().await()
+                    for (remoteDoc in remoteSnapshot.documents) {
+                        if (remoteDoc.id !in localIds) {
+                            batchDeletes.add(remoteDoc.reference)
+                        }
+                    }
+                } catch (_: Exception) {
+                    // Non-fatal if offline/empty collection
+                }
+
                 for ((docId, itemData) in items) {
                     val docRef = userDocRef.collection(subcollectionName).document(docId)
-                    batchOperations.add(docRef to itemData)
+                    batchSets.add(docRef to itemData)
                 }
             }
 
             // Write in WriteBatch chunks of max 400
-            for (chunk in batchOperations.chunked(400)) {
+            val allOperations: MutableList<suspend (com.google.firebase.firestore.WriteBatch) -> Unit> = mutableListOf()
+            for (delRef in batchDeletes) {
+                allOperations.add { batch -> batch.delete(delRef) }
+            }
+            for ((docRef, data) in batchSets) {
+                allOperations.add { batch -> batch.set(docRef, data, SetOptions.merge()) }
+            }
+
+            for (chunk in allOperations.chunked(400)) {
                 val batch = firestore.batch()
-                for ((docRef, data) in chunk) {
-                    batch.set(docRef, data, SetOptions.merge())
+                for (op in chunk) {
+                    op(batch)
                 }
                 batch.commit().await()
             }

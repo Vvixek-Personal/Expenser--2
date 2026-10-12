@@ -239,4 +239,144 @@ class FinanceRepositoryBalanceTest {
         val computedBal = repository.computeAccountBalanceMinor(account.id)
         assertEquals(expectedBalance, computedBal)
     }
+
+    @Test
+    fun testRestoreAllDataPreservesRecurringRulesAndIsAtomic(): Unit = runBlocking {
+        // Setup initial data
+        val accId = repository.insertAccount(
+            Account(id = 1L, name = "Primary", openingBalanceMinor = 50000L, type = "BANK", currencyCode = "INR")
+        )
+        val initialRule = RecurringRule(
+            id = 10L,
+            title = "Gym",
+            amountMinor = 200000L,
+            category = "Health",
+            frequency = "MONTHLY",
+            startDate = 1000L,
+            nextDueDate = 2000L,
+            currencyCode = "INR",
+            accountId = accId
+        )
+        repository.insertRecurringRule(initialRule)
+
+        val exp = Expense(
+            id = 100L,
+            amountMinor = 5000L,
+            amount = 50.0,
+            category = "Health",
+            date = 1500L,
+            type = "EXPENSE",
+            currencyCode = "INR",
+            accountId = accId
+        )
+        repository.insertExpense(exp)
+
+        // Verify initial state
+        assertEquals(1, dao.getRecurringRulesSnapshot().size)
+        assertEquals(1, dao.getExpensesSnapshot().size)
+
+        // Restore new dataset with different rule and expense
+        val newAccount = Account(id = 2L, name = "Secondary", openingBalanceMinor = 100000L, type = "CASH", currencyCode = "INR")
+        val newRule = RecurringRule(
+            id = 20L,
+            title = "Streaming",
+            amountMinor = 49900L,
+            category = "Entertainment",
+            frequency = "MONTHLY",
+            startDate = 5000L,
+            nextDueDate = 6000L,
+            currencyCode = "INR",
+            accountId = 2L
+        )
+        val newExpense = Expense(
+            id = 200L,
+            amountMinor = 12000L,
+            amount = 120.0,
+            category = "Food",
+            date = 7000L,
+            type = "EXPENSE",
+            currencyCode = "INR",
+            accountId = 2L
+        )
+
+        repository.restoreAllData(
+            expenses = listOf(newExpense),
+            accounts = listOf(newAccount),
+            budgets = emptyList(),
+            goals = emptyList(),
+            reminders = emptyList(),
+            rules = listOf(newRule)
+        )
+
+        val restoredRules = dao.getRecurringRulesSnapshot()
+        assertEquals(1, restoredRules.size)
+        assertEquals("Streaming", restoredRules[0].title)
+        assertEquals(49900L, restoredRules[0].amountMinor)
+
+        val restoredExpenses = dao.getExpensesSnapshot()
+        assertEquals(1, restoredExpenses.size)
+        assertEquals(12000L, restoredExpenses[0].amountMinor)
+    }
+
+    @Test
+    fun testLocalRecoveryManagerCreateAndRestoreSnapshot(): Unit = runBlocking {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val accId = repository.insertAccount(
+            Account(id = 1L, name = "Savings Bank", openingBalanceMinor = 500000L, type = "BANK", currencyCode = "INR")
+        )
+        val rule = RecurringRule(
+            id = 1L,
+            title = "Internet Bill",
+            amountMinor = 99900L,
+            category = "Utilities",
+            frequency = "MONTHLY",
+            startDate = 1000L,
+            nextDueDate = 2000L,
+            currencyCode = "INR",
+            accountId = accId
+        )
+        repository.insertRecurringRule(rule)
+        val exp = Expense(
+            id = 1L,
+            amountMinor = 15000L,
+            amount = 150.0,
+            category = "Utilities",
+            date = 1500L,
+            type = "EXPENSE",
+            currencyCode = "INR",
+            accountId = accId
+        )
+        repository.insertExpense(exp)
+
+        // Create snapshot
+        val successCreate = LocalRecoveryManager.createSnapshot(context, database)
+        assertTrue("Snapshot creation must succeed", successCreate)
+
+        val snapshots = LocalRecoveryManager.listSnapshots(context)
+        assertTrue("Snapshots list must not be empty", snapshots.isNotEmpty())
+        val latest = snapshots[0]
+        assertTrue("Snapshot must be marked valid", latest.isValid)
+        assertEquals(1, latest.accountsCount)
+        assertEquals(1, latest.expensesCount)
+
+        // Clear data to simulate loss
+        dao.clearAllData()
+        assertEquals(0, dao.getAccountsSnapshot().size)
+        assertEquals(0, dao.getExpensesSnapshot().size)
+
+        // Restore snapshot
+        var restoredCur = ""
+        val successRestore = LocalRecoveryManager.restoreSnapshot(context, database, latest.fileName) { cur, _, _, _ ->
+            restoredCur = cur
+        }
+        assertTrue("Snapshot restore must succeed", successRestore)
+        assertEquals(1, dao.getAccountsSnapshot().size)
+        assertEquals(1, dao.getExpensesSnapshot().size)
+        assertEquals(1, dao.getRecurringRulesSnapshot().size)
+        assertEquals("Internet Bill", dao.getRecurringRulesSnapshot()[0].title)
+
+        // Cleanup
+        LocalRecoveryManager.deleteSnapshot(context, latest.fileName)
+        Unit
+    }
 }
