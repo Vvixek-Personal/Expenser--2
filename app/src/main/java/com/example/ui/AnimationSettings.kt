@@ -7,6 +7,7 @@ import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
@@ -18,6 +19,7 @@ import androidx.compose.foundation.Indication
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
@@ -27,10 +29,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 
 /** True only when the in-app switch is ON and Android's animator scale is not 0. */
 val LocalAnimationsEnabled = compositionLocalOf { true }
@@ -140,6 +146,35 @@ fun Modifier.bouncyPress(scaleDown: Float = 0.96f): Modifier = composed {
         label = "bouncy_press_scale"
     )
     this.scale(scale)
+}
+
+/**
+ * Adds high-fidelity tactile depth, elevation drop-shadow, and bouncy spring press physics to Buttons and interactive components.
+ */
+fun Modifier.tactileDepth(
+    elevation: Dp = 3.dp,
+    shape: Shape = RoundedCornerShape(12.dp),
+    scaleDown: Float = 0.96f
+): Modifier = composed {
+    val animationsEnabled = LocalAnimationsEnabled.current
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val animatedElevation by animateDpAsState(
+        targetValue = if (isPressed && animationsEnabled) 1.dp else elevation,
+        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        label = "tactile_elevation"
+    )
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed && animationsEnabled) scaleDown else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        ),
+        label = "tactile_scale"
+    )
+    this
+        .scale(scale)
+        .shadow(elevation = animatedElevation, shape = shape, clip = false)
 }
 
 /**

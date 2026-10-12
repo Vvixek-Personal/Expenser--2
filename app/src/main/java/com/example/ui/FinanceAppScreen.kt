@@ -333,9 +333,9 @@ fun FinanceAppScreen(viewModel: FinanceViewModel) {
                 val screenWidth = LocalConfiguration.current.screenWidthDp.dp
                 val fullscreenProgress by animateFloatAsState(
                     targetValue = if (drawerFullscreen) 1f else 0f,
-                    animationSpec = tween(
-                        durationMillis = 280,
-                        easing = CubicBezierEasing(0.25f, 0.1f, 0.25f, 1.0f)
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioNoBouncy,
+                        stiffness = Spring.StiffnessMediumLow
                     ),
                     label = "sidebar_fullscreen_progress"
                 )
@@ -418,16 +418,21 @@ fun FinanceAppScreen(viewModel: FinanceViewModel) {
                 .padding(innerPadding)
         ) {
             val isAnimEnabled = LocalAnimationsEnabled.current
-            // Screen Switcher with liquid-glass shared animations
+            // Fluid screen switcher without laggy middle-to-border scale distortion
             AnimatedContent(
                 targetState = currentScreen,
                 transitionSpec = {
-                    (fadeIn(animationSpec = appSpring(isAnimEnabled, dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessLow)) +
-                     scaleIn(initialScale = 0.94f, animationSpec = appSpring(isAnimEnabled, dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessLow))) togetherWith
-                    (fadeOut(animationSpec = appSpring(isAnimEnabled, stiffness = Spring.StiffnessMedium)) +
-                     scaleOut(targetScale = 1.04f, animationSpec = appSpring(isAnimEnabled, stiffness = Spring.StiffnessMedium)))
+                    if (isAnimEnabled) {
+                        fadeIn(
+                            animationSpec = tween(durationMillis = 140, easing = LinearOutSlowInEasing)
+                        ) togetherWith fadeOut(
+                            animationSpec = tween(durationMillis = 90, easing = FastOutLinearInEasing)
+                        )
+                    } else {
+                        EnterTransition.None togetherWith ExitTransition.None
+                    }
                 },
-                label = "LiquidGlassScreenTransition"
+                label = "FluidScreenTransition"
             ) { screen ->
                 when (screen) {
                     Screen.Dashboard -> DashboardTab(
@@ -591,10 +596,13 @@ fun FinanceAppScreen(viewModel: FinanceViewModel) {
     } // End ModalNavigationDrawer
 
     // 🍎 Apple Settings Native Push & Pop Navigation Transition Suite
+    val settingsAnimEnabled = LocalAnimationsEnabled.current
     AnimatedContent(
         targetState = activeSettingsSubScreen,
         transitionSpec = {
-            if (targetState != null) {
+            if (!settingsAnimEnabled) {
+                EnterTransition.None togetherWith ExitTransition.None
+            } else if (targetState != null) {
                 // Apple iOS Push: Subscreen slides in from right edge (100% width) with subtle fade in,
                 // while underlying screen shifts left with 25% parallax and subtle fade out.
                 (slideInHorizontally(
@@ -1846,7 +1854,7 @@ fun CategoryFeedTile(
     val isPressed by interactionSource.collectIsPressedAsState()
 
     val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.92f else 1.0f,
+        targetValue = if (isPressed) 0.88f else 1.0f,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
             stiffness = Spring.StiffnessMedium
@@ -1856,23 +1864,28 @@ fun CategoryFeedTile(
 
     val isDark = isDarkModeActive
     val bgBrush = if (isDark) {
-        Brush.radialGradient(
-            listOf(
-                tileColor.copy(alpha = 0.32f),
-                tileColor.copy(alpha = 0.14f),
+        Brush.linearGradient(
+            colors = listOf(
+                tileColor.copy(alpha = 0.38f),
+                tileColor.copy(alpha = 0.16f),
                 Color(0xFF0F172A)
-            )
+            ),
+            start = Offset(0f, 0f),
+            end = Offset(120f, 120f)
         )
     } else {
         Brush.linearGradient(
-            listOf(
-                tileColor.copy(alpha = 0.20f),
-                tileColor.copy(alpha = 0.08f)
-            )
+            colors = listOf(
+                Color.White,
+                tileColor.copy(alpha = 0.18f),
+                tileColor.copy(alpha = 0.30f)
+            ),
+            start = Offset(0f, 0f),
+            end = Offset(120f, 120f)
         )
     }
-    val rimBorder = if (isDark) tileColor.copy(alpha = 0.50f) else tileColor.copy(alpha = 0.32f)
-    val iconTint = if (isDark) tileColor.copy(alpha = 0.98f) else tileColor
+    val rimBorder = if (isDark) tileColor.copy(alpha = 0.65f) else tileColor.copy(alpha = 0.40f)
+    val iconTint = if (isDark) tileColor.copy(alpha = 0.99f) else tileColor
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -1881,7 +1894,7 @@ fun CategoryFeedTile(
                 scaleX = scale
                 scaleY = scale
             }
-            .clip(RoundedCornerShape(14.dp))
+            .clip(RoundedCornerShape(16.dp))
             .clickable(
                 interactionSource = interactionSource,
                 indication = null
@@ -1893,17 +1906,18 @@ fun CategoryFeedTile(
     ) {
         Box(
             modifier = Modifier
-                .size(52.dp)
-                .clip(RoundedCornerShape(14.dp))
+                .size(56.dp)
+                .shadow(elevation = if (isDark) 4.dp else 2.dp, shape = RoundedCornerShape(16.dp), clip = false)
+                .clip(RoundedCornerShape(16.dp))
                 .background(bgBrush)
-                .border(BorderStroke(1.2.dp, rimBorder), RoundedCornerShape(14.dp)),
+                .border(BorderStroke(1.5.dp, rimBorder), RoundedCornerShape(16.dp)),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = label,
                 tint = iconTint,
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(28.dp)
             )
         }
 

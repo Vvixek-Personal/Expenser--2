@@ -27,6 +27,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -187,7 +188,7 @@ fun AllShortcutsTabScreen(
                 id = "monthly_budget",
                 title = "Monthly Budget",
                 subtitle = "Adjust limits & alerts",
-                icon = AppIcons.DonutLarge,
+                icon = AppIcons.AccountBalanceWallet,
                 iconTint = Color(0xFF3B82F6),
                 gradientColors = listOf(Color(0xFF3B82F6), Color(0xFF2563EB)),
                 category = "Planning",
@@ -525,10 +526,11 @@ fun HomeScreenAppIconTile(
             val rimColor = if (isDark) item.gradientColors.first().copy(alpha = 0.55f) else item.gradientColors.first().copy(alpha = 0.38f)
             val iconColor = if (isDark) item.gradientColors.first().copy(alpha = 0.98f) else item.iconTint
 
-            // Squircle app icon container
+            // Squircle app icon container with tactile depth elevation
             Box(
                 modifier = Modifier
                     .size(60.dp)
+                    .shadow(elevation = if (isDark) 5.dp else 2.5.dp, shape = RoundedCornerShape(18.dp), clip = false)
                     .clip(RoundedCornerShape(18.dp))
                     .background(iconBgBrush)
                     .border(

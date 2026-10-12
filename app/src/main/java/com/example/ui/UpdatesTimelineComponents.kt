@@ -140,18 +140,23 @@ fun getAppUpdatesHistory(): List<AppReleaseUpdate> {
                 ),
                 UpdateSpecification(
                     category = SpecCategory.UI_UX,
-                    title = "Fluid Fullscreen Navigation Sidebar with Apple Ease-Out Geometry & Header Toggle",
-                    description = "Streamlined the sidebar expand-to-fullscreen interaction using unified single-phase float interpolation across width, margins, and corner radii (0.25f, 0.1f, 0.25f, 1.0f Apple cubic-bezier curve), eliminating layout remeasurement stutter. Added a dedicated one-tap Fullscreen/Collapse toggle icon button directly in the sidebar drawer header with tactile spring feedback alongside smooth 36dp horizontal swipe gestures."
+                    title = "Fluid Sidebar Fullscreen Transition with Spring Physics & Depth Controls",
+                    description = "Smoothened the sidebar expand-to-fullscreen transition using non-bouncy spring physics (DampingRatioNoBouncy, StiffnessMediumLow) across sheet width, horizontal padding, and corner radius collapse (24dp -> 0dp), eliminating frame drops and layout stutter. Integrated a dedicated Fullscreen/Collapse toggle icon button directly in the sidebar drawer header with tactile spring press feedback alongside responsive 36dp horizontal swipe gestures."
                 ),
                 UpdateSpecification(
                     category = SpecCategory.UI_UX,
-                    title = "Apple Settings Native Push & Pop Navigation Transition Suite",
-                    description = "Replaced the sluggish, wobbly middle bounce animation when opening settings with authentic Apple iOS Settings UINavigationController transitions: a smooth 320ms horizontal push from the right edge with 25% background parallax slide-out and subtle crossfade, and a 280ms pop slide-out to the right with reverse parallax. Settings subscreens render on the root layer above the sidebar, and system back presses immediately pop settings without drawer conflicts."
+                    title = "Elimination of Middle-to-Border Scale Distortion & Native Apple Settings Transitions",
+                    description = "Completely eliminated the laggy, distorted center scale-up animation (scaleIn 0.94f / scaleOut 1.04f) that expanded screens and settings from the middle to borders. Replaced with an ultra-fluid 140ms/90ms fast crossfade for root tabs and authentic Apple iOS Settings UINavigationController transitions: a smooth 320ms horizontal push from the right edge with 25% background parallax slide-out and subtle crossfade, and a 280ms pop slide-out to the right with reverse parallax. Fully respects animation settings with instant zero-animation fallback."
                 ),
                 UpdateSpecification(
                     category = SpecCategory.UI_UX,
-                    title = "Cohesive Quick Shortcut Preview & App Launcher Icon Suite Polish",
-                    description = "Upgraded the Dashboard Quick Services category feed and All Shortcuts launcher with radiant, high-contrast squircle icon tiles (14dp/18dp corner radii), dual-stop ambient gradients with dark-mode glow, 24dp/28dp icon sizing, and localized multilingual labels (Expense, Income, Split, Convert, More, All Tools) matching the Financer design system."
+                    title = "Tactile Depth & Elevation Physics for Buttons and UI Components",
+                    description = "Added the new Modifier.tactileDepth() extension providing dynamic drop-shadow elevation (3dp -> 1dp on tap), medium-bouncy spring scale feedback (0.96f), and layered border strokes to deliver tactile depth and fluid responsiveness across buttons, floating action surfaces, and navigation controls."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.UI_UX,
+                    title = "High-Contrast Quick Shortcut Preview & Launcher Icon Suite Polish",
+                    description = "Upgraded the Dashboard Quick Services preview tiles (CategoryFeedTile) to 56dp squircle containers with 28dp high-clarity iconography, ambient drop shadows, luminous rim borders (1.5dp), and vivid specular lighting gradients across Expense, Income, Split, Convert, and More. Corrected All Shortcuts launcher icons (replacing DonutLarge with AccountBalanceWallet for Monthly Budget) and fortified all app icon squircles with 5dp drop-shadow elevation."
                 ),
                 UpdateSpecification(
                     category = SpecCategory.UI_UX,
