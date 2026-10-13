@@ -965,7 +965,7 @@ fun AppearanceScreen(
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     listOf(
                         "Sans Serif" to "Modern Crisp (Default)",
-                        "Rounded / Casual" to "Warm & Friendly",
+                        "Rounded / Casual" to "Warm & Friendly (SF Pro Rounded / Sans fallback)",
                         "Tech Monospace" to "Fintech & Terminal",
                         "Classic Serif" to "Editorial & Elegant"
                     ).forEach { (fontKey, fontDesc) ->

@@ -237,6 +237,24 @@ object LanguageManager {
         ),
         "What's New & About" to mapOf(
             "en" to "What's New & About", "hi" to "नया क्या है और परिचय", "bn" to "নতুন কি এবং বিবরণ", "mr" to "नवीन काय आणि परिचय", "pa" to "ਨਵਾਂ ਕੀ ਹੈ ਅਤੇ ਬਾਰੇ", "fr" to "Nouveautés & À propos", "zh" to "新功能与关于", "ur" to "نیا کیا ہے اور تعارف", "ja" to "最新情報とアプリ情報"
+        ),
+        "No matching settings" to mapOf(
+            "en" to "No matching settings", "hi" to "कोई मिलती-जुलती सेटिंग नहीं", "bn" to "কোনো মিলযুক্ত সেটিংস নেই", "mr" to "कोणतीही जुळणारी सेटिंग नाही", "pa" to "ਕੋਈ ਮੇਲ ਖਾਂਦੀ ਸੈਟਿੰਗ ਨਹੀਂ", "fr" to "Aucun paramètre correspondant", "zh" to "没有匹配的设置", "ur" to "کوئی مماثل سیٹنگ نہیں", "ja" to "一致する設定がありません"
+        ),
+        "Try searching for a different keyword or category" to mapOf(
+            "en" to "Try searching for a different keyword or category", "hi" to "किसी अन्य कीवर्ड या श्रेणी से खोजें", "fr" to "Essayez de rechercher un autre mot-clé", "zh" to "尝试搜索其他关键词或分类", "ja" to "別のキーワードまたはカテゴリで検索してください"
+        ),
+        "Day Streak" to mapOf(
+            "en" to "Day Streak", "hi" to "दिन की स्ट्रीक", "bn" to "দিনের স্ট্রিক", "mr" to "दिवसांची स्ट्रीक", "pa" to "ਦਿਨ ਦੀ ਲੜੀ", "fr" to "Jours consécutifs", "zh" to "天连续打卡", "ur" to "دن کا تسلسل", "ja" to "日連続記録"
+        ),
+        "100% Offline" to mapOf(
+            "en" to "100% Offline", "hi" to "100% ऑफ़लाइन", "bn" to "১০০% অফলাইন", "mr" to "१००% ऑफलाइन", "pa" to "100% ਔਫਲਾਈਨ", "fr" to "100% hors ligne", "zh" to "100% 离线", "ur" to "100% آف لائن", "ja" to "100% オフライン"
+        ),
+        "Stable & Secure" to mapOf(
+            "en" to "Stable & Secure", "hi" to "स्थिर और सुरक्षित", "bn" to "স্থিতিশীল ও নিরাপদ", "mr" to "स्थिर आणि सुरक्षित", "pa" to "ਸਥਿਰ ਅਤੇ ਸੁਰੱਖਿਅਤ", "fr" to "Stable et sécurisé", "zh" to "稳定与安全", "ur" to "مستحکم اور محفوظ", "ja" to "安定・安全"
+        ),
+        "User" to mapOf(
+            "en" to "User", "hi" to "उपयोगकर्ता", "bn" to "ব্যবহারকারী", "mr" to "वापरकर्ता", "pa" to "ਵਰਤੋਂਕਾਰ", "fr" to "Utilisateur", "zh" to "用户", "ur" to "صارف", "ja" to "ユーザー"
         )
     )
 

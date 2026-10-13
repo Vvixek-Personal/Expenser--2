@@ -92,6 +92,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.launch
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.layout
+import com.example.BuildConfig
 import coil.compose.AsyncImage
 
 private const val TAG = "FinanceAppScreen"
@@ -244,6 +246,8 @@ fun FinanceAppScreen(viewModel: FinanceViewModel) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var drawerFullscreen by remember { mutableStateOf(false) }
+    val haptic = LocalHapticFeedback.current
+    val hapticsEnabled by viewModel.hapticsEnabled.collectAsStateWithLifecycle()
 
     // Always reopen at normal width
     LaunchedEffect(drawerState.currentValue) {
@@ -306,6 +310,9 @@ fun FinanceAppScreen(viewModel: FinanceViewModel) {
 
     BackHandler(enabled = canHandleBack) {
         when {
+            activeSettingsSubScreen == SettingsSubScreen.LocalRecovery -> {
+                activeSettingsSubScreen = SettingsSubScreen.DataManagement
+            }
             activeSettingsSubScreen != null -> activeSettingsSubScreen = null
             drawerFullscreen -> drawerFullscreen = false
             drawerState.isOpen -> scope.launch { drawerState.close() }
@@ -330,20 +337,16 @@ fun FinanceAppScreen(viewModel: FinanceViewModel) {
             drawerState = drawerState,
             gesturesEnabled = !locked && activeSettingsSubScreen == null,
             drawerContent = {
-                val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-                val fullscreenProgress by animateFloatAsState(
-                    targetValue = if (drawerFullscreen) 1f else 0f,
-                    animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioNoBouncy,
-                        stiffness = Spring.StiffnessMediumLow
-                    ),
-                    label = "sidebar_fullscreen_progress"
-                )
-                val sheetWidth = 330.dp + (screenWidth - 330.dp) * fullscreenProgress
-                val padTop = 44.dp * (1f - fullscreenProgress)
-                val padBottom = 44.dp * (1f - fullscreenProgress)
-                val padEnd = 12.dp * (1f - fullscreenProgress)
-                val corner = 24.dp * (1f - fullscreenProgress)
+                val fullscreenAnim = remember { Animatable(if (drawerFullscreen) 1f else 0f) }
+                LaunchedEffect(drawerFullscreen) {
+                    fullscreenAnim.animateTo(
+                        targetValue = if (drawerFullscreen) 1f else 0f,
+                        animationSpec = tween(
+                            durationMillis = 420,
+                            easing = CubicBezierEasing(0.16f, 1f, 0.3f, 1f)
+                        )
+                    )
+                }
 
                 ModalDrawerSheet(
                     drawerContainerColor = Color.Transparent,
@@ -351,11 +354,37 @@ fun FinanceAppScreen(viewModel: FinanceViewModel) {
                     drawerShape = RectangleShape,
                     modifier = Modifier
                         .fillMaxHeight()
-                        .width(sheetWidth)
-                        .padding(top = padTop, bottom = padBottom, end = padEnd)
+                        .layout { measurable, constraints ->
+                            val progress = fullscreenAnim.value
+                            val screenW = constraints.maxWidth
+                            val baseW = 330.dp.roundToPx().coerceAtMost(screenW)
+                            val w = (baseW + (screenW - baseW) * progress).roundToInt()
+                            val topPad = (44.dp.roundToPx() * (1f - progress)).roundToInt()
+                            val botPad = (44.dp.roundToPx() * (1f - progress)).roundToInt()
+                            val endPad = (12.dp.roundToPx() * (1f - progress)).roundToInt()
+
+                            val targetW = (w - endPad).coerceAtLeast(0)
+                            val targetH = (constraints.maxHeight - topPad - botPad).coerceAtLeast(0)
+                            val placeable = measurable.measure(
+                                constraints.copy(
+                                    minWidth = targetW,
+                                    maxWidth = targetW,
+                                    minHeight = targetH,
+                                    maxHeight = targetH
+                                )
+                            )
+                            layout(w, constraints.maxHeight) {
+                                placeable.place(0, topPad)
+                            }
+                        }
                 ) {
                     Surface(
-                        shape = RoundedCornerShape(corner),
+                        shape = RoundedCornerShape(
+                            topEnd = 24.dp * (1f - fullscreenAnim.value),
+                            bottomEnd = 24.dp * (1f - fullscreenAnim.value),
+                            topStart = 0.dp,
+                            bottomStart = 0.dp
+                        ),
                         color = SleekBg,
                         border = BorderStroke(1.dp, SleekBorder),
                         shadowElevation = 16.dp,
@@ -376,8 +405,13 @@ fun FinanceAppScreen(viewModel: FinanceViewModel) {
                                             total += c.positionChange().x
                                             c.consume()
                                         }
-                                        if (!drawerFullscreen && total > trigger) drawerFullscreen = true
-                                        else if (drawerFullscreen && total < -trigger) drawerFullscreen = false
+                                        if (!drawerFullscreen && total > trigger) {
+                                            if (hapticsEnabled) haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                            drawerFullscreen = true
+                                        } else if (drawerFullscreen && total < -trigger) {
+                                            if (hapticsEnabled) haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                            drawerFullscreen = false
+                                        }
                                     }
                                 }
                             }
@@ -387,20 +421,31 @@ fun FinanceAppScreen(viewModel: FinanceViewModel) {
                             onCloseDrawer = { scope.launch { drawerState.close() } },
                             onOpenSettingsScreen = { subScreen ->
                                 activeSettingsSubScreen = subScreen
-                                scope.launch { drawerState.snapTo(DrawerValue.Closed) }
+                                scope.launch { drawerState.close() }
                                 drawerFullscreen = false
                             },
                             onChangePasswordClick = {
                                 showChangePinDialog = true
                             },
                             isFullscreen = drawerFullscreen,
-                            onToggleFullscreen = { drawerFullscreen = !drawerFullscreen }
+                            onToggleFullscreen = {
+                                if (hapticsEnabled) haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                drawerFullscreen = !drawerFullscreen
+                            }
                         )
                     }
                 }
             }
         ) {
+        val drawerParallaxProgress by animateFloatAsState(
+            targetValue = if (drawerState.targetValue == DrawerValue.Open) 1f else 0f,
+            animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing),
+            label = "drawer_parallax"
+        )
         Scaffold(
+            modifier = Modifier.graphicsLayer {
+                translationX = drawerParallaxProgress * 24.dp.toPx()
+            },
         bottomBar = {
             if (!isAppLocked || appPin.isNullOrBlank()) {
                 FloatingDockBar(
@@ -599,52 +644,58 @@ fun FinanceAppScreen(viewModel: FinanceViewModel) {
     val settingsAnimEnabled = LocalAnimationsEnabled.current
     AnimatedContent(
         targetState = activeSettingsSubScreen,
+        modifier = Modifier.fillMaxSize(),
         transitionSpec = {
             if (!settingsAnimEnabled) {
-                EnterTransition.None togetherWith ExitTransition.None
+                (EnterTransition.None togetherWith ExitTransition.None)
+                    .using(SizeTransform(clip = false) { _, _ -> snap() })
             } else if (targetState != null) {
-                // Apple iOS Push: Subscreen slides in from right edge (100% width) with subtle fade in,
-                // while underlying screen shifts left with 25% parallax and subtle fade out.
+                // Apple iOS Push: Subscreen slides in from right trailing edge (100% width) with subtle fade in,
+                // while underlying screen shifts left with 18% parallax and subtle fade out.
                 (slideInHorizontally(
                     initialOffsetX = { fullWidth -> fullWidth },
                     animationSpec = tween(
-                        durationMillis = 320,
+                        durationMillis = 350,
                         easing = CubicBezierEasing(0.25f, 0.1f, 0.25f, 1.0f)
                     )
                 ) + fadeIn(
-                    animationSpec = tween(durationMillis = 180)
+                    animationSpec = tween(durationMillis = 200)
                 )).togetherWith(
                     slideOutHorizontally(
-                        targetOffsetX = { fullWidth -> -fullWidth / 4 },
+                        targetOffsetX = { fullWidth -> -fullWidth * 18 / 100 },
                         animationSpec = tween(
-                            durationMillis = 320,
+                            durationMillis = 350,
                             easing = CubicBezierEasing(0.25f, 0.1f, 0.25f, 1.0f)
                         )
                     ) + fadeOut(
-                        animationSpec = tween(durationMillis = 180)
+                        animationSpec = tween(durationMillis = 200)
                     )
+                ).using(
+                    SizeTransform(clip = false) { _, _ -> snap() }
                 )
             } else {
-                // Apple iOS Pop / Back: Exiting subscreen slides out to right (100% width) with subtle fade out,
-                // while returning screen returns from left (-25% width) with reverse parallax.
+                // Apple iOS Pop / Back: Exiting subscreen slides out to right trailing edge with subtle fade out,
+                // while returning screen returns from left (-18% width) with reverse parallax.
                 (slideInHorizontally(
-                    initialOffsetX = { fullWidth -> -fullWidth / 4 },
+                    initialOffsetX = { fullWidth -> -fullWidth * 18 / 100 },
                     animationSpec = tween(
-                        durationMillis = 280,
+                        durationMillis = 300,
                         easing = CubicBezierEasing(0.25f, 0.1f, 0.25f, 1.0f)
                     )
                 ) + fadeIn(
-                    animationSpec = tween(durationMillis = 180)
+                    animationSpec = tween(durationMillis = 200)
                 )).togetherWith(
                     slideOutHorizontally(
                         targetOffsetX = { fullWidth -> fullWidth },
                         animationSpec = tween(
-                            durationMillis = 280,
+                            durationMillis = 300,
                             easing = CubicBezierEasing(0.25f, 0.1f, 0.25f, 1.0f)
                         )
                     ) + fadeOut(
-                        animationSpec = tween(durationMillis = 180)
+                        animationSpec = tween(durationMillis = 200)
                     )
+                ).using(
+                    SizeTransform(clip = false) { _, _ -> snap() }
                 )
             }
         },
@@ -652,7 +703,9 @@ fun FinanceAppScreen(viewModel: FinanceViewModel) {
     ) { targetScreen ->
         if (targetScreen != null) {
             Surface(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .shadow(elevation = 16.dp, clip = false),
                 color = SleekBg
             ) {
                 when (targetScreen) {
@@ -7220,7 +7273,7 @@ fun SidebarDrawerContent(
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = userName?.takeIf { it.isNotBlank() } ?: "Aarav Sharma",
+                        text = userName?.takeIf { it.isNotBlank() } ?: LanguageManager.tr("User", selectedLanguage),
                         style = MaterialTheme.typography.titleMedium,
                         color = SleekTextPrimary,
                         fontWeight = FontWeight.Bold,
@@ -7241,7 +7294,7 @@ fun SidebarDrawerContent(
                             border = BorderStroke(1.dp, Color(0xFFF97316).copy(alpha = 0.5f))
                         ) {
                             Text(
-                                text = "🔥 $currentStreak Day Streak",
+                                text = "🔥 $currentStreak " + LanguageManager.tr("Day Streak", selectedLanguage),
                                 fontSize = 10.5.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color(0xFFC2410C),
@@ -7255,7 +7308,7 @@ fun SidebarDrawerContent(
                             border = BorderStroke(1.dp, Color(0xFF10B981).copy(alpha = 0.4f))
                         ) {
                             Text(
-                                text = "🛡️ 100% Offline",
+                                text = "🛡️ " + LanguageManager.tr("100% Offline", selectedLanguage),
                                 fontSize = 10.5.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color(0xFF047857),
@@ -7418,6 +7471,48 @@ fun SidebarDrawerContent(
         }
         Spacer(modifier = Modifier.height(10.dp))
 
+        // Calculate total matched items for search empty state
+        val totalMatched = allSections.sumOf { (_, items) ->
+            if (searchQuery.isBlank()) items.size else items.count {
+                val title = LanguageManager.tr(it.titleKey, selectedLanguage)
+                val sub = LanguageManager.tr(it.subtitleKey, selectedLanguage)
+                title.contains(searchQuery, ignoreCase = true) || sub.contains(searchQuery, ignoreCase = true)
+            }
+        }
+
+        if (totalMatched == 0 && searchQuery.isNotBlank()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 36.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        imageVector = AppIcons.Search,
+                        contentDescription = null,
+                        tint = SleekTextSecondary,
+                        modifier = Modifier.size(36.dp)
+                    )
+                    Text(
+                        text = LanguageManager.tr("No matching settings", selectedLanguage),
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold,
+                        color = SleekTextPrimary
+                    )
+                    Text(
+                        text = LanguageManager.tr("Try searching for a different keyword or category", selectedLanguage),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = SleekTextSecondary,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+        }
+
         // Render Filtered Sections
         allSections.forEach { (sectionTitle, items) ->
             val filteredItems = if (searchQuery.isBlank()) {
@@ -7451,7 +7546,7 @@ fun SidebarDrawerContent(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(
-                text = "Version 1.28 (Stable & Secure)",
+                text = "Version ${BuildConfig.VERSION_NAME} (" + LanguageManager.tr("Stable & Secure", selectedLanguage) + ")",
                 style = MaterialTheme.typography.labelMedium,
                 color = SleekTextSecondary
             )

@@ -140,23 +140,28 @@ fun getAppUpdatesHistory(): List<AppReleaseUpdate> {
                 ),
                 UpdateSpecification(
                     category = SpecCategory.UI_UX,
-                    title = "Fluid Sidebar Fullscreen Transition with Spring Physics & Depth Controls",
-                    description = "Smoothened the sidebar expand-to-fullscreen transition using non-bouncy spring physics (DampingRatioNoBouncy, StiffnessMediumLow) across sheet width, horizontal padding, and corner radius collapse (24dp -> 0dp), eliminating frame drops and layout stutter. Integrated a dedicated Fullscreen/Collapse toggle icon button directly in the sidebar drawer header with tactile spring press feedback alongside responsive 36dp horizontal swipe gestures."
+                    title = "Root Box Settings Overlay with SizeTransform Snap, 18% Parallax & Edge Shadow",
+                    description = "Decoupled settings subscreen rendering from drawer content, hosting AnimatedContent on the outer root Box above the drawer. Added fillMaxSize() and SizeTransform(clip = false) { snap() } to eliminate middle-to-border size distortion between null and active states. Implemented 18% background parallax, 16dp trailing edge shadow, and graceful animated drawer closure under incoming settings."
                 ),
                 UpdateSpecification(
                     category = SpecCategory.UI_UX,
-                    title = "Elimination of Middle-to-Border Scale Distortion & Native Apple Settings Transitions",
-                    description = "Completely eliminated the laggy, distorted center scale-up animation (scaleIn 0.94f / scaleOut 1.04f) that expanded screens and settings from the middle to borders. Replaced with an ultra-fluid 140ms/90ms fast crossfade for root tabs and authentic Apple iOS Settings UINavigationController transitions: a smooth 320ms horizontal push from the right edge with 25% background parallax slide-out and subtle crossfade, and a 280ms pop slide-out to the right with reverse parallax. Fully respects animation settings with instant zero-animation fallback."
+                    title = "Layout-Phase Sidebar Fullscreen Interpolation with 420ms Apple Ease-Out",
+                    description = "Eliminated composition-phase width and padding animations by moving sidebar expansion to an Animatable read strictly in layout and draw phases (420ms Apple-style cubic-bezier 0.16, 1.0, 0.3, 1.0 curve). Applied trailing-only corner radii (24dp -> 0dp) and integrated haptic tick feedback on header button toggle and horizontal swipe slop gestures."
                 ),
                 UpdateSpecification(
                     category = SpecCategory.UI_UX,
-                    title = "Tactile Depth & Elevation Physics for Buttons and UI Components",
-                    description = "Added the new Modifier.tactileDepth() extension providing dynamic drop-shadow elevation (3dp -> 1dp on tap), medium-bouncy spring scale feedback (0.96f), and layered border strokes to deliver tactile depth and fluid responsiveness across buttons, floating action surfaces, and navigation controls."
+                    title = "Real SF Pro Rounded Font Architecture & Cached Typography",
+                    description = "Replaced placeholder FontFamily.Default with genuine SF Pro Rounded asset loader supporting custom typefaces placed in assets/fonts/ with graceful system sans fallback. Implemented thread-safe typography caching in Type.kt, eliminating per-frame TextStyle allocations across all Composable text elements."
                 ),
                 UpdateSpecification(
                     category = SpecCategory.UI_UX,
-                    title = "High-Contrast Quick Shortcut Preview & Launcher Icon Suite Polish",
-                    description = "Upgraded the Dashboard Quick Services preview tiles (CategoryFeedTile) to 56dp squircle containers with 28dp high-clarity iconography, ambient drop shadows, luminous rim borders (1.5dp), and vivid specular lighting gradients across Expense, Income, Split, Convert, and More. Corrected All Shortcuts launcher icons (replacing DonutLarge with AccountBalanceWallet for Monthly Budget) and fortified all app icon squircles with 5dp drop-shadow elevation."
+                    title = "Settings Search Empty State & Complete Sidebar Localization",
+                    description = "Added an empty state illustration with localized guidance when sidebar settings search yields no matching items. Localized all hardcoded sidebar strings (User fallback, Day Streak, 100% Offline, Stable & Secure) via LanguageManager.tr, and bound the version footer dynamically to BuildConfig.VERSION_NAME."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SYSTEM,
+                    title = "Hierarchical Local Recovery System Back Pop",
+                    description = "Corrected system BackHandler routing from LocalRecoveryScreen to pop back to DataManagementScreen rather than exiting all settings sub-screens, restoring standard multi-tier navigation hierarchy."
                 ),
                 UpdateSpecification(
                     category = SpecCategory.UI_UX,

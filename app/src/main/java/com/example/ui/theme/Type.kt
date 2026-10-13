@@ -1,11 +1,13 @@
 package com.example.ui.theme
 
+import android.content.res.AssetManager
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -13,11 +15,34 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 var activeFontFamilyChoiceState by mutableStateOf("Default")
+var appAssetManager: AssetManager? = null
+
+private val typographyCache = mutableMapOf<String, Typography>()
+
+fun loadSfProRoundedFamily(assetManager: AssetManager? = appAssetManager): FontFamily {
+    val am = assetManager ?: appAssetManager
+    if (am != null) {
+        try {
+            val list = am.list("fonts") ?: emptyArray()
+            val regular = list.firstOrNull { it.contains("rounded", ignoreCase = true) && it.contains("regular", ignoreCase = true) }
+            val bold = list.firstOrNull { it.contains("rounded", ignoreCase = true) && (it.contains("bold", ignoreCase = true) || it.contains("semibold", ignoreCase = true)) }
+            if (regular != null) {
+                return FontFamily(
+                    Font("fonts/$regular", am, FontWeight.Normal),
+                    Font("fonts/${bold ?: regular}", am, FontWeight.SemiBold)
+                )
+            }
+        } catch (_: Exception) {
+            // Graceful fallback to system sans
+        }
+    }
+    return FontFamily.SansSerif
+}
 
 fun getFontFamilyForChoice(choice: String): FontFamily {
     return when (choice) {
         "Sans Serif" -> FontFamily.SansSerif
-        "Rounded / Casual" -> FontFamily.Default
+        "SF Pro Rounded", "Rounded / Casual" -> loadSfProRoundedFamily()
         "Tech Monospace" -> FontFamily.Monospace
         "Classic Serif" -> FontFamily.Serif
         else -> FontFamily.SansSerif
@@ -124,7 +149,9 @@ fun createAppTypography(choice: String): Typography {
 }
 
 val Typography: Typography
-    get() = createAppTypography(activeFontFamilyChoiceState)
+    get() = typographyCache.getOrPut(activeFontFamilyChoiceState) {
+        createAppTypography(activeFontFamilyChoiceState)
+    }
 
 /**
  * Standardized typography and sizing scale for buttons, icons, and text across tabs.
