@@ -645,54 +645,53 @@ fun FinanceAppScreen(viewModel: FinanceViewModel) {
     AnimatedContent(
         targetState = activeSettingsSubScreen,
         modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.TopStart,
         transitionSpec = {
             if (!settingsAnimEnabled) {
                 (EnterTransition.None togetherWith ExitTransition.None)
                     .using(SizeTransform(clip = false) { _, _ -> snap() })
             } else if (targetState != null) {
-                // Apple iOS Push: Subscreen slides in from right trailing edge (100% width) with subtle fade in,
-                // while underlying screen shifts left with 18% parallax and subtle fade out.
+                // Fluid slide-in from right edge with subtle fade; no middle-to-border distortion
                 (slideInHorizontally(
                     initialOffsetX = { fullWidth -> fullWidth },
                     animationSpec = tween(
-                        durationMillis = 350,
-                        easing = CubicBezierEasing(0.25f, 0.1f, 0.25f, 1.0f)
+                        durationMillis = 240,
+                        easing = FastOutSlowInEasing
                     )
                 ) + fadeIn(
-                    animationSpec = tween(durationMillis = 200)
+                    animationSpec = tween(durationMillis = 160)
                 )).togetherWith(
                     slideOutHorizontally(
-                        targetOffsetX = { fullWidth -> -fullWidth * 18 / 100 },
+                        targetOffsetX = { fullWidth -> -fullWidth * 15 / 100 },
                         animationSpec = tween(
-                            durationMillis = 350,
-                            easing = CubicBezierEasing(0.25f, 0.1f, 0.25f, 1.0f)
+                            durationMillis = 240,
+                            easing = FastOutSlowInEasing
                         )
                     ) + fadeOut(
-                        animationSpec = tween(durationMillis = 200)
+                        animationSpec = tween(durationMillis = 140)
                     )
                 ).using(
                     SizeTransform(clip = false) { _, _ -> snap() }
                 )
             } else {
-                // Apple iOS Pop / Back: Exiting subscreen slides out to right trailing edge with subtle fade out,
-                // while returning screen returns from left (-18% width) with reverse parallax.
+                // Fluid back pop to right edge
                 (slideInHorizontally(
-                    initialOffsetX = { fullWidth -> -fullWidth * 18 / 100 },
+                    initialOffsetX = { fullWidth -> -fullWidth * 15 / 100 },
                     animationSpec = tween(
-                        durationMillis = 300,
-                        easing = CubicBezierEasing(0.25f, 0.1f, 0.25f, 1.0f)
+                        durationMillis = 200,
+                        easing = FastOutSlowInEasing
                     )
                 ) + fadeIn(
-                    animationSpec = tween(durationMillis = 200)
+                    animationSpec = tween(durationMillis = 140)
                 )).togetherWith(
                     slideOutHorizontally(
                         targetOffsetX = { fullWidth -> fullWidth },
                         animationSpec = tween(
-                            durationMillis = 300,
-                            easing = CubicBezierEasing(0.25f, 0.1f, 0.25f, 1.0f)
+                            durationMillis = 200,
+                            easing = FastOutSlowInEasing
                         )
                     ) + fadeOut(
-                        animationSpec = tween(durationMillis = 200)
+                        animationSpec = tween(durationMillis = 140)
                     )
                 ).using(
                     SizeTransform(clip = false) { _, _ -> snap() }
@@ -804,6 +803,8 @@ fun FinanceAppScreen(viewModel: FinanceViewModel) {
                     )
                 }
             }
+        } else {
+            Box(modifier = Modifier.fillMaxSize())
         }
     }
 
@@ -1209,14 +1210,24 @@ fun DashboardTab(
                     onClick = onAddExpenseClick,
                     modifier = Modifier
                         .size(48.dp)
+                        .tactileDepth(elevation = 5.dp, shape = CircleShape)
                         .clip(CircleShape)
-                        .background(SleekPrimary)
+                        .background(
+                            Brush.verticalGradient(
+                                listOf(
+                                    SleekPrimary,
+                                    mixPrimaryWithColor(SleekPrimary, Color.Black, 0.18f)
+                                )
+                            )
+                        )
+                        .border(1.2.dp, Color.White.copy(alpha = 0.35f), CircleShape)
                         .testTag("dashboard_add_expense_fab")
                 ) {
                     Icon(
                         imageVector = AppIcons.Add,
                         contentDescription = "Add Expense",
-                        tint = Color.White
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             }

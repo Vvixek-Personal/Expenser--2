@@ -109,6 +109,16 @@ fun getAppUpdatesHistory(): List<AppReleaseUpdate> {
             isLatest = true,
             specifications = listOf(
                 UpdateSpecification(
+                    category = SpecCategory.UI_UX,
+                    title = "Tactile Depth & Spring Physics Button Architecture (Modifier.tactileDepth & Bouncy Press)",
+                    description = "Delivered tactile depth enhancements across the entire app interface: dynamic elevation drop-shadows, subtle specular rim borders, gradient depth styling, and spring-based compression physics (bouncyPress, tactileDepth) applied to action buttons, Dashboard FAB, FloatingDockBar, and quick shortcuts for a physical, fluid feel."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.ANIMATION,
+                    title = "Fluid Sidebar Tab & Settings Navigation Transition (Zero Center-to-Border Distortion & [No Animation] Compliance)",
+                    description = "Completely eliminated laggy middle-to-border scale distortion when opening settings tabs and sidebar destinations. Anchored layout with contentAlignment = Alignment.TopStart and symmetrical full-bleed placeholders, introduced fluid hardware-accelerated horizontal slide and fade transitions, and provided instantaneous zero-overhead switching ([No Animation] mode) when animations are turned off."
+                ),
+                UpdateSpecification(
                     category = SpecCategory.SYSTEM,
                     title = "Production Local Backup & Recovery Engine (LocalRecoveryManager)",
                     description = "Replaced stubbed snapshot operations with a complete, production-grade JSON backup & recovery engine. Captures all accounts, expenses, budgets, savings goals, reminders, recurring rules, and preferences with SHA-256 integrity verification, atomic file replacement, automatic rolling retention (10 snapshots), pre-restore safety snapshots, and transactional database restoration."
