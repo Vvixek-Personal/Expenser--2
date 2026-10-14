@@ -169,6 +169,7 @@ private fun AnimatedDockTile(
                 scaleX = animatedScale
                 scaleY = animatedScale
             }
+            .bouncyPress(scaleDown = 0.94f)
             .clip(SleekShapes.pill)
             .background(containerBg)
             .border(

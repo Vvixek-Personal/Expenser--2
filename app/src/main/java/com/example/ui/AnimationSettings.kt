@@ -19,6 +19,7 @@ import androidx.compose.foundation.Indication
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.compositionLocalOf
@@ -239,3 +240,86 @@ fun rememberStaggeredProgress(delayMs: Int = 0, durationMs: Int = 450): Float {
     return progress
 }
 
+/**
+ * Subtle organic breathing pulse animation modifier for hero banners, active badges, and focus elements.
+ */
+fun Modifier.subtleBreathing(
+    minScale: Float = 0.985f,
+    maxScale: Float = 1.015f,
+    durationMs: Int = 3200
+): Modifier = composed {
+    val scale = rememberLoopFloat(
+        initial = minScale,
+        target = maxScale,
+        durationMs = durationMs,
+        label = "subtle_breathing_scale",
+        easing = FastOutSlowInEasing,
+        reverse = true,
+        rest = 1f
+    )
+    this.scale(scale)
+}
+
+/**
+ * Lightweight hardware-accelerated celebration particle canvas for milestone, budget success, and savings celebrations.
+ */
+@Composable
+fun CelebrationParticleBurst(
+    trigger: Boolean,
+    modifier: Modifier = Modifier,
+    particleCount: Int = 24
+) {
+    if (!trigger || !LocalAnimationsEnabled.current) return
+
+    val animProgress = remember { androidx.compose.animation.core.Animatable(0f) }
+
+    androidx.compose.runtime.LaunchedEffect(trigger) {
+        animProgress.snapTo(0f)
+        animProgress.animateTo(
+            targetValue = 1f,
+            animationSpec = tween(durationMillis = 1100, easing = FastOutSlowInEasing)
+        )
+    }
+
+    val colors = remember {
+        listOf(
+            Color(0xFF10B981), // Emerald
+            Color(0xFF3B82F6), // Blue
+            Color(0xFFF59E0B), // Amber
+            Color(0xFF8B5CF6), // Purple
+            Color(0xFFEC4899), // Pink
+            Color(0xFF06B6D4)  // Cyan
+        )
+    }
+
+    val particles = remember {
+        val random = java.util.Random(42)
+        List(particleCount) { index ->
+            val angle = (index.toFloat() / particleCount.toFloat()) * 2f * Math.PI.toFloat() + (random.nextFloat() * 0.4f - 0.2f)
+            val distance = 60f + random.nextFloat() * 120f
+            val size = 5f + random.nextFloat() * 7f
+            val color = colors[index % colors.size]
+            Triple(angle, distance, Pair(size, color))
+        }
+    }
+
+    if (animProgress.value < 1f) {
+        androidx.compose.foundation.Canvas(modifier = modifier.fillMaxSize()) {
+            val progress = animProgress.value
+            val alpha = (1f - progress).coerceIn(0f, 1f)
+            val center = Offset(size.width / 2f, size.height / 2f)
+
+            particles.forEach { (angle, maxDist, sizeAndColor) ->
+                val currentDist = maxDist * (1f - (1f - progress) * (1f - progress))
+                val px = center.x + kotlin.math.cos(angle) * currentDist
+                val py = center.y + kotlin.math.sin(angle) * currentDist + (progress * progress * 40f) // gentle gravity
+                val pSize = sizeAndColor.first * (1f - progress * 0.4f)
+                drawCircle(
+                    color = sizeAndColor.second.copy(alpha = alpha),
+                    radius = pSize,
+                    center = Offset(px, py)
+                )
+            }
+        }
+    }
+}

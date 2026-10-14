@@ -3930,7 +3930,8 @@ fun NetWorthOverTimeChartCard(
             sortedExpenses.chunked(step).take(7).forEach { chunk ->
                 val date = chunk.last().date
                 chunk.forEach { e ->
-                    val converted = CurrencyManager.convert(e.amount, e.currencyCode, currencyCode)
+                    val convertedMinor = Money.convert(e.amountMinor, e.currencyCode, currencyCode)
+                    val converted = Money.toDouble(convertedMinor, currencyCode)
                     if (e.type == "INCOME") runningFlow += converted else runningFlow -= converted
                 }
                 points.add(Pair(date, runningFlow))

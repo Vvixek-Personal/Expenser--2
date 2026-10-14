@@ -137,10 +137,16 @@ object CurrencyManager {
             ?: currencies[0] // default to INR
     }
 
+    fun getSymbol(code: String): String {
+        return getByCode(code).symbol
+    }
+
     fun convert(amount: Double, fromCode: String, toCode: String): Double {
+        if (fromCode.equals(toCode, ignoreCase = true)) return amount
         val fromRate = getByCode(fromCode).rateToUsd
         val toRate = getByCode(toCode).rateToUsd
-        if (fromRate == 0.0) return amount
+        if (fromRate <= 0.0 || !fromRate.isFinite()) return amount
+        if (toRate <= 0.0 || !toRate.isFinite()) return amount
         val amountInUsd = amount / fromRate
         return amountInUsd * toRate
     }

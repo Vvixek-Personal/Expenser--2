@@ -10,7 +10,8 @@ fun getFinanceDbMigrations(defaultCurrency: String): Array<Migration> {
         createMigration9To10(defaultCurrency),
         createMigration10To11(defaultCurrency),
         MIGRATION_11_12,
-        createMigration12To13(defaultCurrency)
+        createMigration12To13(defaultCurrency),
+        MIGRATION_13_14
     )
 }
 
@@ -123,6 +124,13 @@ val MIGRATION_11_12 = object : Migration(11, 12) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("CREATE TABLE IF NOT EXISTS `recurring_rules` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `amountMinor` INTEGER NOT NULL, `category` TEXT NOT NULL, `frequency` TEXT NOT NULL, `startDate` INTEGER NOT NULL, `nextDueDate` INTEGER NOT NULL, `isActive` INTEGER NOT NULL, `currencyCode` TEXT NOT NULL, `accountId` INTEGER NOT NULL, `note` TEXT)")
         addColumnIfNotExists(db, "expenses", "recurringRuleId", "INTEGER")
+    }
+}
+
+val MIGRATION_13_14 = object : Migration(13, 14) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        addColumnIfNotExists(db, "expenses", "originalCurrencyCode", "TEXT")
+        addColumnIfNotExists(db, "expenses", "originalAmountMinor", "INTEGER")
     }
 }
 

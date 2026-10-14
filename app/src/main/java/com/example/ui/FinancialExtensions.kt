@@ -78,8 +78,8 @@ fun Iterable<SavingsGoal>.totalSavingsMinor(targetCurrencyCode: String = "INR"):
     return sum
 }
 
-fun Iterable<SavingsGoal>.totalSavings(): Double {
-    return this.sumOf { it.currentAmount }
+fun Iterable<SavingsGoal>.totalSavings(targetCurrencyCode: String = "INR"): Double {
+    return Money.toDouble(totalSavingsMinor(targetCurrencyCode), targetCurrencyCode)
 }
 
 // Net Worth

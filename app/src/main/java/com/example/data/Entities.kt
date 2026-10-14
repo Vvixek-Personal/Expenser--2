@@ -30,7 +30,9 @@ data class Expense(
     val accountId: Long = 0,
     val kind: String = "REGULAR", // "REGULAR", "SAVINGS", "RECURRING"
     val goalId: Long? = null,
-    val recurringRuleId: Long? = null
+    val recurringRuleId: Long? = null,
+    val originalCurrencyCode: String? = null,
+    val originalAmountMinor: Long? = null
 )
 
 @Entity(tableName = "accounts")

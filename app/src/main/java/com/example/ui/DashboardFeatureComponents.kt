@@ -1,6 +1,8 @@
 package com.example.ui
 
 import android.widget.Toast
+import com.example.data.Money
+import java.util.Locale
 import androidx.compose.animation.*
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring
@@ -1185,12 +1187,14 @@ fun QuickCurrencyConvertDialog(
     var amountText by remember { mutableStateOf("100") }
     var targetCode by remember { mutableStateOf(if (currencyCode == "USD") "EUR" else "USD") }
 
-    val amount = amountText.toDoubleOrNull() ?: 0.0
+    val parsedMinor = remember(amountText, currencyCode) {
+        Money.parse(amountText, currencyCode) ?: 0L
+    }
     val targetCurrency = remember(targetCode) { CurrencyManager.getByCode(targetCode) }
     val sourceCurrency = remember(currencyCode) { CurrencyManager.getByCode(currencyCode) }
 
-    val converted = remember(amount, currencyCode, targetCode) {
-        CurrencyManager.convert(amount, currencyCode, targetCode)
+    val conversionResult = remember(parsedMinor, currencyCode, targetCode) {
+        Money.tryConvert(parsedMinor, currencyCode, targetCode)
     }
 
     Dialog(onDismissRequest = onDismiss) {
@@ -1232,17 +1236,37 @@ fun QuickCurrencyConvertDialog(
                     ) {
                         Text("${targetCurrency.flag} ${targetCurrency.name}", fontSize = 12.sp, color = SleekTextSecondary)
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = "${targetCurrency.symbol}${String.format(Locale.getDefault(), "%,.2f", converted)} ${targetCurrency.code}",
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = SleekPrimary
-                        )
-                        Text(
-                            text = "${sourceCurrency.symbol}${String.format(Locale.getDefault(), "%,.2f", amount)} $currencyCode",
-                            fontSize = 11.sp,
-                            color = SleekTextSecondary
-                        )
+                        when (conversionResult) {
+                            is Money.ConversionResult.Success -> {
+                                Text(
+                                    text = Money.format(conversionResult.amountMinor, targetCode),
+                                    fontSize = 24.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = SleekPrimary
+                                )
+                                Text(
+                                    text = "${Money.format(parsedMinor, currencyCode)} (Rate: ${String.format(Locale.US, "%.4f", conversionResult.rateUsed)})",
+                                    fontSize = 11.sp,
+                                    color = SleekTextSecondary
+                                )
+                            }
+                            is Money.ConversionResult.MissingRate -> {
+                                Text(
+                                    text = "Rate unavailable",
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = SleekTextSecondary
+                                )
+                            }
+                            is Money.ConversionResult.InvalidRate -> {
+                                Text(
+                                    text = "Invalid exchange rate",
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = SleekTextSecondary
+                                )
+                            }
+                        }
                     }
                 }
 

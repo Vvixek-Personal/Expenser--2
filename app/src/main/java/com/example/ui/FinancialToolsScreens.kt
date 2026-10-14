@@ -4,6 +4,8 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.widget.Toast
+import com.example.data.Money
+import java.util.Locale
 import androidx.compose.animation.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -38,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.ui.theme.*
-import java.util.Locale
 import kotlin.math.roundToInt
 
 /**
@@ -491,8 +492,11 @@ fun CurrencySettingsScreen(
         var selectedOption by remember { mutableStateOf("KEEP") } // "KEEP" or "CONVERT"
 
         val currentRate = remember(currentCode, target.code) {
-            val rate = CurrencyManager.convert(1.0, currentCode, target.code)
-            String.format(Locale.getDefault(), "%,.4f", rate)
+            val oneMajor = Money.factor(currentCode).toLong()
+            when (val res = Money.tryConvert(oneMajor, currentCode, target.code)) {
+                is Money.ConversionResult.Success -> String.format(Locale.US, "%,.4f", res.rateUsed)
+                else -> "N/A"
+            }
         }
 
         AlertDialog(
@@ -727,7 +731,7 @@ fun CalculationsScreen(
     onBack: () -> Unit
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
-    val tabTitles = listOf("Currency Converter", "Split Bill & Tip", "Percentage", "Run-Rate", "Loan & EMI")
+    val tabTitles = listOf("Currency Converter", "Split Bill & Tip", "Percentage", "Run-Rate", "Loan & EMI", "Wealth & Compound")
 
     Scaffold(
         topBar = {
@@ -776,6 +780,7 @@ fun CalculationsScreen(
                     2 -> PercentageCalculatorTool()
                     3 -> RunRateCalculatorTool(viewModel)
                     4 -> LoanEmiCalculatorTool(viewModel)
+                    5 -> WealthCompoundInterestCalculatorTool(viewModel)
                 }
             }
         }
@@ -1696,6 +1701,269 @@ private fun LoanEmiCalculatorTool(viewModel: FinanceViewModel) {
                         FilterChip(
                             selected = isSelected,
                             onClick = { tenureYearsText = years },
+                            label = { Text(label, fontSize = 11.sp) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = SleekPrimary,
+                                selectedLabelColor = Color.White
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * High-fidelity Compound Interest & SIP Wealth Accumulation Simulator
+ * Provides real-time dynamic compounding math, interactive duration sliders,
+ * interactive wealth accumulation visual bar, and estimated future value.
+ */
+@Composable
+private fun WealthCompoundInterestCalculatorTool(viewModel: FinanceViewModel) {
+    val currencySymbol by viewModel.selectedCurrencySymbol.collectAsStateWithLifecycle()
+
+    var initialDepositText by remember { mutableStateOf("10000") }
+    var monthlyContributionText by remember { mutableStateOf("2500") }
+    var annualInterestRateText by remember { mutableStateOf("12.0") }
+    var investmentYearsText by remember { mutableStateOf("10") }
+
+    val initialDeposit = initialDepositText.toDoubleOrNull()?.coerceAtLeast(0.0) ?: 0.0
+    val monthlyContribution = monthlyContributionText.toDoubleOrNull()?.coerceAtLeast(0.0) ?: 0.0
+    val annualRate = annualInterestRateText.toDoubleOrNull()?.coerceIn(0.0, 100.0) ?: 12.0
+    val years = investmentYearsText.toDoubleOrNull()?.coerceIn(1.0, 50.0) ?: 10.0
+
+    // Compound Interest Calculation: A = P(1 + r/n)^(nt) + PMT * [((1 + r/n)^(nt) - 1) / (r/n)]
+    val monthlyRate = (annualRate / 100.0) / 12.0
+    val totalMonths = (years * 12).toInt()
+
+    val (futureValue, totalInvested, totalGains) = remember(initialDeposit, monthlyContribution, annualRate, years) {
+        var balance = initialDeposit
+        var invested = initialDeposit
+        for (m in 1..totalMonths) {
+            balance = (balance + monthlyContribution) * (1.0 + monthlyRate)
+            invested += monthlyContribution
+        }
+        val gains = (balance - invested).coerceAtLeast(0.0)
+        Triple(balance, invested, gains)
+    }
+
+    val investedRatio = if (futureValue > 0) (totalInvested / futureValue).toFloat().coerceIn(0.05f, 0.95f) else 0.5f
+    val gainsRatio = 1f - investedRatio
+
+    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        // Future Value Hero Card
+        Card(
+            shape = RoundedCornerShape(22.dp),
+            colors = CardDefaults.cardColors(containerColor = SleekSurface),
+            border = BorderStroke(1.5.dp, SleekPrimary.copy(alpha = 0.45f)),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Surface(
+                    color = SleekPrimaryContainer,
+                    shape = RoundedCornerShape(10.dp)
+                ) {
+                    Text(
+                        text = "🚀 Estimated Wealth at Year ${years.toInt()}",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = SleekPrimary,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text(
+                    text = "$currencySymbol${String.format(Locale.getDefault(), "%,.0f", futureValue)}",
+                    style = MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = SleekPrimary
+                )
+
+                Text(
+                    text = "Total Value Accumulated",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = SleekTextSecondary
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Dual-Segment Wealth Composition Bar
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(14.dp)
+                            .clip(CircleShape)
+                            .background(Color(0xFFE2E8F0))
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .weight(investedRatio)
+                                .fillMaxHeight()
+                                .background(SleekPrimary)
+                        )
+                        Box(
+                            modifier = Modifier
+                                .weight(gainsRatio)
+                                .fillMaxHeight()
+                                .background(Color(0xFF10B981))
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(modifier = Modifier.size(8.dp).clip(CircleShape).background(SleekPrimary))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "Invested: ${(investedRatio * 100).toInt()}%",
+                                fontSize = 11.sp,
+                                color = SleekTextSecondary
+                            )
+                        }
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(modifier = Modifier.size(8.dp).clip(CircleShape).background(Color(0xFF10B981)))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "Est. Wealth Gain: ${(gainsRatio * 100).toInt()}%",
+                                fontSize = 11.sp,
+                                color = SleekTextSecondary
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+                HorizontalDivider(color = SleekBorder)
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column {
+                        Text("Total Out-of-Pocket", style = MaterialTheme.typography.labelSmall, color = SleekTextSecondary)
+                        Text(
+                            "$currencySymbol${String.format(Locale.getDefault(), "%,.0f", totalInvested)}",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = SleekTextPrimary
+                        )
+                    }
+
+                    Column(horizontalAlignment = Alignment.End) {
+                        Text("Estimated Compounding Gain", style = MaterialTheme.typography.labelSmall, color = SleekTextSecondary)
+                        Text(
+                            "+$currencySymbol${String.format(Locale.getDefault(), "%,.0f", totalGains)}",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF10B981)
+                        )
+                    }
+                }
+            }
+        }
+
+        // Inputs Card
+        Card(
+            shape = RoundedCornerShape(18.dp),
+            colors = CardDefaults.cardColors(containerColor = SleekSurface),
+            border = BorderStroke(1.dp, SleekBorder),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(18.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+                Text(
+                    text = "Growth Parameters",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = SleekTextPrimary
+                )
+
+                OutlinedTextField(
+                    value = initialDepositText,
+                    onValueChange = { initialDepositText = it.filter { char -> char.isDigit() || char == '.' } },
+                    label = { Text("Initial Lumsum ($currencySymbol)") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = SleekSurface,
+                        unfocusedContainerColor = SleekSurface
+                    )
+                )
+
+                OutlinedTextField(
+                    value = monthlyContributionText,
+                    onValueChange = { monthlyContributionText = it.filter { char -> char.isDigit() || char == '.' } },
+                    label = { Text("Monthly Contribution / SIP ($currencySymbol)") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = SleekSurface,
+                        unfocusedContainerColor = SleekSurface
+                    )
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    OutlinedTextField(
+                        value = annualInterestRateText,
+                        onValueChange = { annualInterestRateText = it.filter { char -> char.isDigit() || char == '.' } },
+                        label = { Text("Expected Return (% p.a.)") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        singleLine = true,
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = SleekSurface,
+                            unfocusedContainerColor = SleekSurface
+                        )
+                    )
+
+                    OutlinedTextField(
+                        value = investmentYearsText,
+                        onValueChange = { investmentYearsText = it.filter { char -> char.isDigit() } },
+                        label = { Text("Horizon (Years)") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true,
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = SleekSurface,
+                            unfocusedContainerColor = SleekSurface
+                        )
+                    )
+                }
+
+                // Quick Tenure Selector Chips
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    listOf("3 Yrs" to "3", "5 Yrs" to "5", "10 Yrs" to "10", "15 Yrs" to "15", "25 Yrs" to "25").forEach { (label, yr) ->
+                        val isSelected = investmentYearsText == yr
+                        FilterChip(
+                            selected = isSelected,
+                            onClick = { investmentYearsText = yr },
                             label = { Text(label, fontSize = 11.sp) },
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = SleekPrimary,

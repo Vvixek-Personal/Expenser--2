@@ -539,6 +539,7 @@ fun InteractiveScorecardRow(
             border = BorderStroke(1.dp, SleekBorder),
             modifier = Modifier
                 .weight(1f)
+                .tactileDepth(elevation = 3.dp, shape = SleekShapes.card)
                 .clickable {
                     haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                     onMetricClick(
@@ -591,6 +592,7 @@ fun InteractiveScorecardRow(
             border = BorderStroke(1.dp, SleekBorder),
             modifier = Modifier
                 .weight(1f)
+                .tactileDepth(elevation = 3.dp, shape = SleekShapes.card)
                 .clickable {
                     haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                     onMetricClick(
@@ -642,6 +644,7 @@ fun InteractiveScorecardRow(
             border = BorderStroke(1.dp, SleekBorder),
             modifier = Modifier
                 .weight(1f)
+                .tactileDepth(elevation = 3.dp, shape = SleekShapes.card)
                 .clickable {
                     haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                     onMetricClick(
@@ -1063,7 +1066,12 @@ private fun WaterfallStepRow(
             )
         }
         Spacer(modifier = Modifier.height(4.dp))
-        val ratio = (amount / maxScale).toFloat().coerceIn(0.04f, 1f)
+        val targetRatio = (amount / maxScale).toFloat().coerceIn(0.04f, 1f)
+        val animatedRatio by animateFloatAsState(
+            targetValue = targetRatio,
+            animationSpec = appTween(650, FastOutSlowInEasing),
+            label = "waterfall_bar_fill"
+        )
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -1074,7 +1082,7 @@ private fun WaterfallStepRow(
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .fillMaxWidth(ratio)
+                    .fillMaxWidth(animatedRatio)
                     .clip(RoundedCornerShape(4.dp))
                     .background(color)
             )
@@ -1184,32 +1192,40 @@ fun BudgetPerformanceSection(
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(5.dp))
+                        Spacer(modifier = Modifier.height(6.dp))
+
+                        val targetProgress = (item.percentUsed / 100.0).toFloat().coerceIn(0.02f, 1f)
+                        val animatedBarFill by animateFloatAsState(
+                            targetValue = targetProgress,
+                            animationSpec = appTween(600, FastOutSlowInEasing),
+                            label = "budget_bar_fill"
+                        )
 
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(6.dp)
-                                .clip(RoundedCornerShape(3.dp))
+                                .height(8.dp)
+                                .clip(RoundedCornerShape(4.dp))
                                 .background(SleekBorder.copy(alpha = 0.5f))
                         ) {
                             Box(
                                 modifier = Modifier
                                     .fillMaxHeight()
-                                    .fillMaxWidth((item.percentUsed / 100.0).toFloat().coerceIn(0.02f, 1f))
-                                    .clip(RoundedCornerShape(3.dp))
+                                    .fillMaxWidth(animatedBarFill)
+                                    .clip(RoundedCornerShape(4.dp))
                                     .background(progressColor)
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(3.dp))
+                        Spacer(modifier = Modifier.height(4.dp))
 
                         Text(
                             text = if (isExceeded)
                                 "⚠️ Exceeded by $currencySymbol%,.0f".format(abs(item.variance))
                             else
                                 "Remaining: $currencySymbol%,.0f".format(item.variance),
-                            fontSize = 10.5.sp,
+                            fontSize = 11.sp,
+                            fontWeight = if (isExceeded) FontWeight.SemiBold else FontWeight.Normal,
                             color = if (isExceeded) Color(0xFFEF4444) else SleekTextSecondary
                         )
                     }

@@ -11,31 +11,30 @@ class FinanceRepository(private val dao: FinanceDao, private val database: Finan
     val allRecurringRules: Flow<List<RecurringRule>> = dao.getAllRecurringRules()
     val allReminders: Flow<List<ReminderEntity>> = dao.getAllReminders()
 
+    suspend fun ensureDefaultAccountCreated(defaultCurrency: String = "INR"): Long {
+        val existing = dao.getAccountsSnapshot()
+        if (existing.isNotEmpty()) return existing.first().id
+        return dao.insertAccount(
+            Account(
+                name = "Cash",
+                type = "CASH",
+                currencyCode = defaultCurrency,
+                openingBalance = 0.0,
+                balance = 0.0,
+                openingBalanceMinor = 0L,
+                balanceMinor = 0L
+            )
+        )
+    }
+
     suspend fun insertExpense(expense: Expense): Long {
         val targetAccountId = if (expense.accountId > 0L) {
-            if (dao.getAccountById(expense.accountId) == null) {
-                dao.insertAccount(
-                    Account(
-                        id = expense.accountId,
-                        name = "Cash",
-                        type = "CASH",
-                        currencyCode = expense.currencyCode,
-                        openingBalanceMinor = 0L,
-                        balanceMinor = 0L
-                    )
-                )
-            }
-            expense.accountId
+            val existing = dao.getAccountById(expense.accountId)
+                ?: throw IllegalArgumentException("Account with id ${expense.accountId} does not exist")
+            existing.id
         } else {
-            dao.getAccountsSnapshot().firstOrNull()?.id ?: dao.insertAccount(
-                Account(
-                    name = "Cash",
-                    type = "CASH",
-                    currencyCode = expense.currencyCode,
-                    openingBalanceMinor = 0L,
-                    balanceMinor = 0L
-                )
-            )
+            dao.getAccountsSnapshot().firstOrNull()?.id
+                ?: throw IllegalStateException("No account exists. Please create an account before adding transactions.")
         }
 
         val toInsert = syncExpenseAmounts(expense.copy(accountId = targetAccountId))

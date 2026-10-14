@@ -110,6 +110,16 @@ fun getAppUpdatesHistory(): List<AppReleaseUpdate> {
             specifications = listOf(
                 UpdateSpecification(
                     category = SpecCategory.UI_UX,
+                    title = "Wealth & Compound Interest / SIP Investment Calculator (CalculationsScreen)",
+                    description = "Added an interactive wealth accumulation and SIP compounding calculator to Financial Calculators. Simulates exponential compound interest over 1 to 50 year horizons with dynamic out-of-pocket vs gains ratio visual breakdown, custom contribution frequency, and instant milestone projections."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.ANIMATION,
+                    title = "Interactive Animation Suite: Breathing Modifiers, Particle Bursts & Smooth Bar Visualizers",
+                    description = "Introduced Modifier.subtleBreathing for dynamic focus states, CelebrationParticleBurst for achievement moments, animated progress fills (appTween) across budget variance and cashflow waterfall rows, and bouncy spring press feedback integrated directly into FloatingDockBar tiles."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.UI_UX,
                     title = "Tactile Depth & Spring Physics Button Architecture (Modifier.tactileDepth & Bouncy Press)",
                     description = "Delivered tactile depth enhancements across the entire app interface: dynamic elevation drop-shadows, subtle specular rim borders, gradient depth styling, and spring-based compression physics (bouncyPress, tactileDepth) applied to action buttons, Dashboard FAB, FloatingDockBar, and quick shortcuts for a physical, fluid feel."
                 ),

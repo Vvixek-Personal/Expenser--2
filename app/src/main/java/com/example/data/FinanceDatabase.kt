@@ -10,7 +10,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 private const val TAG = "FinanceDatabase"
 
-const val FINANCE_DB_VERSION = 13
+const val FINANCE_DB_VERSION = 14
 const val DATABASE_NAME = "finance_database"
 
 @Database(

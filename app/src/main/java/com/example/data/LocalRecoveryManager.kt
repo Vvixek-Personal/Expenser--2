@@ -268,6 +268,7 @@ object LocalRecoveryManager {
         context: Context,
         db: FinanceDatabase,
         fileName: String,
+        allowUnverifiedLegacy: Boolean = false,
         onCurrencyRestored: (String, String, String, Double) -> Unit
     ): Boolean {
         val file = File(getSnapshotDir(context), fileName)
@@ -282,14 +283,18 @@ object LocalRecoveryManager {
 
             val payloadObj = if (root.has("payload")) {
                 val payloadString = root.getString("payload")
-                val expectedChecksum = root.getString("checksum")
+                val expectedChecksum = root.optString("checksum", "")
                 val actualChecksum = sha256(payloadString.toByteArray(Charsets.UTF_8))
-                if (expectedChecksum != actualChecksum) {
+                if (expectedChecksum.isBlank() || expectedChecksum != actualChecksum) {
                     Log.w(TAG, "Snapshot checksum mismatch for $fileName")
                     return false
                 }
                 JSONObject(payloadString)
             } else {
+                if (!allowUnverifiedLegacy) {
+                    Log.w(TAG, "Snapshot lacks checksum and unverified legacy restore not permitted: $fileName")
+                    return false
+                }
                 root
             }
 
@@ -300,9 +305,11 @@ object LocalRecoveryManager {
                 val cur = obj.optString("currencyCode", "INR")
                 val minor = if (obj.has("balanceMinor")) obj.getLong("balanceMinor") else Money.fromDouble(obj.optDouble("balance", 0.0), cur)
                 val opMinor = if (obj.has("openingBalanceMinor")) obj.getLong("openingBalanceMinor") else minor
+                val name = obj.optString("name", "Account").trim()
+                if (name.isBlank()) throw IllegalArgumentException("Account at index $idx has empty name")
                 Account(
                     id = obj.optLong("id", 0L),
-                    name = obj.optString("name", "Account"),
+                    name = name,
                     type = obj.optString("type", "BANK"),
                     currencyCode = cur,
                     openingBalance = Money.toDouble(opMinor, cur),
@@ -312,15 +319,18 @@ object LocalRecoveryManager {
                 )
             }
 
+            val validAccountIds = accounts.map { it.id }.toSet()
+
             // Parse recurring rules
             val rawRules = payloadObj.optJSONArray("recurringRules") ?: JSONArray()
             val rules = (0 until rawRules.length()).map { idx ->
                 val obj = rawRules.getJSONObject(idx)
                 val cur = obj.optString("currencyCode", "INR")
                 val amtMinor = obj.optLong("amountMinor", 0L)
+                val accId = obj.optLong("accountId", 0L)
                 RecurringRule(
                     id = obj.optLong("id", 0L),
-                    title = obj.optString("title", "Recurring"),
+                    title = obj.optString("title", "Recurring").ifBlank { "Recurring Bill" },
                     amountMinor = amtMinor,
                     category = obj.optString("category", "General"),
                     frequency = obj.optString("frequency", "MONTHLY"),
@@ -328,7 +338,7 @@ object LocalRecoveryManager {
                     nextDueDate = obj.optLong("nextDueDate", System.currentTimeMillis()),
                     isActive = obj.optBoolean("isActive", true),
                     currencyCode = cur,
-                    accountId = obj.optLong("accountId", 0L),
+                    accountId = if (validAccountIds.contains(accId)) accId else (accounts.firstOrNull()?.id ?: 1L),
                     note = obj.optString("note", "")
                 )
             }
@@ -341,6 +351,8 @@ object LocalRecoveryManager {
                 val minor = if (obj.has("amountMinor")) obj.getLong("amountMinor") else Money.fromDouble(obj.optDouble("amount", 0.0), cur)
                 val gId = obj.optLong("goalId", -1L)
                 val rId = obj.optLong("recurringRuleId", -1L)
+                val accId = obj.optLong("accountId", 0L)
+                val resolvedAccountId = if (validAccountIds.contains(accId)) accId else (accounts.firstOrNull()?.id ?: 1L)
                 Expense(
                     id = obj.optLong("id", 0L),
                     amount = Money.toDouble(minor, cur),
@@ -351,7 +363,7 @@ object LocalRecoveryManager {
                     imagePath = if (obj.has("imagePath")) obj.getString("imagePath").ifBlank { null } else null,
                     type = obj.optString("type", "EXPENSE"),
                     currencyCode = cur,
-                    accountId = obj.optLong("accountId", 0L),
+                    accountId = resolvedAccountId,
                     kind = obj.optString("kind", "REGULAR"),
                     goalId = if (gId > 0L) gId else null,
                     recurringRuleId = if (rId > 0L) rId else null
@@ -384,7 +396,7 @@ object LocalRecoveryManager {
                 val contribMinor = if (obj.has("contributionAmountMinor")) obj.getLong("contributionAmountMinor") else Money.fromDouble(obj.optDouble("contributionAmount", 0.0), cur)
                 SavingsGoal(
                     id = obj.optLong("id", 0L),
-                    name = obj.optString("name", "Goal"),
+                    name = obj.optString("name", "Goal").ifBlank { "Savings Goal" },
                     targetAmount = Money.toDouble(targetMinor, cur),
                     currentAmount = Money.toDouble(curMinor, cur),
                     targetAmountMinor = targetMinor,
@@ -414,8 +426,12 @@ object LocalRecoveryManager {
                 )
             }
 
-            // Pre-restore safety backup
-            PreMigrationBackup.backupDatabaseBeforeMigration(context, DATABASE_NAME)
+            // Mandatory Pre-restore Safety Snapshot
+            val safetySnapshotCreated = createSnapshot(context, db)
+            if (!safetySnapshotCreated) {
+                Log.e(TAG, "Pre-restore safety snapshot failed! Aborting restoration.")
+                return false
+            }
 
             // Atomic transactional restore
             val dao = db.financeDao()
@@ -427,6 +443,13 @@ object LocalRecoveryManager {
                 budgets.forEach { dao.insertBudget(it) }
                 goals.forEach { dao.insertSavingsGoal(it) }
                 reminders.forEach { dao.insertReminder(it) }
+
+                // Verification of restored record counts
+                val restoredAccounts = dao.getAccountsSnapshot()
+                val restoredExpenses = dao.getExpensesSnapshot()
+                if (restoredAccounts.size != accounts.size || restoredExpenses.size != expenses.size) {
+                    throw IllegalStateException("Record count mismatch after restore! Accounts: ${restoredAccounts.size}/${accounts.size}, Expenses: ${restoredExpenses.size}/${expenses.size}")
+                }
             }
 
             // Restore settings

@@ -187,6 +187,7 @@ class FinanceRepositoryBalanceTest {
 
     @Test
     fun testExpenseCurrencyCodePersistenceAndAnalyticsNormalization() = runBlocking {
+        repository.ensureDefaultAccountCreated("USD")
         // User is using USD
         val usdExpense = Expense(
             amountMinor = 5000L,
