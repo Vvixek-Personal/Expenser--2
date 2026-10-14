@@ -109,6 +109,26 @@ fun getAppUpdatesHistory(): List<AppReleaseUpdate> {
             isLatest = true,
             specifications = listOf(
                 UpdateSpecification(
+                    category = SpecCategory.FEATURE,
+                    title = "Emergency Fund & Living Runway Analyzer Tool (CalculationsScreen)",
+                    description = "Added an emergency runway calculator computing real-time survival months from liquid savings against essential monthly burn rate. Provides 3, 6, 9, and 12-month target reserve projections, vulnerability level badges (Critical, Starter, Standard, Bulletproof), animated funding progress bar, monthly savings trajectory needed to reach safety targets in 6/12/24 months, and 1-tap clipboard export."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.FEATURE,
+                    title = "Inflation & Purchasing Power Erosion Calculator (CalculationsScreen)",
+                    description = "Added an inflation impact calculator analyzing future purchasing power decay over 1 to 50 year horizons with selectable inflation rates (3% to 10%). Features interactive visual decay bars comparing retained real value vs lost purchasing power, replacement cost projection, and formatted clipboard summary export."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.ANIMATION,
+                    title = "Expanded Motion Suite: Dynamic Pulse Glow, Shifting Gradient Borders & Spring Button Physics",
+                    description = "Expanded AnimationSettings with Modifier.pulseGlow for breathing ambient elevation halos, Modifier.animatedGradientBorder for perimeter shimmer rotations, and Modifier.springPressEffect for zero-latency tactile button compression. Integrated spring feedback into home QuickActionButton shortcuts and animated sweep arcs into the SmartBudgetHealthGaugeWidget."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SYSTEM,
+                    title = "Single Source of Truth Settings Architecture & Biometric Auto-Unlock Fix (AppSettingsManager)",
+                    description = "Eliminated dual competing state sources: AppSettingsManager is now the authoritative repository for all 45+ persisted settings. Fixed loadInitialState() to restore all fields on cold start, handled all dispatch intents exhaustively, permanently decoupled session isAppLocked from settings emissions to stop re-locking on theme/currency changes, and wired biometric authentication properly."
+                ),
+                UpdateSpecification(
                     category = SpecCategory.UI_UX,
                     title = "Wealth & Compound Interest / SIP Investment Calculator (CalculationsScreen)",
                     description = "Added an interactive wealth accumulation and SIP compounding calculator to Financial Calculators. Simulates exponential compound interest over 1 to 50 year horizons with dynamic out-of-pocket vs gains ratio visual breakdown, custom contribution frequency, and instant milestone projections."

@@ -142,6 +142,7 @@ private fun QuickActionButton(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
+            .springPressEffect(scaleDown = 0.92f)
             .clip(SleekShapes.chip)
             .clickable(
                 onClick = {
@@ -1497,6 +1498,11 @@ fun SmartBudgetHealthGaugeWidget(
     val remaining = monthlyBudget - currentMonthExpense
     val isExceeded = remaining < 0
     val progressFraction = (currentMonthExpense / monthlyBudget).toFloat().coerceIn(0f, 1f)
+    val animatedProgressFraction by animateFloatAsState(
+        targetValue = progressFraction,
+        animationSpec = appTween(800),
+        label = "budget_gauge_sweep"
+    )
 
     val gaugeColor = when {
         isExceeded -> ExpenseRed
@@ -1614,7 +1620,7 @@ fun SmartBudgetHealthGaugeWidget(
                         drawArc(
                             color = gaugeColor,
                             startAngle = -90f,
-                            sweepAngle = 360f * progressFraction,
+                            sweepAngle = 360f * animatedProgressFraction,
                             useCenter = false,
                             style = androidx.compose.ui.graphics.drawscope.Stroke(width = strokeWidth, cap = androidx.compose.ui.graphics.StrokeCap.Round)
                         )

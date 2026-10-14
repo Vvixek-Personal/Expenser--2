@@ -15,7 +15,9 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Indication
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -323,3 +325,79 @@ fun CelebrationParticleBurst(
         }
     }
 }
+
+/**
+ * Dynamic pulsing glow modifier that subtly animates alpha when animations are enabled.
+ */
+fun Modifier.pulseGlow(
+    glowColor: Color,
+    minAlpha: Float = 0.15f,
+    maxAlpha: Float = 0.45f,
+    durationMs: Int = 2400
+): Modifier = composed {
+    val alpha = rememberLoopFloat(
+        initial = minAlpha,
+        target = maxAlpha,
+        durationMs = durationMs,
+        label = "pulse_glow_alpha",
+        easing = FastOutSlowInEasing,
+        reverse = true,
+        rest = minAlpha
+    )
+    this.shadow(
+        elevation = 8.dp,
+        shape = RoundedCornerShape(16.dp),
+        ambientColor = glowColor.copy(alpha = alpha),
+        spotColor = glowColor.copy(alpha = alpha)
+    )
+}
+
+/**
+ * Animated gradient border that smoothly shifts colors along the perimeter.
+ */
+fun Modifier.animatedGradientBorder(
+    colors: List<Color>,
+    borderWidth: Dp = 1.5.dp,
+    shape: Shape = RoundedCornerShape(16.dp),
+    durationMs: Int = 4000
+): Modifier = composed {
+    val offset = rememberLoopFloat(
+        initial = 0f,
+        target = 1000f,
+        durationMs = durationMs,
+        label = "gradient_border_offset",
+        easing = LinearEasing,
+        reverse = false,
+        rest = 0f
+    )
+    val brush = remember(offset, colors) {
+        Brush.linearGradient(
+            colors = colors,
+            start = Offset(offset, 0f),
+            end = Offset(offset + 600f, 600f)
+        )
+    }
+    this.border(width = borderWidth, brush = brush, shape = shape)
+}
+
+/**
+ * High-precision spring press effect for interactive chips, cards, and icons.
+ */
+fun Modifier.springPressEffect(
+    scaleDown: Float = 0.94f,
+    stiffness: Float = Spring.StiffnessMediumLow
+): Modifier = composed {
+    val animationsEnabled = LocalAnimationsEnabled.current
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed && animationsEnabled) scaleDown else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = stiffness
+        ),
+        label = "spring_press_scale"
+    )
+    this.scale(scale)
+}
+

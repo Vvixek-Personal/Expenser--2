@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.ui.theme.*
+import kotlin.math.pow
 import kotlin.math.roundToInt
 
 /**
@@ -731,7 +732,7 @@ fun CalculationsScreen(
     onBack: () -> Unit
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
-    val tabTitles = listOf("Currency Converter", "Split Bill & Tip", "Percentage", "Run-Rate", "Loan & EMI", "Wealth & Compound")
+    val tabTitles = listOf("Currency Converter", "Split Bill & Tip", "Percentage", "Run-Rate", "Loan & EMI", "Wealth & Compound", "Emergency Runway", "Inflation Erosion")
 
     Scaffold(
         topBar = {
@@ -781,6 +782,8 @@ fun CalculationsScreen(
                     3 -> RunRateCalculatorTool(viewModel)
                     4 -> LoanEmiCalculatorTool(viewModel)
                     5 -> WealthCompoundInterestCalculatorTool(viewModel)
+                    6 -> EmergencyFundCalculatorTool(viewModel)
+                    7 -> InflationCalculatorTool(viewModel)
                 }
             }
         }
@@ -1976,6 +1979,555 @@ private fun WealthCompoundInterestCalculatorTool(viewModel: FinanceViewModel) {
         }
     }
 }
+
+/**
+ * 🛡️ Emergency Fund & Runway Analyzer Tool (Rule 12)
+ * Computes exact runway (in months) based on real/custom monthly burn rate,
+ * projects recommended 3/6/9/12-month safety reserves, and estimates required monthly savings.
+ */
+@Composable
+private fun EmergencyFundCalculatorTool(viewModel: FinanceViewModel) {
+    val currencySymbol by viewModel.selectedCurrencySymbol.collectAsStateWithLifecycle()
+    val accounts by viewModel.accounts.collectAsStateWithLifecycle()
+    val monthlyBudget by viewModel.monthlyBudget.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    val totalBalance = remember(accounts) { accounts.sumOf { it.balance } }
+    val defaultLiquid = if (totalBalance > 0) String.format(Locale.US, "%.0f", totalBalance) else "50000"
+    val defaultBurn = if (monthlyBudget > 0) String.format(Locale.US, "%.0f", monthlyBudget) else "15000"
+
+    var currentSavingsText by remember { mutableStateOf(defaultLiquid) }
+    var monthlyBurnText by remember { mutableStateOf(defaultBurn) }
+    var targetMonthsSelection by remember { mutableIntStateOf(6) }
+
+    val currentSavings = currentSavingsText.toDoubleOrNull()?.coerceAtLeast(0.0) ?: 0.0
+    val monthlyBurn = monthlyBurnText.toDoubleOrNull()?.coerceAtLeast(1.0) ?: 1.0
+
+    val currentRunwayMonths = if (monthlyBurn > 0) currentSavings / monthlyBurn else 0.0
+    val targetFundNeeded = monthlyBurn * targetMonthsSelection
+    val shortfallOrSurplus = currentSavings - targetFundNeeded
+    val isFundFunded = shortfallOrSurplus >= 0
+
+    val progressFraction = if (targetFundNeeded > 0) {
+        (currentSavings / targetFundNeeded).toFloat().coerceIn(0f, 1f)
+    } else 0f
+
+    val (statusLabel, statusColor, statusDesc) = when {
+        currentRunwayMonths < 1.0 -> Triple(
+            "🚨 Critical Vulnerability",
+            ExpenseRed,
+            "Less than 1 month of living expenses saved. An unexpected expense could cause immediate distress."
+        )
+        currentRunwayMonths < 3.0 -> Triple(
+            "⚠️ Starter Safety Net",
+            WarningOrange,
+            "Under 3 months of runway. Suitable for minor emergencies, but vulnerable to job transitions."
+        )
+        currentRunwayMonths < 6.0 -> Triple(
+            "🛡️ Standard Stability",
+            IncomeGreen,
+            "Solid 3-6 month reserve covering essential obligations. Good protection against shocks."
+        )
+        else -> Triple(
+            "💎 Bulletproof Independence",
+            Color(0xFF3B82F6),
+            "6+ months of living costs secured. Provides high peace of mind and career flexibility."
+        )
+    }
+
+    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        // Runway Hero Card
+        Card(
+            shape = RoundedCornerShape(22.dp),
+            colors = CardDefaults.cardColors(containerColor = SleekSurface),
+            border = BorderStroke(1.5.dp, statusColor.copy(alpha = 0.45f)),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Surface(
+                    color = statusColor.copy(alpha = 0.12f),
+                    shape = RoundedCornerShape(10.dp)
+                ) {
+                    Text(
+                        text = statusLabel,
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = statusColor,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text(
+                    text = String.format(Locale.getDefault(), "%.1f Months", currentRunwayMonths),
+                    style = MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = statusColor
+                )
+
+                Text(
+                    text = "Current Living Runway",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = SleekTextSecondary
+                )
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                // Progress Bar towards selected target months
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Target: $targetMonthsSelection Months ($currencySymbol${String.format(Locale.getDefault(), "%,.0f", targetFundNeeded)})",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = SleekTextSecondary
+                        )
+                        Text(
+                            text = "${(progressFraction * 100).toInt()}% funded",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = if (isFundFunded) IncomeGreen else statusColor
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(10.dp)
+                            .clip(RoundedCornerShape(5.dp))
+                            .background(SleekBorder)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(progressFraction)
+                                .fillMaxHeight()
+                                .clip(RoundedCornerShape(5.dp))
+                                .background(if (isFundFunded) IncomeGreen else statusColor)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                Text(
+                    text = statusDesc,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = SleekTextSecondary,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
+            }
+        }
+
+        // Target Duration Chips & Input Parameters
+        Card(
+            shape = RoundedCornerShape(18.dp),
+            colors = CardDefaults.cardColors(containerColor = SleekSurface),
+            border = BorderStroke(1.dp, SleekBorder),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(18.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+                Text(
+                    text = "Target Runway Horizon",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = SleekTextPrimary
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    listOf(
+                        "3 Months" to 3,
+                        "6 Months" to 6,
+                        "9 Months" to 9,
+                        "12 Months" to 12
+                    ).forEach { (label, months) ->
+                        val isSelected = targetMonthsSelection == months
+                        FilterChip(
+                            selected = isSelected,
+                            onClick = { targetMonthsSelection = months },
+                            label = { Text(label, fontSize = 11.sp, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = SleekPrimary,
+                                selectedLabelColor = Color.White
+                            )
+                        )
+                    }
+                }
+
+                HorizontalDivider(color = SleekBorder.copy(alpha = 0.6f))
+
+                OutlinedTextField(
+                    value = currentSavingsText,
+                    onValueChange = { currentSavingsText = it.filter { char -> char.isDigit() || char == '.' } },
+                    label = { Text("Current Liquid Savings ($currencySymbol)") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = SleekSurface,
+                        unfocusedContainerColor = SleekSurface
+                    )
+                )
+
+                OutlinedTextField(
+                    value = monthlyBurnText,
+                    onValueChange = { monthlyBurnText = it.filter { char -> char.isDigit() || char == '.' } },
+                    label = { Text("Monthly Essential Living Cost ($currencySymbol)") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = SleekSurface,
+                        unfocusedContainerColor = SleekSurface
+                    )
+                )
+            }
+        }
+
+        // Savings Trajectory Plan Card
+        if (!isFundFunded && targetFundNeeded > currentSavings) {
+            val deficit = targetFundNeeded - currentSavings
+            val save6m = deficit / 6.0
+            val save12m = deficit / 12.0
+            val save24m = deficit / 24.0
+
+            Card(
+                shape = RoundedCornerShape(18.dp),
+                colors = CardDefaults.cardColors(containerColor = SleekSurface),
+                border = BorderStroke(1.dp, SleekBorder),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier.padding(18.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(
+                        text = "🎯 Monthly Savings Required to Reach Target",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = SleekTextPrimary
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        TrajectoryBox("In 6 Months", "$currencySymbol${String.format(Locale.getDefault(), "%,.0f", save6m)}/mo")
+                        TrajectoryBox("In 12 Months", "$currencySymbol${String.format(Locale.getDefault(), "%,.0f", save12m)}/mo")
+                        TrajectoryBox("In 24 Months", "$currencySymbol${String.format(Locale.getDefault(), "%,.0f", save24m)}/mo")
+                    }
+                }
+            }
+        }
+
+        // Copy Plan Button
+        OutlinedButton(
+            onClick = {
+                val summary = "Emergency Fund Analysis:\n" +
+                        "• Current Runway: ${String.format(Locale.getDefault(), "%.1f", currentRunwayMonths)} months ($currencySymbol${String.format(Locale.getDefault(), "%,.0f", currentSavings)})\n" +
+                        "• Target: $targetMonthsSelection months ($currencySymbol${String.format(Locale.getDefault(), "%,.0f", targetFundNeeded)})\n" +
+                        "• Status: $statusLabel"
+                val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                clipboard.setPrimaryClip(ClipData.newPlainText("Emergency Fund Plan", summary))
+                Toast.makeText(context, "Emergency fund summary copied!", Toast.LENGTH_SHORT).show()
+            },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(14.dp)
+        ) {
+            Icon(imageVector = AppIcons.ContentCopy, contentDescription = null, modifier = Modifier.size(18.dp))
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("Copy Emergency Plan to Clipboard")
+        }
+    }
+}
+
+@Composable
+private fun TrajectoryBox(period: String, amountStr: String) {
+    Surface(
+        color = SleekBg,
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(1.dp, SleekBorder)
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(period, style = MaterialTheme.typography.labelSmall, color = SleekTextSecondary, fontSize = 11.sp)
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(amountStr, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = SleekPrimary)
+        }
+    }
+}
+
+/**
+ * 📉 Inflation & Purchasing Power Erosion Calculator Tool (Rule 12)
+ * Demonstrates the impact of inflation over time on liquid money,
+ * computing real future purchasing power vs nominal face value.
+ */
+@Composable
+private fun InflationCalculatorTool(viewModel: FinanceViewModel) {
+    val currencySymbol by viewModel.selectedCurrencySymbol.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    var initialAmountText by remember { mutableStateOf("100000") }
+    var inflationRateText by remember { mutableStateOf("6.0") }
+    var horizonYearsText by remember { mutableStateOf("10") }
+
+    val amount = initialAmountText.toDoubleOrNull()?.coerceAtLeast(0.0) ?: 0.0
+    val rate = inflationRateText.toDoubleOrNull()?.coerceIn(0.1, 50.0) ?: 6.0
+    val years = horizonYearsText.toDoubleOrNull()?.coerceIn(1.0, 50.0) ?: 10.0
+
+    // Purchasing Power Decay: Real Value = Amount / (1 + r)^t
+    val factor = (1.0 + (rate / 100.0)).pow(years)
+    val futureRealValue = if (factor > 0) amount / factor else 0.0
+    val purchasingPowerLost = (amount - futureRealValue).coerceAtLeast(0.0)
+    val futureCostOfBasket = amount * factor
+    val retainedPercentage = if (amount > 0) ((futureRealValue / amount) * 100.0).coerceIn(0.0, 100.0) else 0.0
+
+    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        // Result Card
+        Card(
+            shape = RoundedCornerShape(22.dp),
+            colors = CardDefaults.cardColors(containerColor = SleekSurface),
+            border = BorderStroke(1.5.dp, WarningOrange.copy(alpha = 0.45f)),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Surface(
+                    color = WarningOrange.copy(alpha = 0.12f),
+                    shape = RoundedCornerShape(10.dp)
+                ) {
+                    Text(
+                        text = "📉 Real Purchasing Power in ${years.toInt()} Years",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = WarningOrange,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text(
+                    text = "$currencySymbol${String.format(Locale.getDefault(), "%,.0f", futureRealValue)}",
+                    style = MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = WarningOrange
+                )
+
+                Text(
+                    text = "What $currencySymbol${String.format(Locale.getDefault(), "%,.0f", amount)} will actually buy (at ${String.format(Locale.getDefault(), "%.1f", rate)}% inflation)",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = SleekTextSecondary,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Dual Decay Bar (Retained vs Eroded)
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Retained Value (${retainedPercentage.toInt()}%)",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = IncomeGreen,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            text = "Eroded (${(100.0 - retainedPercentage).toInt()}%)",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = ExpenseRed,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(12.dp)
+                            .clip(RoundedCornerShape(6.dp))
+                    ) {
+                        val retainedWeight = (retainedPercentage / 100.0).toFloat().coerceIn(0.01f, 0.99f)
+                        Box(
+                            modifier = Modifier
+                                .weight(retainedWeight)
+                                .fillMaxHeight()
+                                .background(IncomeGreen)
+                        )
+                        Box(
+                            modifier = Modifier
+                                .weight(1f - retainedWeight)
+                                .fillMaxHeight()
+                                .background(ExpenseRed)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                HorizontalDivider(color = SleekBorder.copy(alpha = 0.5f))
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column {
+                        Text("Future Replacement Cost", style = MaterialTheme.typography.labelSmall, color = SleekTextSecondary)
+                        Text(
+                            "$currencySymbol${String.format(Locale.getDefault(), "%,.0f", futureCostOfBasket)}",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = SleekTextPrimary
+                        )
+                    }
+
+                    Column(horizontalAlignment = Alignment.End) {
+                        Text("Purchasing Power Lost", style = MaterialTheme.typography.labelSmall, color = SleekTextSecondary)
+                        Text(
+                            "-$currencySymbol${String.format(Locale.getDefault(), "%,.0f", purchasingPowerLost)}",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = ExpenseRed
+                        )
+                    }
+                }
+            }
+        }
+
+        // Inputs Card
+        Card(
+            shape = RoundedCornerShape(18.dp),
+            colors = CardDefaults.cardColors(containerColor = SleekSurface),
+            border = BorderStroke(1.dp, SleekBorder),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(18.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+                Text(
+                    text = "Inflation Parameters",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = SleekTextPrimary
+                )
+
+                OutlinedTextField(
+                    value = initialAmountText,
+                    onValueChange = { initialAmountText = it.filter { char -> char.isDigit() || char == '.' } },
+                    label = { Text("Today's Amount ($currencySymbol)") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = SleekSurface,
+                        unfocusedContainerColor = SleekSurface
+                    )
+                )
+
+                OutlinedTextField(
+                    value = inflationRateText,
+                    onValueChange = { inflationRateText = it.filter { char -> char.isDigit() || char == '.' } },
+                    label = { Text("Annual Inflation Rate (%)") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = SleekSurface,
+                        unfocusedContainerColor = SleekSurface
+                    )
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    listOf("3%", "5%", "6%", "7%", "10%").forEach { rateStr ->
+                        val clean = rateStr.removeSuffix("%")
+                        FilterChip(
+                            selected = inflationRateText == clean,
+                            onClick = { inflationRateText = clean },
+                            label = { Text(rateStr, fontSize = 11.sp) }
+                        )
+                    }
+                }
+
+                HorizontalDivider(color = SleekBorder.copy(alpha = 0.5f))
+
+                Text(
+                    text = "Time Horizon (Years)",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = SleekTextPrimary
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    listOf("5 Yrs" to "5", "10 Yrs" to "10", "15 Yrs" to "15", "20 Yrs" to "20", "30 Yrs" to "30").forEach { (label, yr) ->
+                        FilterChip(
+                            selected = horizonYearsText == yr,
+                            onClick = { horizonYearsText = yr },
+                            label = { Text(label, fontSize = 11.sp) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = SleekPrimary,
+                                selectedLabelColor = Color.White
+                            )
+                        )
+                    }
+                }
+            }
+        }
+
+        // Copy Inflation Breakdown Button
+        OutlinedButton(
+            onClick = {
+                val summary = "Inflation Erosion Projection:\n" +
+                        "• Initial: $currencySymbol${String.format(Locale.getDefault(), "%,.0f", amount)}\n" +
+                        "• After ${years.toInt()} Years at $rate% Inflation: $currencySymbol${String.format(Locale.getDefault(), "%,.0f", futureRealValue)} real value\n" +
+                        "• Cost to match today's basket: $currencySymbol${String.format(Locale.getDefault(), "%,.0f", futureCostOfBasket)}"
+                val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                clipboard.setPrimaryClip(ClipData.newPlainText("Inflation Analysis", summary))
+                Toast.makeText(context, "Inflation analysis copied!", Toast.LENGTH_SHORT).show()
+            },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(14.dp)
+        ) {
+            Icon(imageVector = AppIcons.ContentCopy, contentDescription = null, modifier = Modifier.size(18.dp))
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("Copy Inflation Analysis to Clipboard")
+        }
+    }
+}
+
 
 /**
  * Dedicated Savings Goals Settings Screen (Rule 11)

@@ -979,7 +979,7 @@ class FinanceViewModel(
                 _statsCurrencyName.value = settings.statsCurrencyName
                 _monthlyBudget.value = settings.monthlyBudget
                 _appPin.value = settings.appPin
-                _isAppLocked.value = settings.isAppLocked
+                _biometricEnabled.value = settings.biometricEnabled
                 _privacyModeEnabled.value = settings.privacyModeEnabled
                 _hideSensitiveAmounts.value = settings.hideSensitiveAmounts
                 _screenshotProtection.value = settings.screenshotProtection
@@ -1634,6 +1634,7 @@ class FinanceViewModel(
     fun toggleAutoBackupEnabled(enabled: Boolean) {
         _autoBackupEnabled.value = enabled
         sharedPrefs.edit().putBoolean("auto_backup_enabled", enabled).apply()
+        appSettingsManager.dispatch(AppSettingsIntent.SetAutoBackupEnabled(enabled))
     }
 
     fun setSyncMode(mode: String) {
@@ -1732,21 +1733,25 @@ class FinanceViewModel(
     fun toggleLockOnRestart(enabled: Boolean) {
         _lockOnRestart.value = enabled
         sharedPrefs.edit().putBoolean("lock_on_restart", enabled).apply()
+        appSettingsManager.dispatch(AppSettingsIntent.SetLockOnRestart(enabled))
     }
 
     fun toggleBiometricEnabled(enabled: Boolean) {
         _biometricEnabled.value = enabled
         sharedPrefs.edit().putBoolean("biometric_enabled", enabled).apply()
+        appSettingsManager.dispatch(AppSettingsIntent.SetBiometricEnabled(enabled))
     }
 
     fun toggleHideSensitiveAmounts(enabled: Boolean) {
         _hideSensitiveAmounts.value = enabled
         sharedPrefs.edit().putBoolean("hide_sensitive_amounts", enabled).apply()
+        appSettingsManager.dispatch(AppSettingsIntent.SetHideSensitiveAmounts(enabled))
     }
 
     fun togglePrivacyModeEnabled(enabled: Boolean) {
         _privacyModeEnabled.value = enabled
         sharedPrefs.edit().putBoolean("privacy_mode_enabled", enabled).apply()
+        appSettingsManager.dispatch(AppSettingsIntent.SetPrivacyModeEnabled(enabled))
         // Reset session reveal whenever the feature itself is toggled, so
         // turning it off-then-on again doesn't leave amounts pre-revealed.
         _privacyRevealOverride.value = false

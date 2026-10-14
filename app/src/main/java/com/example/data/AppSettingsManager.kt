@@ -78,6 +78,11 @@ sealed class AppSettingsIntent {
     data class UpdateBillReminderPreferredTime(val time: String) : AppSettingsIntent()
     data class UpdateBillAutoMarkPaid(val enabled: Boolean) : AppSettingsIntent()
     data class UpdateSyncMode(val mode: String) : AppSettingsIntent()
+    data class SetBiometricEnabled(val enabled: Boolean) : AppSettingsIntent()
+    data class SetPrivacyModeEnabled(val enabled: Boolean) : AppSettingsIntent()
+    data class SetHideSensitiveAmounts(val enabled: Boolean) : AppSettingsIntent()
+    data class SetLockOnRestart(val enabled: Boolean) : AppSettingsIntent()
+    data class SetAutoBackupEnabled(val enabled: Boolean) : AppSettingsIntent()
     object IncrementAiRequestCount : AppSettingsIntent()
     object ReloadStateAfterWipe : AppSettingsIntent()
     data class UpdateAnimationEnabled(val enabled: Boolean) : AppSettingsIntent()
@@ -119,16 +124,38 @@ class AppSettingsManager private constructor(private val context: Context) {
             appPin = rawPin,
             isAppLocked = !rawPin.isNullOrBlank(),
             pinLockoutUntil = initialLockoutWall,
-            language = prefs.getString("language", "English") ?: "English",
+            language = prefs.getString("language", prefs.getString("selected_language", "English")) ?: "English",
             themeMode = prefs.getString("theme_mode", "SYSTEM") ?: "SYSTEM",
             themeIndex = prefs.getInt("theme_index", 0),
             customThemeHue = prefs.getFloat("custom_theme_hue", 210f),
-            currencyCode = prefs.getString("currency_code", "INR") ?: "INR",
-            currencySymbol = prefs.getString("currency_symbol", "₹") ?: "₹",
-            currencyName = prefs.getString("currency_name", "Indian Rupee") ?: "Indian Rupee",
+            isFollowDeviceColors = prefs.getBoolean("follow_device_colors", false),
+            currencyCode = prefs.getString("currency_code", prefs.getString("selected_currency_code", "INR")) ?: "INR",
+            currencySymbol = prefs.getString("currency_symbol", prefs.getString("selected_currency_symbol", "₹")) ?: "₹",
+            currencyName = prefs.getString("currency_name", prefs.getString("selected_currency_name", "Indian Rupee")) ?: "Indian Rupee",
+            statsCurrencyCode = prefs.getString("stats_currency_code", "INR") ?: "INR",
+            statsCurrencySymbol = prefs.getString("stats_currency_symbol", "₹") ?: "₹",
+            statsCurrencyName = prefs.getString("stats_currency_name", "Indian Rupee") ?: "Indian Rupee",
             monthlyBudget = prefs.getFloat("monthly_budget", 0f).toDouble(),
+            privacyModeEnabled = prefs.getBoolean("privacy_mode_enabled", false),
+            hideSensitiveAmounts = prefs.getBoolean("hide_sensitive_amounts", false),
+            screenshotProtection = prefs.getBoolean("screenshot_protection", false),
             autoLockDuration = prefs.getString("auto_lock_duration", "NEVER") ?: "NEVER",
+            biometricEnabled = prefs.getBoolean("biometric_enabled", false),
+            fontFamily = prefs.getString("font_family", "Default") ?: "Default",
+            hapticsEnabled = prefs.getBoolean("haptics_enabled", true),
+            highContrastMode = prefs.getBoolean("high_contrast_mode", false),
+            cardGlowAnimation = prefs.getBoolean("card_glow_animation", true),
+            defaultPaymentMode = prefs.getString("default_payment_mode", "CASH") ?: "CASH",
+            highAmountWarningEnabled = prefs.getBoolean("high_amount_warning_enabled", false),
+            highAmountThreshold = prefs.getFloat("high_amount_threshold", 10000f).toDouble(),
             billReminderTiming = prefs.getString("bill_reminder_timing", "0") ?: "0",
+            billReminderPreferredTime = prefs.getString("bill_reminder_preferred_time", "09:00") ?: "09:00",
+            billAutoMarkPaid = prefs.getBoolean("bill_auto_mark_paid", false),
+            autoBackupEnabled = prefs.getBoolean("auto_backup_enabled", false),
+            lastBackupTimestamp = prefs.getString("last_backup_timestamp", "Never") ?: "Never",
+            syncMode = prefs.getString("sync_mode", "LOCAL") ?: "LOCAL",
+            lastCloudSyncTimestamp = prefs.getString("last_cloud_sync_timestamp", "Never") ?: "Never",
+            cloudSyncStatus = prefs.getString("cloud_sync_status", "Not Synced") ?: "Not Synced",
             isAnimationEnabled = prefs.getBoolean("animations_enabled", true),
             aiDailyRequestCount = prefs.getInt("ai_daily_request_count", 0),
             aiLastRequestDate = prefs.getString("ai_last_request_date", "") ?: ""
@@ -284,6 +311,77 @@ class AppSettingsManager private constructor(private val context: Context) {
             is AppSettingsIntent.SetUserDob -> {
                 prefs.edit().putString("user_dob", intent.dob).apply()
                 _state.value.copy(userDob = intent.dob)
+            }
+            is AppSettingsIntent.UpdateStatsCurrency -> {
+                prefs.edit().putString("stats_currency_code", intent.code)
+                    .putString("stats_currency_symbol", intent.symbol)
+                    .putString("stats_currency_name", intent.name).apply()
+                _state.value.copy(statsCurrencyCode = intent.code, statsCurrencySymbol = intent.symbol, statsCurrencyName = intent.name)
+            }
+            is AppSettingsIntent.SetScreenshotProtection -> {
+                prefs.edit().putBoolean("screenshot_protection", intent.enabled).apply()
+                _state.value.copy(screenshotProtection = intent.enabled)
+            }
+            is AppSettingsIntent.UpdateFontFamily -> {
+                prefs.edit().putString("font_family", intent.font).apply()
+                _state.value.copy(fontFamily = intent.font)
+            }
+            is AppSettingsIntent.UpdateHapticsEnabled -> {
+                prefs.edit().putBoolean("haptics_enabled", intent.enabled).apply()
+                _state.value.copy(hapticsEnabled = intent.enabled)
+            }
+            is AppSettingsIntent.UpdateHighContrastMode -> {
+                prefs.edit().putBoolean("high_contrast_mode", intent.enabled).apply()
+                _state.value.copy(highContrastMode = intent.enabled)
+            }
+            is AppSettingsIntent.UpdateCardGlowAnimation -> {
+                prefs.edit().putBoolean("card_glow_animation", intent.enabled).apply()
+                _state.value.copy(cardGlowAnimation = intent.enabled)
+            }
+            is AppSettingsIntent.UpdateDefaultPaymentMode -> {
+                prefs.edit().putString("default_payment_mode", intent.mode).apply()
+                _state.value.copy(defaultPaymentMode = intent.mode)
+            }
+            is AppSettingsIntent.UpdateHighAmountWarning -> {
+                prefs.edit().putBoolean("high_amount_warning_enabled", intent.enabled)
+                    .putFloat("high_amount_threshold", intent.threshold.toFloat()).apply()
+                _state.value.copy(highAmountWarningEnabled = intent.enabled, highAmountThreshold = intent.threshold)
+            }
+            is AppSettingsIntent.UpdateBillReminderPreferredTime -> {
+                prefs.edit().putString("bill_reminder_preferred_time", intent.time).apply()
+                _state.value.copy(billReminderPreferredTime = intent.time)
+            }
+            is AppSettingsIntent.UpdateBillAutoMarkPaid -> {
+                prefs.edit().putBoolean("bill_auto_mark_paid", intent.enabled).apply()
+                _state.value.copy(billAutoMarkPaid = intent.enabled)
+            }
+            is AppSettingsIntent.UpdateSyncMode -> {
+                prefs.edit().putString("sync_mode", intent.mode).apply()
+                _state.value.copy(syncMode = intent.mode)
+            }
+            is AppSettingsIntent.SetBiometricEnabled -> {
+                prefs.edit().putBoolean("biometric_enabled", intent.enabled).apply()
+                _state.value.copy(biometricEnabled = intent.enabled)
+            }
+            is AppSettingsIntent.SetPrivacyModeEnabled -> {
+                prefs.edit().putBoolean("privacy_mode_enabled", intent.enabled).apply()
+                _state.value.copy(privacyModeEnabled = intent.enabled)
+            }
+            is AppSettingsIntent.SetHideSensitiveAmounts -> {
+                prefs.edit().putBoolean("hide_sensitive_amounts", intent.enabled).apply()
+                _state.value.copy(hideSensitiveAmounts = intent.enabled)
+            }
+            is AppSettingsIntent.SetLockOnRestart -> {
+                prefs.edit().putBoolean("lock_on_restart", intent.enabled).apply()
+                _state.value
+            }
+            is AppSettingsIntent.SetAutoBackupEnabled -> {
+                prefs.edit().putBoolean("auto_backup_enabled", intent.enabled).apply()
+                _state.value.copy(autoBackupEnabled = intent.enabled)
+            }
+            is AppSettingsIntent.ResetPinLockout -> {
+                resetPinLockoutAndAttempts()
+                _state.value.copy(pinLockoutUntil = 0L)
             }
             is AppSettingsIntent.ReloadStateAfterWipe -> {
                 loadInitialState()
