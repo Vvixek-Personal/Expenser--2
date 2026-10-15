@@ -4,14 +4,9 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.widget.Toast
-import com.example.data.Money
-import java.util.Locale
-import androidx.compose.animation.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -20,702 +15,22 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.ui.theme.*
+import java.util.Locale
 import kotlin.math.pow
 import kotlin.math.roundToInt
-
-/**
- * Dedicated Currency & Exchange Rates Configuration Screen (Rule 6 & 7)
- * - 100+ countries/currencies searchable by Country, Name, Code, and Symbol.
- * - Option A (Keep Existing) vs Option B (Convert Existing with live rate & confirmation).
- * - Default Currency for Statistics selector.
- * - Exchange rate status & local cache management.
- */
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CurrencySettingsScreen(
-    viewModel: FinanceViewModel,
-    onBack: () -> Unit
-) {
-    val currentCode by viewModel.selectedCurrencyCode.collectAsStateWithLifecycle()
-    val currentSymbol by viewModel.selectedCurrencySymbol.collectAsStateWithLifecycle()
-    val currentName by viewModel.selectedCurrencyName.collectAsStateWithLifecycle()
-    val statsCode by viewModel.statsCurrencyCode.collectAsStateWithLifecycle()
-    val statsSymbol by viewModel.statsCurrencySymbol.collectAsStateWithLifecycle()
-    val statsName by viewModel.statsCurrencyName.collectAsStateWithLifecycle()
-    val isAutoUpdate by viewModel.isAutoExchangeRateUpdateEnabled.collectAsStateWithLifecycle()
-    val lastUpdate by viewModel.lastExchangeRateUpdate.collectAsStateWithLifecycle()
-    val isUpdatingRates by viewModel.isUpdatingExchangeRates.collectAsStateWithLifecycle()
-
-    var searchQuery by remember { mutableStateOf("") }
-    var selectedRegion by remember { mutableStateOf("All") }
-    var pendingCurrencyChange by remember { mutableStateOf<CurrencyItem?>(null) }
-    var showStatsCurrencyPicker by remember { mutableStateOf(false) }
-
-    val allCurrencies = remember { CurrencyManager.currencies }
-
-    val filteredCurrencies = remember(searchQuery, selectedRegion) {
-        allCurrencies.filter { item ->
-            val matchesQuery = searchQuery.isBlank() ||
-                    item.country.contains(searchQuery, ignoreCase = true) ||
-                    item.name.contains(searchQuery, ignoreCase = true) ||
-                    item.code.contains(searchQuery, ignoreCase = true) ||
-                    item.symbol.contains(searchQuery, ignoreCase = true)
-
-            val matchesRegion = when (selectedRegion) {
-                "All" -> true
-                "Popular" -> item.code in listOf("INR", "USD", "EUR", "GBP", "JPY", "AUD", "CAD", "SGD", "AED")
-                "Asia" -> item.country in listOf("India", "Japan", "China", "Hong Kong", "Singapore", "South Korea", "Bangladesh", "Pakistan", "Sri Lanka", "Nepal", "Indonesia", "Malaysia", "Thailand", "Philippines", "Vietnam")
-                "Europe" -> item.country in listOf("European Union", "United Kingdom", "Switzerland", "Sweden", "Norway", "Denmark", "Poland", "Czech Republic", "Hungary", "Romania", "Croatia", "Iceland")
-                "Americas" -> item.country in listOf("United States", "Canada", "Brazil", "Mexico", "Argentina", "Chile", "Colombia", "Peru", "Costa Rica", "Dominican Republic", "Jamaica")
-                "Middle East & Africa" -> item.country in listOf("United Arab Emirates", "Saudi Arabia", "South Africa", "Egypt", "Nigeria", "Kenya", "Qatar", "Kuwait", "Morocco", "Ethiopia")
-                else -> true
-            }
-
-            matchesQuery && matchesRegion
-        }
-    }
-
-    Scaffold(
-        topBar = {
-            SettingsHeaderTitle(title = "Currency & Rates", onBack = onBack)
-        },
-        containerColor = SleekBg
-    ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            contentPadding = PaddingValues(bottom = 96.dp)
-        ) {
-            // Header summary cards
-            item {
-                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
-                    Text(
-                        text = "Active Currency Settings",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = SleekTextPrimary
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        // Default Transaction Currency Card
-                        Card(
-                            shape = RoundedCornerShape(16.dp),
-                            colors = CardDefaults.cardColors(containerColor = SleekSurface),
-                            border = BorderStroke(1.5.dp, SleekPrimary.copy(alpha = 0.5f)),
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Column(modifier = Modifier.padding(14.dp)) {
-                                Surface(
-                                    color = IncomeGreenBg,
-                                    shape = RoundedCornerShape(6.dp)
-                                ) {
-                                    Text(
-                                        text = "TRANSACTIONS",
-                                        style = MaterialTheme.typography.labelSmall,
-                                        fontWeight = FontWeight.Bold,
-                                        color = IncomeGreen,
-                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                                    )
-                                }
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    val currentItem = CurrencyManager.getByCode(currentCode)
-                                    Text(text = currentItem.flag, fontSize = 24.sp)
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Column {
-                                        Text(
-                                            text = "$currentCode ($currentSymbol)",
-                                            style = MaterialTheme.typography.titleMedium,
-                                            fontWeight = FontWeight.Bold,
-                                            color = SleekTextPrimary
-                                        )
-                                        Text(
-                                            text = currentName,
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = SleekTextSecondary,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                    }
-                                }
-                            }
-                        }
-
-                        // Statistics Default Currency Card
-                        Card(
-                            shape = RoundedCornerShape(16.dp),
-                            colors = CardDefaults.cardColors(containerColor = SleekSurface),
-                            border = BorderStroke(1.dp, SleekBorder),
-                            modifier = Modifier
-                                .weight(1f)
-                                .clickable { showStatsCurrencyPicker = true }
-                        ) {
-                            Column(modifier = Modifier.padding(14.dp)) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Surface(
-                                        color = SleekPrimaryContainer,
-                                        shape = RoundedCornerShape(6.dp)
-                                    ) {
-                                        Text(
-                                            text = "STATISTICS",
-                                            style = MaterialTheme.typography.labelSmall,
-                                            fontWeight = FontWeight.Bold,
-                                            color = SleekPrimary,
-                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                                        )
-                                    }
-                                    Icon(
-                                        imageVector = AppIcons.Edit,
-                                        contentDescription = "Change Stats Currency",
-                                        tint = SleekTextSecondary,
-                                        modifier = Modifier.size(14.dp)
-                                    )
-                                }
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    val statsItem = CurrencyManager.getByCode(statsCode)
-                                    Text(text = statsItem.flag, fontSize = 24.sp)
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Column {
-                                        Text(
-                                            text = "$statsCode ($statsSymbol)",
-                                            style = MaterialTheme.typography.titleMedium,
-                                            fontWeight = FontWeight.Bold,
-                                            color = SleekTextPrimary
-                                        )
-                                        Text(
-                                            text = statsName,
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = SleekTextSecondary,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Live Rates & Offline Sync section (Rule 7)
-            item {
-                Card(
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = SleekSurface),
-                    border = BorderStroke(1.dp, SleekBorder),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 6.dp)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column(modifier = Modifier.weight(1f)) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = AppIcons.Sync,
-                                        contentDescription = null,
-                                        tint = SleekPrimary,
-                                        modifier = Modifier.size(18.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Text(
-                                        text = "Exchange Rates Engine",
-                                        style = MaterialTheme.typography.titleSmall,
-                                        fontWeight = FontWeight.Bold,
-                                        color = SleekTextPrimary
-                                    )
-                                }
-                                Spacer(modifier = Modifier.height(2.dp))
-                                Text(
-                                    text = "Cached offline. Rates auto-refresh every ~10 days.",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = SleekTextSecondary
-                                )
-                                Text(
-                                    text = "Last synced: $lastUpdate",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = SleekPrimary,
-                                    fontWeight = FontWeight.Medium
-                                )
-                            }
-
-                            FilledTonalButton(
-                                onClick = { viewModel.refreshExchangeRates() },
-                                enabled = !isUpdatingRates,
-                                shape = RoundedCornerShape(12.dp),
-                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
-                            ) {
-                                if (isUpdatingRates) {
-                                    CircularProgressIndicator(
-                                        modifier = Modifier.size(14.dp),
-                                        strokeWidth = 2.dp,
-                                        color = SleekPrimary
-                                    )
-                                } else {
-                                    Icon(
-                                        imageVector = AppIcons.Refresh,
-                                        contentDescription = "Refresh",
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                }
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text("Sync", fontSize = 13.sp)
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-                        HorizontalDivider(color = SleekBorder, thickness = 0.8.dp)
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "Auto-update exchange rates",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = SleekTextPrimary
-                            )
-                            Switch(
-                                checked = isAutoUpdate,
-                                onCheckedChange = { viewModel.toggleAutoExchangeRateUpdate(it) }
-                            )
-                        }
-                    }
-                }
-            }
-
-            // Search Bar & Filter chips
-            item {
-                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                    Text(
-                        text = "Choose Default Currency (100+ Available)",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = SleekTextPrimary
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    OutlinedTextField(
-                        value = searchQuery,
-                        onValueChange = { searchQuery = it },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .testTag("currency_search_input"),
-                        placeholder = { Text("Search by country, name, code, symbol...") },
-                        leadingIcon = {
-                            Icon(AppIcons.Search, contentDescription = "Search", tint = SleekTextSecondary)
-                        },
-                        trailingIcon = {
-                            if (searchQuery.isNotEmpty()) {
-                                IconButton(onClick = { searchQuery = "" }) {
-                                    Icon(AppIcons.Clear, contentDescription = "Clear", tint = SleekTextSecondary)
-                                }
-                            }
-                        },
-                        singleLine = true,
-                        shape = RoundedCornerShape(14.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = SleekPrimary,
-                            unfocusedBorderColor = SleekBorder,
-                            focusedContainerColor = SleekSurface,
-                            unfocusedContainerColor = SleekSurface
-                        )
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    // Region Filter Chips
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .horizontalScroll(rememberScrollState()),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        listOf("All", "Popular", "Asia", "Europe", "Americas", "Middle East & Africa").forEach { region ->
-                            val isSelected = selectedRegion == region
-                            FilterChip(
-                                selected = isSelected,
-                                onClick = { selectedRegion = region },
-                                label = { Text(region, fontSize = 12.sp) },
-                                shape = RoundedCornerShape(20.dp),
-                                colors = FilterChipDefaults.filterChipColors(
-                                    selectedContainerColor = SleekPrimary,
-                                    selectedLabelColor = Color.White,
-                                    containerColor = SleekSurface,
-                                    labelColor = SleekTextPrimary
-                                ),
-                                border = BorderStroke(1.dp, if (isSelected) SleekPrimary else SleekBorder)
-                            )
-                        }
-                    }
-                }
-            }
-
-            // Currencies List
-            items(filteredCurrencies, key = { it.code + it.country }) { currency ->
-                val isCurrentDefault = currency.code.equals(currentCode, ignoreCase = true)
-
-                Card(
-                    shape = RoundedCornerShape(14.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = if (isCurrentDefault) SleekPrimary.copy(alpha = 0.08f) else SleekSurface
-                    ),
-                    border = BorderStroke(
-                        width = if (isCurrentDefault) 1.5.dp else 1.dp,
-                        color = if (isCurrentDefault) SleekPrimary else SleekBorder
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp)
-                        .clickable {
-                            if (!isCurrentDefault) {
-                                pendingCurrencyChange = currency
-                            }
-                        }
-                        .testTag("currency_item_${currency.code}")
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 14.dp, vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(text = currency.flag, fontSize = 28.sp)
-                        Spacer(modifier = Modifier.width(12.dp))
-
-                        Column(modifier = Modifier.weight(1f)) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(
-                                    text = currency.country,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = SleekTextPrimary
-                                )
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Surface(
-                                    color = SleekPrimaryContainer,
-                                    shape = RoundedCornerShape(6.dp)
-                                ) {
-                                    Text(
-                                        text = currency.code,
-                                        style = MaterialTheme.typography.labelSmall,
-                                        fontWeight = FontWeight.Bold,
-                                        color = SleekPrimary,
-                                        modifier = Modifier.padding(horizontal = 5.dp, vertical = 1.dp)
-                                    )
-                                }
-                            }
-                            Text(
-                                text = currency.name,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = SleekTextSecondary,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                            Text(
-                                text = "1 USD = ${String.format(Locale.getDefault(), "%,.2f", currency.rateToUsd)} ${currency.code}",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = SleekTextSecondary.copy(alpha = 0.75f)
-                            )
-                        }
-
-                        Column(horizontalAlignment = Alignment.End) {
-                            Surface(
-                                shape = CircleShape,
-                                color = if (isCurrentDefault) SleekPrimary else SleekBorder.copy(alpha = 0.3f),
-                                modifier = Modifier.size(32.dp)
-                            ) {
-                                Box(contentAlignment = Alignment.Center) {
-                                    Text(
-                                        text = currency.symbol,
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 14.sp,
-                                        color = if (isCurrentDefault) Color.White else SleekTextPrimary
-                                    )
-                                }
-                            }
-                            if (isCurrentDefault) {
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Text(
-                                    text = "Current",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = SleekPrimary,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // Option A vs Option B Currency Conversion Dialog (Rule 6)
-    val pendingChange = pendingCurrencyChange
-    if (pendingChange != null) {
-        val target = pendingChange
-        var selectedOption by remember { mutableStateOf("KEEP") } // "KEEP" or "CONVERT"
-
-        val currentRate = remember(currentCode, target.code) {
-            val oneMajor = Money.factor(currentCode).toLong()
-            when (val res = Money.tryConvert(oneMajor, currentCode, target.code)) {
-                is Money.ConversionResult.Success -> String.format(Locale.US, "%,.4f", res.rateUsed)
-                else -> "N/A"
-            }
-        }
-
-        AlertDialog(
-            onDismissRequest = { pendingCurrencyChange = null },
-            title = {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = target.flag, fontSize = 24.sp)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Change Currency to ${target.code}?",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = SleekTextPrimary
-                    )
-                }
-            },
-            text = {
-                Column {
-                    Text(
-                        text = "Current Rate: 1 $currentCode = $currentRate ${target.code}",
-                        style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.SemiBold,
-                        color = SleekPrimary
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text(
-                        text = "How should existing transactions be handled?",
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = SleekTextPrimary
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    // Option A: Keep Existing Transactions
-                    Card(
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = if (selectedOption == "KEEP") SleekPrimary.copy(alpha = 0.08f) else SleekSurface
-                        ),
-                        border = BorderStroke(
-                            width = if (selectedOption == "KEEP") 1.5.dp else 1.dp,
-                            color = if (selectedOption == "KEEP") SleekPrimary else SleekBorder
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { selectedOption = "KEEP" }
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(12.dp),
-                            verticalAlignment = Alignment.Top
-                        ) {
-                            RadioButton(
-                                selected = selectedOption == "KEEP",
-                                onClick = { selectedOption = "KEEP" },
-                                colors = RadioButtonDefaults.colors(selectedColor = SleekPrimary)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Column {
-                                Text(
-                                    text = "Option A — Keep Existing Values",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = SleekTextPrimary
-                                )
-                                Text(
-                                    text = "Existing transactions keep their original numbers and history. Only new transactions will use ${target.code} (${target.symbol}).",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = SleekTextSecondary
-                                )
-                            }
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Option B: Convert Existing Transactions
-                    Card(
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = if (selectedOption == "CONVERT") SleekPrimary.copy(alpha = 0.08f) else SleekSurface
-                        ),
-                        border = BorderStroke(
-                            width = if (selectedOption == "CONVERT") 1.5.dp else 1.dp,
-                            color = if (selectedOption == "CONVERT") SleekPrimary else SleekBorder
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { selectedOption = "CONVERT" }
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(12.dp),
-                            verticalAlignment = Alignment.Top
-                        ) {
-                            RadioButton(
-                                selected = selectedOption == "CONVERT",
-                                onClick = { selectedOption = "CONVERT" },
-                                colors = RadioButtonDefaults.colors(selectedColor = SleekPrimary)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Column {
-                                Text(
-                                    text = "Option B — Convert Transactions",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = SleekTextPrimary
-                                )
-                                Text(
-                                    text = "Recalculates past amounts to ${target.code} using exchange rate (1 $currentCode = $currentRate ${target.code}). Recommended for accurate net balances.",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = SleekTextSecondary
-                                )
-                            }
-                        }
-                    }
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        val convert = (selectedOption == "CONVERT")
-                        viewModel.updateDefaultCurrency(
-                            code = target.code,
-                            symbol = target.symbol,
-                            name = target.name,
-                            convertExisting = convert
-                        )
-                        pendingCurrencyChange = null
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = SleekPrimary)
-                ) {
-                    Text("Apply & Save")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { pendingCurrencyChange = null }) {
-                    Text("Cancel", color = SleekTextSecondary)
-                }
-            },
-            containerColor = SleekSurface,
-            shape = RoundedCornerShape(20.dp)
-        )
-    }
-
-    // Default Currency for Statistics Picker Dialog
-    if (showStatsCurrencyPicker) {
-        AlertDialog(
-            onDismissRequest = { showStatsCurrencyPicker = false },
-            title = {
-                Text(
-                    text = "Default Currency for Statistics",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = SleekTextPrimary
-                )
-            },
-            text = {
-                Column {
-                    Text(
-                        text = "Select the currency used when aggregating total expenses, category charts, and trend metrics.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = SleekTextSecondary
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    val quickCurrencies = remember {
-                        allCurrencies.filter { it.code in listOf("INR", "USD", "EUR", "GBP", "JPY", "AUD", "CAD", "SGD", "AED", "SAR") }
-                    }
-
-                    LazyColumn(modifier = Modifier.heightIn(max = 300.dp)) {
-                        items(quickCurrencies, key = { it.code }) { item ->
-                            val isSelected = item.code.equals(statsCode, ignoreCase = true)
-                            Surface(
-                                shape = RoundedCornerShape(10.dp),
-                                color = if (isSelected) SleekPrimary.copy(alpha = 0.12f) else Color.Transparent,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        viewModel.updateStatsCurrency(item.code, item.symbol, item.name)
-                                        showStatsCurrencyPicker = false
-                                    }
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(10.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(item.flag, fontSize = 20.sp)
-                                    Spacer(modifier = Modifier.width(10.dp))
-                                    Text(
-                                        text = "${item.code} (${item.symbol}) - ${item.name}",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                        color = if (isSelected) SleekPrimary else SleekTextPrimary,
-                                        modifier = Modifier.weight(1f)
-                                    )
-                                    if (isSelected) {
-                                        Icon(
-                                            imageVector = AppIcons.Check,
-                                            contentDescription = null,
-                                            tint = SleekPrimary,
-                                            modifier = Modifier.size(18.dp)
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = { showStatsCurrencyPicker = false }) {
-                    Text("Close", color = SleekPrimary)
-                }
-            },
-            containerColor = SleekSurface,
-            shape = RoundedCornerShape(20.dp)
-        )
-    }
-}
 
 /**
  * Dedicated Financial Calculations Screen (Rule 12)
@@ -724,6 +39,10 @@ fun CurrencySettingsScreen(
  * 2. Split Bill & Tip Calculator (with direct option to record share as expense)
  * 3. Percentage & Discount Calculator (X% of Y, % Change, Discount savings)
  * 4. Average & Run-rate Calculator (daily allowance, projected monthly spend)
+ * 5. Loan EMI & Mortgage Calculator
+ * 6. Wealth & Compound Interest / SIP Simulator
+ * 7. Emergency Fund & Runway Analyzer
+ * 8. Inflation & Purchasing Power Erosion Calculator
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -732,7 +51,16 @@ fun CalculationsScreen(
     onBack: () -> Unit
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
-    val tabTitles = listOf("Currency Converter", "Split Bill & Tip", "Percentage", "Run-Rate", "Loan & EMI", "Wealth & Compound", "Emergency Runway", "Inflation Erosion")
+    val tabTitles = listOf(
+        "Currency Converter",
+        "Split Bill & Tip",
+        "Percentage",
+        "Run-Rate",
+        "Loan & EMI",
+        "Wealth & Compound",
+        "Emergency Runway",
+        "Inflation Erosion"
+    )
 
     Scaffold(
         topBar = {
@@ -1252,7 +580,6 @@ private fun PercentageCalculatorTool() {
                 when (subMode) {
                     0 -> { // X% of Y
                         val result = (val1 * val2) / 100.0
-                        val total = val2 + result
                         Text("$val1% of $val2 is", style = MaterialTheme.typography.labelMedium, color = SleekTextSecondary)
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
@@ -1261,36 +588,32 @@ private fun PercentageCalculatorTool() {
                             fontWeight = FontWeight.Bold,
                             color = SleekPrimary
                         )
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Text(
-                            text = "Total (Original + Percentage) = ${String.format(Locale.getDefault(), "%,.2f", total)}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = SleekTextSecondary
-                        )
                     }
                     1 -> { // % Change from val1 to val2
                         val diff = val2 - val1
                         val pctChange = if (val1 != 0.0) (diff / val1) * 100.0 else 0.0
-                        val isIncrease = diff >= 0
-                        Text("Change from $val1 to $val2", style = MaterialTheme.typography.labelMedium, color = SleekTextSecondary)
+                        val isPositive = pctChange >= 0
+                        Text("Percentage Change", style = MaterialTheme.typography.labelMedium, color = SleekTextSecondary)
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "${if (isIncrease) "+" else ""}${String.format(Locale.getDefault(), "%,.2f", pctChange)}%",
+                            text = "${if (isPositive) "+" else ""}${String.format(Locale.getDefault(), "%.2f", pctChange)}%",
                             style = MaterialTheme.typography.headlineLarge,
                             fontWeight = FontWeight.Bold,
-                            color = if (isIncrease) IncomeGreen else ExpenseRed
+                            color = if (isPositive) IncomeGreen else ExpenseRed
                         )
-                        Spacer(modifier = Modifier.height(6.dp))
+                        Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Absolute Difference: ${if (diff >= 0) "+" else ""}${String.format(Locale.getDefault(), "%,.2f", diff)}",
+                            text = "Difference: ${if (diff >= 0) "+" else ""}${String.format(Locale.getDefault(), "%,.2f", diff)}",
                             style = MaterialTheme.typography.bodySmall,
                             color = SleekTextSecondary
                         )
                     }
-                    2 -> { // Discount: Original val2 with val1% off
-                        val saved = (val2 * val1) / 100.0
-                        val finalPrice = (val2 - saved).coerceAtLeast(0.0)
-                        Text("Final Price After $val1% Discount", style = MaterialTheme.typography.labelMedium, color = SleekTextSecondary)
+                    else -> { // Discount
+                        val discountPct = val1
+                        val originalPrice = val2
+                        val saved = (originalPrice * discountPct) / 100.0
+                        val finalPrice = originalPrice - saved
+                        Text("Final Price After $discountPct% Off", style = MaterialTheme.typography.labelMedium, color = SleekTextSecondary)
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = String.format(Locale.getDefault(), "%,.2f", finalPrice),
@@ -1411,27 +734,30 @@ private fun RunRateCalculatorTool(viewModel: FinanceViewModel) {
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("Daily Average", style = MaterialTheme.typography.labelSmall, color = SleekTextSecondary)
+                        Text("Current Pace", style = MaterialTheme.typography.labelSmall, color = SleekTextSecondary)
                         Text(
-                            text = "$currencySymbol${String.format(Locale.getDefault(), "%,.2f", dailyAverage)}",
+                            text = "$currencySymbol${String.format(Locale.getDefault(), "%,.0f", dailyAverage)} / day",
                             fontWeight = FontWeight.Bold,
                             color = SleekTextPrimary
                         )
                     }
+
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text("Projected Total", style = MaterialTheme.typography.labelSmall, color = SleekTextSecondary)
                         Text(
-                            text = "$currencySymbol${String.format(Locale.getDefault(), "%,.2f", projectedTotal)}",
+                            text = "$currencySymbol${String.format(Locale.getDefault(), "%,.0f", projectedTotal)}",
                             fontWeight = FontWeight.Bold,
-                            color = if (projectedTotal > monthlyBudget) ExpenseRed else IncomeGreen
+                            color = if (monthlyBudget > 0 && projectedTotal > monthlyBudget) ExpenseRed else IncomeGreen
                         )
                     }
+
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("Monthly Limit", style = MaterialTheme.typography.labelSmall, color = SleekTextSecondary)
+                        Text("Budget Margin", style = MaterialTheme.typography.labelSmall, color = SleekTextSecondary)
+                        val variance = monthlyBudget - projectedTotal
                         Text(
-                            text = "$currencySymbol${String.format(Locale.getDefault(), "%,.2f", monthlyBudget)}",
+                            text = "${if (variance >= 0) "+" else ""}$currencySymbol${String.format(Locale.getDefault(), "%,.0f", variance)}",
                             fontWeight = FontWeight.Bold,
-                            color = SleekTextPrimary
+                            color = if (variance >= 0) IncomeGreen else ExpenseRed
                         )
                     }
                 }
@@ -1488,10 +814,6 @@ private fun RunRateCalculatorTool(viewModel: FinanceViewModel) {
     }
 }
 
-/**
- * 🏦 Loan EMI & Mortgage Calculator Tool
- * Calculates monthly EMI, total interest, and total payment with interactive visual breakdown
- */
 @Composable
 private fun LoanEmiCalculatorTool(viewModel: FinanceViewModel) {
     val currencySymbol by viewModel.selectedCurrencySymbol.collectAsStateWithLifecycle()
@@ -1717,11 +1039,6 @@ private fun LoanEmiCalculatorTool(viewModel: FinanceViewModel) {
     }
 }
 
-/**
- * High-fidelity Compound Interest & SIP Wealth Accumulation Simulator
- * Provides real-time dynamic compounding math, interactive duration sliders,
- * interactive wealth accumulation visual bar, and estimated future value.
- */
 @Composable
 private fun WealthCompoundInterestCalculatorTool(viewModel: FinanceViewModel) {
     val currencySymbol by viewModel.selectedCurrencySymbol.collectAsStateWithLifecycle()
@@ -1736,7 +1053,6 @@ private fun WealthCompoundInterestCalculatorTool(viewModel: FinanceViewModel) {
     val annualRate = annualInterestRateText.toDoubleOrNull()?.coerceIn(0.0, 100.0) ?: 12.0
     val years = investmentYearsText.toDoubleOrNull()?.coerceIn(1.0, 50.0) ?: 10.0
 
-    // Compound Interest Calculation: A = P(1 + r/n)^(nt) + PMT * [((1 + r/n)^(nt) - 1) / (r/n)]
     val monthlyRate = (annualRate / 100.0) / 12.0
     val totalMonths = (years * 12).toInt()
 
@@ -1755,7 +1071,6 @@ private fun WealthCompoundInterestCalculatorTool(viewModel: FinanceViewModel) {
     val gainsRatio = 1f - investedRatio
 
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        // Future Value Hero Card
         Card(
             shape = RoundedCornerShape(22.dp),
             colors = CardDefaults.cardColors(containerColor = SleekSurface),
@@ -1771,7 +1086,7 @@ private fun WealthCompoundInterestCalculatorTool(viewModel: FinanceViewModel) {
                     shape = RoundedCornerShape(10.dp)
                 ) {
                     Text(
-                        text = "🚀 Estimated Wealth at Year ${years.toInt()}",
+                        text = "Estimated Wealth at Year ${years.toInt()}",
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.SemiBold,
                         color = SleekPrimary,
@@ -1796,13 +1111,12 @@ private fun WealthCompoundInterestCalculatorTool(viewModel: FinanceViewModel) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Dual-Segment Wealth Composition Bar
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(14.dp)
-                            .clip(CircleShape)
+                            .clip(RoundedCornerShape(7.dp))
                             .background(Color(0xFFE2E8F0))
                     ) {
                         Box(
@@ -1839,7 +1153,7 @@ private fun WealthCompoundInterestCalculatorTool(viewModel: FinanceViewModel) {
                             Box(modifier = Modifier.size(8.dp).clip(CircleShape).background(Color(0xFF10B981)))
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                text = "Est. Wealth Gain: ${(gainsRatio * 100).toInt()}%",
+                                text = "Gains: ${(gainsRatio * 100).toInt()}%",
                                 fontSize = 11.sp,
                                 color = SleekTextSecondary
                             )
@@ -1849,7 +1163,7 @@ private fun WealthCompoundInterestCalculatorTool(viewModel: FinanceViewModel) {
 
                 Spacer(modifier = Modifier.height(16.dp))
                 HorizontalDivider(color = SleekBorder)
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(14.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -1899,7 +1213,7 @@ private fun WealthCompoundInterestCalculatorTool(viewModel: FinanceViewModel) {
                 OutlinedTextField(
                     value = initialDepositText,
                     onValueChange = { initialDepositText = it.filter { char -> char.isDigit() || char == '.' } },
-                    label = { Text("Initial Lumsum ($currencySymbol)") },
+                    label = { Text("Initial Lumpsum ($currencySymbol)") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
@@ -1944,9 +1258,9 @@ private fun WealthCompoundInterestCalculatorTool(viewModel: FinanceViewModel) {
 
                     OutlinedTextField(
                         value = investmentYearsText,
-                        onValueChange = { investmentYearsText = it.filter { char -> char.isDigit() } },
-                        label = { Text("Horizon (Years)") },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        onValueChange = { investmentYearsText = it.filter { char -> char.isDigit() || char == '.' } },
+                        label = { Text("Duration (Years)") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         singleLine = true,
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(14.dp),
@@ -1957,7 +1271,7 @@ private fun WealthCompoundInterestCalculatorTool(viewModel: FinanceViewModel) {
                     )
                 }
 
-                // Quick Tenure Selector Chips
+                // Quick Duration Selector Chips
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -1980,11 +1294,6 @@ private fun WealthCompoundInterestCalculatorTool(viewModel: FinanceViewModel) {
     }
 }
 
-/**
- * 🛡️ Emergency Fund & Runway Analyzer Tool (Rule 12)
- * Computes exact runway (in months) based on real/custom monthly burn rate,
- * projects recommended 3/6/9/12-month safety reserves, and estimates required monthly savings.
- */
 @Composable
 private fun EmergencyFundCalculatorTool(viewModel: FinanceViewModel) {
     val currencySymbol by viewModel.selectedCurrencySymbol.collectAsStateWithLifecycle()
@@ -2014,22 +1323,22 @@ private fun EmergencyFundCalculatorTool(viewModel: FinanceViewModel) {
 
     val (statusLabel, statusColor, statusDesc) = when {
         currentRunwayMonths < 1.0 -> Triple(
-            "🚨 Critical Vulnerability",
+            "Critical Vulnerability",
             ExpenseRed,
             "Less than 1 month of living expenses saved. An unexpected expense could cause immediate distress."
         )
         currentRunwayMonths < 3.0 -> Triple(
-            "⚠️ Starter Safety Net",
+            "Starter Safety Net",
             WarningOrange,
             "Under 3 months of runway. Suitable for minor emergencies, but vulnerable to job transitions."
         )
         currentRunwayMonths < 6.0 -> Triple(
-            "🛡️ Standard Stability",
+            "Standard Stability",
             IncomeGreen,
             "Solid 3-6 month reserve covering essential obligations. Good protection against shocks."
         )
         else -> Triple(
-            "💎 Bulletproof Independence",
+            "Bulletproof Independence",
             Color(0xFF3B82F6),
             "6+ months of living costs secured. Provides high peace of mind and career flexibility."
         )
@@ -2217,7 +1526,7 @@ private fun EmergencyFundCalculatorTool(viewModel: FinanceViewModel) {
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Text(
-                        text = "🎯 Monthly Savings Required to Reach Target",
+                        text = "Monthly Savings Required to Reach Target",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = SleekTextPrimary
@@ -2274,11 +1583,6 @@ private fun TrajectoryBox(period: String, amountStr: String) {
     }
 }
 
-/**
- * 📉 Inflation & Purchasing Power Erosion Calculator Tool (Rule 12)
- * Demonstrates the impact of inflation over time on liquid money,
- * computing real future purchasing power vs nominal face value.
- */
 @Composable
 private fun InflationCalculatorTool(viewModel: FinanceViewModel) {
     val currencySymbol by viewModel.selectedCurrencySymbol.collectAsStateWithLifecycle()
@@ -2292,7 +1596,6 @@ private fun InflationCalculatorTool(viewModel: FinanceViewModel) {
     val rate = inflationRateText.toDoubleOrNull()?.coerceIn(0.1, 50.0) ?: 6.0
     val years = horizonYearsText.toDoubleOrNull()?.coerceIn(1.0, 50.0) ?: 10.0
 
-    // Purchasing Power Decay: Real Value = Amount / (1 + r)^t
     val factor = (1.0 + (rate / 100.0)).pow(years)
     val futureRealValue = if (factor > 0) amount / factor else 0.0
     val purchasingPowerLost = (amount - futureRealValue).coerceAtLeast(0.0)
@@ -2316,7 +1619,7 @@ private fun InflationCalculatorTool(viewModel: FinanceViewModel) {
                     shape = RoundedCornerShape(10.dp)
                 ) {
                     Text(
-                        text = "📉 Real Purchasing Power in ${years.toInt()} Years",
+                        text = "Real Purchasing Power in ${years.toInt()} Years",
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
                         color = WarningOrange,
@@ -2387,9 +1690,7 @@ private fun InflationCalculatorTool(viewModel: FinanceViewModel) {
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
-
                 HorizontalDivider(color = SleekBorder.copy(alpha = 0.5f))
-
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Row(
@@ -2528,395 +1829,8 @@ private fun InflationCalculatorTool(viewModel: FinanceViewModel) {
     }
 }
 
-
-/**
- * Dedicated Savings Goals Settings Screen (Rule 11)
- */
 @Composable
-fun SavingsGoalsSettingsScreen(
-    viewModel: FinanceViewModel,
-    onBack: () -> Unit
-) {
-    val viewMode by viewModel.goalViewMode.collectAsStateWithLifecycle()
-    val progressStyle by viewModel.goalProgressStyle.collectAsStateWithLifecycle()
-
-    var autoGapCalculation by remember { mutableStateOf(true) }
-    var celebrateMilestones by remember { mutableStateOf(true) }
-    var autoArchiveCompleted by remember { mutableStateOf(false) }
-
-    Scaffold(
-        topBar = {
-            SettingsHeaderTitle(title = "Savings Goals Settings", onBack = onBack)
-        },
-        containerColor = SleekBg
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Display Preferences Card
-            Card(
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = SleekSurface),
-                border = BorderStroke(1.dp, SleekBorder),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        text = "Display & Visualization",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = SleekTextPrimary
-                    )
-                    Spacer(modifier = Modifier.height(14.dp))
-
-                    // View Mode
-                    Text("Card Layout", style = MaterialTheme.typography.bodySmall, color = SleekTextSecondary)
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        listOf("Grid", "List").forEach { mode ->
-                            val isSelected = viewMode == mode
-                            FilledTonalButton(
-                                onClick = { viewModel.updateGoalViewMode(mode) },
-                                shape = RoundedCornerShape(12.dp),
-                                modifier = Modifier.weight(1f),
-                                colors = ButtonDefaults.filledTonalButtonColors(
-                                    containerColor = if (isSelected) SleekPrimary else SleekBg,
-                                    contentColor = if (isSelected) Color.White else SleekTextPrimary
-                                ),
-                                border = BorderStroke(1.dp, if (isSelected) SleekPrimary else SleekBorder)
-                            ) {
-                                Icon(
-                                    imageVector = if (mode == "Grid") AppIcons.GridView else AppIcons.ViewAgenda,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(mode)
-                            }
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(14.dp))
-
-                    // Progress Style
-                    Text("Progress Indicator Style", style = MaterialTheme.typography.bodySmall, color = SleekTextSecondary)
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        listOf("Circle", "Bar").forEach { style ->
-                            val isSelected = progressStyle == style
-                            FilledTonalButton(
-                                onClick = { viewModel.updateGoalProgressStyle(style) },
-                                shape = RoundedCornerShape(12.dp),
-                                modifier = Modifier.weight(1f),
-                                colors = ButtonDefaults.filledTonalButtonColors(
-                                    containerColor = if (isSelected) SleekPrimary else SleekBg,
-                                    contentColor = if (isSelected) Color.White else SleekTextPrimary
-                                ),
-                                border = BorderStroke(1.dp, if (isSelected) SleekPrimary else SleekBorder)
-                            ) {
-                                Icon(
-                                    imageVector = if (style == "Circle") AppIcons.PieChart else AppIcons.LinearScale,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(if (style == "Circle") "Circular Arc" else "Horizontal Bar")
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Calculation & Goal Rules Card
-            Card(
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = SleekSurface),
-                border = BorderStroke(1.dp, SleekBorder),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        text = "Behavior & Calculations",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = SleekTextPrimary
-                    )
-                    Spacer(modifier = Modifier.height(14.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text("Auto-Gap Calculation", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, color = SleekTextPrimary)
-                            Text("Automatically calculates suggested weekly contribution based on target date", style = MaterialTheme.typography.bodySmall, color = SleekTextSecondary)
-                        }
-                        Switch(checked = autoGapCalculation, onCheckedChange = { autoGapCalculation = it })
-                    }
-
-                    Spacer(modifier = Modifier.height(12.dp))
-                    HorizontalDivider(color = SleekBorder, thickness = 0.8.dp)
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text("Milestone Celebrations", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, color = SleekTextPrimary)
-                            Text("Celebrate when reaching 25%, 50%, 75% and 100% of target amount", style = MaterialTheme.typography.bodySmall, color = SleekTextSecondary)
-                        }
-                        Switch(checked = celebrateMilestones, onCheckedChange = { celebrateMilestones = it })
-                    }
-
-                    Spacer(modifier = Modifier.height(12.dp))
-                    HorizontalDivider(color = SleekBorder, thickness = 0.8.dp)
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text("Auto-Archive Completed Goals", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, color = SleekTextPrimary)
-                            Text("Hide 100% reached goals from active list into completed archive", style = MaterialTheme.typography.bodySmall, color = SleekTextSecondary)
-                        }
-                        Switch(checked = autoArchiveCompleted, onCheckedChange = { autoArchiveCompleted = it })
-                    }
-                }
-            }
-        }
-    }
-}
-
-/**
- * Dedicated Transaction Settings Screen (Rule 13)
- */
-@Composable
-fun TransactionSettingsScreen(
-    viewModel: FinanceViewModel,
-    onBack: () -> Unit
-) {
-    val defaultTxType by viewModel.defaultTxType.collectAsStateWithLifecycle()
-    val rememberLastCategory by viewModel.rememberLastCategory.collectAsStateWithLifecycle()
-    val confirmDelete by viewModel.confirmTxDelete.collectAsStateWithLifecycle()
-    val groupByDate by viewModel.groupByDate.collectAsStateWithLifecycle()
-    val defaultPaymentMode by viewModel.defaultPaymentMode.collectAsStateWithLifecycle()
-    val highAmountEnabled by viewModel.highAmountWarningEnabled.collectAsStateWithLifecycle()
-    val highAmountThreshold by viewModel.highAmountThreshold.collectAsStateWithLifecycle()
-    val currencySymbol by viewModel.selectedCurrencySymbol.collectAsStateWithLifecycle()
-
-    var thresholdInput by remember(highAmountThreshold) { mutableStateOf(highAmountThreshold.toInt().toString()) }
-
-    Scaffold(
-        topBar = {
-            SettingsHeaderTitle(title = "Transaction Preferences", onBack = onBack)
-        },
-        containerColor = SleekBg
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Input Defaults Card
-            Card(
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = SleekSurface),
-                border = BorderStroke(1.dp, SleekBorder),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        text = "Input Defaults",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = SleekTextPrimary
-                    )
-                    Spacer(modifier = Modifier.height(14.dp))
-
-                    Text("Default Transaction Type", style = MaterialTheme.typography.bodySmall, color = SleekTextSecondary)
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        listOf("EXPENSE" to "Expense", "INCOME" to "Income").forEach { (typeKey, label) ->
-                            val isSelected = defaultTxType.equals(typeKey, ignoreCase = true)
-                            FilledTonalButton(
-                                onClick = { viewModel.updateDefaultTxType(typeKey) },
-                                shape = RoundedCornerShape(12.dp),
-                                modifier = Modifier.weight(1f),
-                                colors = ButtonDefaults.filledTonalButtonColors(
-                                    containerColor = if (isSelected) {
-                                        if (typeKey == "EXPENSE") ExpenseRed else IncomeGreen
-                                    } else SleekBg,
-                                    contentColor = if (isSelected) Color.White else SleekTextPrimary
-                                ),
-                                border = BorderStroke(1.dp, if (isSelected) Color.Transparent else SleekBorder)
-                            ) {
-                                Text(label, fontWeight = FontWeight.Bold)
-                            }
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(14.dp))
-                    HorizontalDivider(color = SleekBorder, thickness = 0.8.dp)
-                    Spacer(modifier = Modifier.height(14.dp))
-
-                    Text("Default Payment Method", style = MaterialTheme.typography.bodySmall, color = SleekTextSecondary)
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        listOf("UPI", "Cash", "Card", "NetBank").forEach { mode ->
-                            val isSelected = defaultPaymentMode.equals(mode, ignoreCase = true)
-                            FilterChip(
-                                selected = isSelected,
-                                onClick = { viewModel.updateDefaultPaymentMode(mode) },
-                                label = { Text(mode, fontSize = 11.sp, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal) },
-                                colors = FilterChipDefaults.filterChipColors(
-                                    selectedContainerColor = SleekPrimary,
-                                    selectedLabelColor = Color.White
-                                )
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(14.dp))
-                    HorizontalDivider(color = SleekBorder, thickness = 0.8.dp)
-                    Spacer(modifier = Modifier.height(14.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text("Remember Last Category", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, color = SleekTextPrimary)
-                            Text("Automatically select last-used category for faster entry", style = MaterialTheme.typography.bodySmall, color = SleekTextSecondary)
-                        }
-                        Switch(
-                            checked = rememberLastCategory,
-                            onCheckedChange = { viewModel.toggleRememberLastCategory(it) }
-                        )
-                    }
-                }
-            }
-
-            // Organization & Safety Card
-            Card(
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = SleekSurface),
-                border = BorderStroke(1.dp, SleekBorder),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        text = "Safety & Organization",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = SleekTextPrimary
-                    )
-                    Spacer(modifier = Modifier.height(14.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text("Group Transactions by Date", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, color = SleekTextPrimary)
-                            Text("Organize records into Today, Yesterday and monthly section headers", style = MaterialTheme.typography.bodySmall, color = SleekTextSecondary)
-                        }
-                        Switch(
-                            checked = groupByDate,
-                            onCheckedChange = { viewModel.toggleGroupByDate(it) }
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(12.dp))
-                    HorizontalDivider(color = SleekBorder, thickness = 0.8.dp)
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text("Confirm Before Deleting", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, color = SleekTextPrimary)
-                            Text("Show confirmation dialog to prevent accidental deletion", style = MaterialTheme.typography.bodySmall, color = SleekTextSecondary)
-                        }
-                        Switch(
-                            checked = confirmDelete,
-                            onCheckedChange = { viewModel.toggleConfirmTxDelete(it) }
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(12.dp))
-                    HorizontalDivider(color = SleekBorder, thickness = 0.8.dp)
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text("High Amount Alert", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, color = SleekTextPrimary)
-                            Text("Requires confirmation for amounts over $currencySymbol$thresholdInput", style = MaterialTheme.typography.bodySmall, color = SleekTextSecondary)
-                        }
-                        Switch(
-                            checked = highAmountEnabled,
-                            onCheckedChange = { viewModel.updateHighAmountWarning(it, thresholdInput.toDoubleOrNull() ?: 5000.0) }
-                        )
-                    }
-
-                    if (highAmountEnabled) {
-                        Spacer(modifier = Modifier.height(10.dp))
-                        OutlinedTextField(
-                            value = thresholdInput,
-                            onValueChange = {
-                                thresholdInput = it.filter { char -> char.isDigit() }
-                                val d = thresholdInput.toDoubleOrNull()
-                                if (d != null && d > 0) {
-                                    viewModel.updateHighAmountWarning(true, d)
-                                }
-                            },
-                            label = { Text("Warning Threshold ($currencySymbol)") },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            singleLine = true,
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp)
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun CurrencyPickerDialog(
+fun CurrencyPickerDialog(
     title: String,
     currencies: List<CurrencyItem>,
     selectedCode: String,
