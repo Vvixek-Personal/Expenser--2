@@ -1834,10 +1834,10 @@ private fun RowScope.RenderAnimatedDayCell(
         val hasTransactions = dayExpenses.isNotEmpty()
         val isProfit = hasTransactions && dayIncome >= dayExpense
 
-        val targetScale = if (isSelected) 1.05f else 1.0f
+        val targetScale = if (isSelected) 1.035f else 1.0f
         val animatedScale by animateFloatAsState(
             targetValue = targetScale,
-            animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow),
+            animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessMediumLow),
             label = "dayScale"
         )
 

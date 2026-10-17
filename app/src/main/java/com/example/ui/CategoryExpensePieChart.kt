@@ -67,6 +67,24 @@ fun CategoryExpensePieChart(
 ) {
     var isDonutMode by remember { mutableStateOf(false) }
     var selectedCategory by remember { mutableStateOf<String?>(null) }
+    val animEnabled = LocalAnimationsEnabled.current
+    var animationPlayed by remember { mutableStateOf(!animEnabled) }
+
+    val animProgress by animateFloatAsState(
+        targetValue = if (animationPlayed || !animEnabled) 1f else 0f,
+        animationSpec = appTween(durationMs = 800, easing = AppleDecelerateEasing),
+        label = "pie_chart_sweep_anim"
+    )
+
+    LaunchedEffect(categoryExpenses, animEnabled) {
+        if (animEnabled) {
+            animationPlayed = false
+            kotlinx.coroutines.delay(30)
+            animationPlayed = true
+        } else {
+            animationPlayed = true
+        }
+    }
 
     val totalExpense = remember(categoryExpenses) {
         categoryExpenses.values.sum()
@@ -284,7 +302,7 @@ fun CategoryExpensePieChart(
                     var startAngle = -90f
 
                     validExpenses.forEach { (cat, amount) ->
-                        val sweepAngle = ((amount / totalExpense) * 360f).toFloat()
+                        val sweepAngle = ((amount / totalExpense) * 360f).toFloat() * animProgress
                         val color = resolvedCategoryColors[cat] ?: chartSlicePalette[0]
                         val isSelected = (cat == selectedCategory)
 

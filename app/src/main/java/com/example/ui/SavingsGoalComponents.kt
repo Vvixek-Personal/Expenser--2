@@ -701,7 +701,7 @@ fun SavingGoalCardItem(
     val progressRatio = if (goal.targetAmount > 0) (goal.currentAmount / goal.targetAmount).toFloat() else 0f
     val animatedProgress by animateFloatAsState(
         targetValue = progressRatio.coerceIn(0f, 1f),
-        animationSpec = tween(700, easing = FastOutSlowInEasing),
+        animationSpec = appTween(750, AppleDecelerateEasing),
         label = "goalProgress"
     )
 
@@ -855,7 +855,7 @@ fun CoinDepositAnimationDialog(
             1 -> -80f
             else -> 18f
         },
-        animationSpec = tween(if (animPhase == 1) 380 else 420, easing = FastOutSlowInEasing),
+        animationSpec = tween(if (animPhase == 1) 380 else 420, easing = AppleDecelerateEasing),
         label = "coinY"
     )
 
@@ -865,19 +865,19 @@ fun CoinDepositAnimationDialog(
             1 -> 1.15f
             else -> 0.40f
         },
-        animationSpec = tween(420),
+        animationSpec = tween(420, easing = AppleDecelerateEasing),
         label = "coinScale"
     )
 
     val cardScale by animateFloatAsState(
-        targetValue = if (animPhase == 2) 1.08f else 1f,
-        animationSpec = tween(300),
+        targetValue = if (animPhase == 2) 1.05f else 1f,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessMediumLow),
         label = "cardScale"
     )
 
     val cardGlowAlpha by animateFloatAsState(
         targetValue = if (animPhase == 2) 0.6f else 0f,
-        animationSpec = tween(400),
+        animationSpec = tween(380, easing = AppleDecelerateEasing),
         label = "cardGlowAlpha"
     )
 

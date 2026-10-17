@@ -1686,13 +1686,13 @@ fun FinancialHealthScoreWidget(
 
     val animatedScore by animateIntAsState(
         targetValue = overallScore,
-        animationSpec = androidx.compose.animation.core.tween(200),
+        animationSpec = appTween(750, AppleDecelerateEasing),
         label = "health_score"
     )
 
     val sweepProgress by animateFloatAsState(
         targetValue = overallScore / 100f,
-        animationSpec = androidx.compose.animation.core.tween(200),
+        animationSpec = appTween(850, AppleDecelerateEasing),
         label = "gauge_sweep"
     )
 

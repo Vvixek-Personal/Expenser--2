@@ -367,7 +367,7 @@ fun ExpensesTab(
         if (showDateRangePickerDialog) {
             DateRangePickerDialog(
                 onDismiss = { showDateRangePickerDialog = false },
-                onSelectRange = { start, end ->
+                onSelectRange = { start: Long, end: Long ->
                     viewModel.setDateRange(start, end)
                     showDateRangePickerDialog = false
                 }

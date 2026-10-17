@@ -109,6 +109,16 @@ fun getAppUpdatesHistory(): List<AppReleaseUpdate> {
             isLatest = true,
             specifications = listOf(
                 UpdateSpecification(
+                    category = SpecCategory.ANIMATION,
+                    title = "Professional Motion Suite: Shared-Axis Navigation, Apple Decelerate Easing & Crisp Spring Physics",
+                    description = "Upgraded app-wide motion design to flagship standard: implemented directional shared-axis tab navigation with 12% subtle parallax, depth scale (0.985f), and decelerating alpha fades; enhanced settings push/pop navigation with 20% parallax and AppleDecelerateEasing (CubicBezierEasing 0.16, 1.0, 0.3, 1.0); refined bottom dock bar labels with wobble-free LowBouncy springs; replaced twitchy 200ms health gauge tweens with 850ms decelerate sweeps; added smooth entrance sweep animation to CategoryExpensePieChart; added animated curve progression to NetWorthOverTimeChartCard; softened calendar day cell and streak celebration physics from jittery MediumBouncy to crisp LowBouncy springs; and tuned transaction confirmation dialog checkmark and card reveal."
+                ),
+                UpdateSpecification(
+                    category = SpecCategory.SYSTEM,
+                    title = "Modular Architecture: Independent Settings & Clean Tab Isolation",
+                    description = "Decomposed monolithic UI files into dedicated, modular Kotlin screens. Extracted AppearanceScreen into AppearanceSettingsScreen.kt, BillsSettingsScreen into BillsSettingsScreen.kt, ExpensesTab and Image1TransactionRow into ExpensesTabScreen.kt, and AnalyticsTab, AnalyticsStatCard, NetWorthOverTimeChartCard, and AnalyticsPeriodTransactionsCard into AnalyticsTabScreen.kt. Resolved all conflicting function overloads, eliminated ambiguous resolution candidates, strictly preserved state bindings, M3 styling, and validated error-free compilation."
+                ),
+                UpdateSpecification(
                     category = SpecCategory.FEATURE,
                     title = "Emergency Fund & Living Runway Analyzer Tool (CalculationsScreen)",
                     description = "Added an emergency runway calculator computing real-time survival months from liquid savings against essential monthly burn rate. Provides 3, 6, 9, and 12-month target reserve projections, vulnerability level badges (Critical, Starter, Standard, Bulletproof), animated funding progress bar, monthly savings trajectory needed to reach safety targets in 6/12/24 months, and 1-tap clipboard export."

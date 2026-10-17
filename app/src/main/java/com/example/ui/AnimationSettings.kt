@@ -41,6 +41,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
+import androidx.compose.animation.core.CubicBezierEasing
+
+/** High-end professional easing curves (Apple & Material 3 Motion Specs) */
+val AppleDecelerateEasing: Easing = CubicBezierEasing(0.16f, 1f, 0.3f, 1f)
+val EmphasizedDecelerateEasing: Easing = CubicBezierEasing(0.05f, 0.7f, 0.1f, 1.0f)
+val EmphasizedAccelerateEasing: Easing = CubicBezierEasing(0.3f, 0.0f, 0.8f, 0.15f)
+val SmoothStandardEasing: Easing = CubicBezierEasing(0.2f, 0.0f, 0.0f, 1.0f)
+
 /** True only when the in-app switch is ON and Android's animator scale is not 0. */
 val LocalAnimationsEnabled = compositionLocalOf { true }
 
@@ -60,12 +68,12 @@ fun <T> appSpring(
 fun <T> appTween(
     enabled: Boolean,
     durationMs: Int,
-    easing: Easing = FastOutSlowInEasing
+    easing: Easing = AppleDecelerateEasing
 ): FiniteAnimationSpec<T> =
     if (enabled) tween(durationMs, easing = easing) else snap()
 
 @Composable
-fun <T> appTween(durationMs: Int, easing: Easing = FastOutSlowInEasing): FiniteAnimationSpec<T> =
+fun <T> appTween(durationMs: Int, easing: Easing = AppleDecelerateEasing): FiniteAnimationSpec<T> =
     if (LocalAnimationsEnabled.current) tween(durationMs, easing = easing) else snap()
 
 @Composable
@@ -101,15 +109,15 @@ fun rememberLoopFloat(
 }
 
 /**
- * Delightful spring scale feedback on interactive touch press.
- * Compresses slightly when tapped and springs back on release.
+ * High-end tactile touch feedback on interactive buttons and chips.
+ * Compresses subtly (0.975f) with low bounce spring physics on tap and snaps back smoothly.
  * Honors [LocalAnimationsEnabled] — stays 1.0f when animations are disabled.
  */
 fun Modifier.bouncyClickable(
     interactionSource: MutableInteractionSource? = null,
     indication: Indication? = null,
     enabled: Boolean = true,
-    scaleDown: Float = 0.95f,
+    scaleDown: Float = 0.975f,
     onClick: () -> Unit
 ): Modifier = composed {
     val animationsEnabled = LocalAnimationsEnabled.current
@@ -118,10 +126,10 @@ fun Modifier.bouncyClickable(
     val scale by animateFloatAsState(
         targetValue = if (isPressed && animationsEnabled) scaleDown else 1f,
         animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
+            dampingRatio = Spring.DampingRatioLowBouncy,
             stiffness = Spring.StiffnessMedium
         ),
-        label = "bouncy_click_scale"
+        label = "professional_click_scale"
     )
     this
         .scale(scale)
@@ -136,41 +144,44 @@ fun Modifier.bouncyClickable(
 /**
  * Spring press scale modifier for Cards and custom surfaces.
  */
-fun Modifier.bouncyPress(scaleDown: Float = 0.96f): Modifier = composed {
+fun Modifier.bouncyPress(scaleDown: Float = 0.975f): Modifier = composed {
     val animationsEnabled = LocalAnimationsEnabled.current
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val scale by animateFloatAsState(
         targetValue = if (isPressed && animationsEnabled) scaleDown else 1f,
         animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
+            dampingRatio = Spring.DampingRatioLowBouncy,
             stiffness = Spring.StiffnessMedium
         ),
-        label = "bouncy_press_scale"
+        label = "professional_press_scale"
     )
     this.scale(scale)
 }
 
 /**
- * Adds high-fidelity tactile depth, elevation drop-shadow, and bouncy spring press physics to Buttons and interactive components.
+ * Adds high-fidelity tactile depth, elevation drop-shadow, and subtle spring press physics to Buttons and interactive components.
  */
 fun Modifier.tactileDepth(
-    elevation: Dp = 3.dp,
+    elevation: Dp = 2.dp,
     shape: Shape = RoundedCornerShape(12.dp),
-    scaleDown: Float = 0.96f
+    scaleDown: Float = 0.98f
 ): Modifier = composed {
     val animationsEnabled = LocalAnimationsEnabled.current
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val animatedElevation by animateDpAsState(
-        targetValue = if (isPressed && animationsEnabled) 1.dp else elevation,
-        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        targetValue = if (isPressed && animationsEnabled) 0.5.dp else elevation,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioNoBouncy,
+            stiffness = Spring.StiffnessMedium
+        ),
         label = "tactile_elevation"
     )
     val scale by animateFloatAsState(
         targetValue = if (isPressed && animationsEnabled) scaleDown else 1f,
         animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
+            dampingRatio = Spring.DampingRatioLowBouncy,
             stiffness = Spring.StiffnessMedium
         ),
         label = "tactile_scale"
@@ -244,18 +255,19 @@ fun rememberStaggeredProgress(delayMs: Int = 0, durationMs: Int = 450): Float {
 
 /**
  * Subtle organic breathing pulse animation modifier for hero banners, active badges, and focus elements.
+ * Uses gentle 0.992f..1.008f breathing scale over 3600ms with Apple decelerate easing.
  */
 fun Modifier.subtleBreathing(
-    minScale: Float = 0.985f,
-    maxScale: Float = 1.015f,
-    durationMs: Int = 3200
+    minScale: Float = 0.992f,
+    maxScale: Float = 1.008f,
+    durationMs: Int = 3600
 ): Modifier = composed {
     val scale = rememberLoopFloat(
         initial = minScale,
         target = maxScale,
         durationMs = durationMs,
         label = "subtle_breathing_scale",
-        easing = FastOutSlowInEasing,
+        easing = AppleDecelerateEasing,
         reverse = true,
         rest = 1f
     )
@@ -264,12 +276,13 @@ fun Modifier.subtleBreathing(
 
 /**
  * Lightweight hardware-accelerated celebration particle canvas for milestone, budget success, and savings celebrations.
+ * Uses aerodynamic deceleration with soft alpha fade-out for professional confetti feel.
  */
 @Composable
 fun CelebrationParticleBurst(
     trigger: Boolean,
     modifier: Modifier = Modifier,
-    particleCount: Int = 24
+    particleCount: Int = 28
 ) {
     if (!trigger || !LocalAnimationsEnabled.current) return
 
@@ -279,7 +292,7 @@ fun CelebrationParticleBurst(
         animProgress.snapTo(0f)
         animProgress.animateTo(
             targetValue = 1f,
-            animationSpec = tween(durationMillis = 1100, easing = FastOutSlowInEasing)
+            animationSpec = tween(durationMillis = 950, easing = AppleDecelerateEasing)
         )
     }
 
@@ -297,9 +310,9 @@ fun CelebrationParticleBurst(
     val particles = remember {
         val random = java.util.Random(42)
         List(particleCount) { index ->
-            val angle = (index.toFloat() / particleCount.toFloat()) * 2f * Math.PI.toFloat() + (random.nextFloat() * 0.4f - 0.2f)
-            val distance = 60f + random.nextFloat() * 120f
-            val size = 5f + random.nextFloat() * 7f
+            val angle = (index.toFloat() / particleCount.toFloat()) * 2f * Math.PI.toFloat() + (random.nextFloat() * 0.3f - 0.15f)
+            val distance = 50f + random.nextFloat() * 110f
+            val size = 4f + random.nextFloat() * 5f
             val color = colors[index % colors.size]
             Triple(angle, distance, Pair(size, color))
         }
@@ -308,14 +321,15 @@ fun CelebrationParticleBurst(
     if (animProgress.value < 1f) {
         androidx.compose.foundation.Canvas(modifier = modifier.fillMaxSize()) {
             val progress = animProgress.value
-            val alpha = (1f - progress).coerceIn(0f, 1f)
+            val alpha = (1f - (progress * progress)).coerceIn(0f, 1f)
             val center = Offset(size.width / 2f, size.height / 2f)
 
             particles.forEach { (angle, maxDist, sizeAndColor) ->
-                val currentDist = maxDist * (1f - (1f - progress) * (1f - progress))
-                val px = center.x + kotlin.math.cos(angle) * currentDist
-                val py = center.y + kotlin.math.sin(angle) * currentDist + (progress * progress * 40f) // gentle gravity
-                val pSize = sizeAndColor.first * (1f - progress * 0.4f)
+                // Smooth ease-out flight distance
+                val easedDist = maxDist * (1f - (1f - progress) * (1f - progress))
+                val px = center.x + kotlin.math.cos(angle) * easedDist
+                val py = center.y + kotlin.math.sin(angle) * easedDist + (progress * progress * 32f) // subtle gravity
+                val pSize = sizeAndColor.first * (1f - progress * 0.35f)
                 drawCircle(
                     color = sizeAndColor.second.copy(alpha = alpha),
                     radius = pSize,
@@ -331,21 +345,21 @@ fun CelebrationParticleBurst(
  */
 fun Modifier.pulseGlow(
     glowColor: Color,
-    minAlpha: Float = 0.15f,
-    maxAlpha: Float = 0.45f,
-    durationMs: Int = 2400
+    minAlpha: Float = 0.12f,
+    maxAlpha: Float = 0.32f,
+    durationMs: Int = 2800
 ): Modifier = composed {
     val alpha = rememberLoopFloat(
         initial = minAlpha,
         target = maxAlpha,
         durationMs = durationMs,
         label = "pulse_glow_alpha",
-        easing = FastOutSlowInEasing,
+        easing = AppleDecelerateEasing,
         reverse = true,
         rest = minAlpha
     )
     this.shadow(
-        elevation = 8.dp,
+        elevation = 6.dp,
         shape = RoundedCornerShape(16.dp),
         ambientColor = glowColor.copy(alpha = alpha),
         spotColor = glowColor.copy(alpha = alpha)
@@ -357,9 +371,9 @@ fun Modifier.pulseGlow(
  */
 fun Modifier.animatedGradientBorder(
     colors: List<Color>,
-    borderWidth: Dp = 1.5.dp,
+    borderWidth: Dp = 1.2.dp,
     shape: Shape = RoundedCornerShape(16.dp),
-    durationMs: Int = 4000
+    durationMs: Int = 4500
 ): Modifier = composed {
     val offset = rememberLoopFloat(
         initial = 0f,
@@ -384,8 +398,8 @@ fun Modifier.animatedGradientBorder(
  * High-precision spring press effect for interactive chips, cards, and icons.
  */
 fun Modifier.springPressEffect(
-    scaleDown: Float = 0.94f,
-    stiffness: Float = Spring.StiffnessMediumLow
+    scaleDown: Float = 0.975f,
+    stiffness: Float = Spring.StiffnessMedium
 ): Modifier = composed {
     val animationsEnabled = LocalAnimationsEnabled.current
     val interactionSource = remember { MutableInteractionSource() }
@@ -393,10 +407,10 @@ fun Modifier.springPressEffect(
     val scale by animateFloatAsState(
         targetValue = if (isPressed && animationsEnabled) scaleDown else 1f,
         animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
+            dampingRatio = Spring.DampingRatioLowBouncy,
             stiffness = stiffness
         ),
-        label = "spring_press_scale"
+        label = "professional_spring_press_scale"
     )
     this.scale(scale)
 }

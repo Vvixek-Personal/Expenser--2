@@ -43,8 +43,6 @@ import com.example.R
 import com.example.data.Account
 import com.example.data.Expense
 import com.example.data.Money
-import com.example.data.realExpense
-import com.example.data.realIncome
 import com.example.ui.theme.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -967,6 +965,25 @@ fun NetWorthOverTimeChartCard(
     var selectedPointIndex by remember { mutableStateOf<Int?>(null) }
     val activePoint = selectedPointIndex?.let { dataPoints.getOrNull(it) } ?: dataPoints.lastOrNull()
 
+    val animEnabled = LocalAnimationsEnabled.current
+    var animationPlayed by remember { mutableStateOf(!animEnabled) }
+
+    val chartAnimProgress by animateFloatAsState(
+        targetValue = if (animationPlayed || !animEnabled) 1f else 0f,
+        animationSpec = appTween(durationMs = 850, easing = AppleDecelerateEasing),
+        label = "net_worth_chart_anim"
+    )
+
+    LaunchedEffect(dataPoints, animEnabled) {
+        if (animEnabled) {
+            animationPlayed = false
+            kotlinx.coroutines.delay(30)
+            animationPlayed = true
+        } else {
+            animationPlayed = true
+        }
+    }
+
     Card(
         colors = CardDefaults.cardColors(containerColor = SleekSurface),
         shape = RoundedCornerShape(22.dp),
@@ -1107,7 +1124,7 @@ fun NetWorthOverTimeChartCard(
                     val stepX = w / (pointsCount - 1)
                     val coords = dataPoints.mapIndexed { idx, pt ->
                         val x = idx * stepX
-                        val normalizedY = ((pt.second - minVal) / (maxVal - minVal)).toFloat().coerceIn(0f, 1f)
+                        val normalizedY = (((pt.second - minVal) / (maxVal - minVal)).toFloat().coerceIn(0f, 1f)) * chartAnimProgress
                         val y = h - (normalizedY * (h - 20.dp.toPx())) - 10.dp.toPx()
                         Offset(x, y)
                     }

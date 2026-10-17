@@ -81,8 +81,8 @@ fun StreakFlameLogo(
     // Interactive press scale animation
     var isPressed by remember { mutableStateOf(false) }
     val pressScale by animateFloatAsState(
-        targetValue = if (isPressed) 0.92f else (if (isLarge) idleScale else 1.0f),
-        animationSpec = spring(stiffness = Spring.StiffnessMedium, dampingRatio = Spring.DampingRatioMediumBouncy),
+        targetValue = if (isPressed) 0.95f else (if (isLarge) idleScale else 1.0f),
+        animationSpec = spring(stiffness = Spring.StiffnessMedium, dampingRatio = Spring.DampingRatioLowBouncy),
         label = "press_scale"
     )
 
@@ -359,22 +359,22 @@ fun DailyStreakCelebrationDialog(
     val flameScale by animateFloatAsState(
         targetValue = if (animationStarted) 1f else 0.2f,
         animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessLow
+            dampingRatio = Spring.DampingRatioLowBouncy,
+            stiffness = Spring.StiffnessMediumLow
         ),
         label = "flame_scale_anim"
     )
 
     val contentAlpha by animateFloatAsState(
         targetValue = if (animationStarted) 1f else 0f,
-        animationSpec = tween(durationMillis = 400, delayMillis = 150),
+        animationSpec = tween(durationMillis = 350, delayMillis = 100, easing = AppleDecelerateEasing),
         label = "content_alpha_anim"
     )
 
     // Animated number counter
     val animatedCount by animateIntAsState(
         targetValue = if (animationStarted) streakCount else 0,
-        animationSpec = tween(durationMillis = 850, delayMillis = 200, easing = FastOutSlowInEasing),
+        animationSpec = tween(durationMillis = 850, delayMillis = 180, easing = AppleDecelerateEasing),
         label = "count_up_anim"
     )
 

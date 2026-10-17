@@ -3,6 +3,7 @@ package com.example.ui
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -140,13 +141,13 @@ private fun AnimatedDockTile(
 ) {
     val animatedPaddingHorizontal by animateDpAsState(
         targetValue = if (isSelected) 14.dp else 10.dp,
-        animationSpec = spring(stiffness = Spring.StiffnessMediumLow, dampingRatio = Spring.DampingRatioMediumBouncy),
+        animationSpec = spring(stiffness = Spring.StiffnessMedium, dampingRatio = Spring.DampingRatioNoBouncy),
         label = "tilePadding"
     )
 
     val animatedScale by animateFloatAsState(
-        targetValue = if (isSelected) 1.08f else 1.0f,
-        animationSpec = spring(stiffness = Spring.StiffnessMediumLow, dampingRatio = Spring.DampingRatioMediumBouncy),
+        targetValue = if (isSelected) 1.02f else 1.0f,
+        animationSpec = spring(stiffness = Spring.StiffnessMedium, dampingRatio = Spring.DampingRatioLowBouncy),
         label = "tileScale"
     )
 
@@ -155,7 +156,7 @@ private fun AnimatedDockTile(
 
     val containerBg by animateColorAsState(
         targetValue = if (isSelected) activePillBg else Color.Transparent,
-        animationSpec = tween(300, easing = FastOutSlowInEasing),
+        animationSpec = tween(240, easing = AppleDecelerateEasing),
         label = "containerBgAnim"
     )
 
@@ -169,7 +170,7 @@ private fun AnimatedDockTile(
                 scaleX = animatedScale
                 scaleY = animatedScale
             }
-            .bouncyPress(scaleDown = 0.94f)
+            .bouncyPress(scaleDown = 0.965f)
             .clip(SleekShapes.pill)
             .background(containerBg)
             .border(
@@ -243,11 +244,11 @@ private fun AnimatedDockTile(
         AnimatedVisibility(
             visible = isSelected,
             enter = androidx.compose.animation.expandHorizontally(
-                animationSpec = spring(stiffness = Spring.StiffnessMediumLow, dampingRatio = Spring.DampingRatioMediumBouncy)
-            ) + fadeIn(),
+                animationSpec = spring(stiffness = Spring.StiffnessMediumLow, dampingRatio = Spring.DampingRatioNoBouncy)
+            ) + fadeIn(animationSpec = tween(180, easing = AppleDecelerateEasing)),
             exit = androidx.compose.animation.shrinkHorizontally(
-                animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
-            ) + fadeOut()
+                animationSpec = spring(stiffness = Spring.StiffnessMediumLow, dampingRatio = Spring.DampingRatioNoBouncy)
+            ) + fadeOut(animationSpec = tween(120, easing = FastOutLinearInEasing))
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Spacer(modifier = Modifier.width(8.dp))

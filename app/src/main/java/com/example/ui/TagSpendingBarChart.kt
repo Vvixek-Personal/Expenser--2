@@ -68,17 +68,23 @@ fun TagSpendingBarChart(
     chartHeight: Dp = 200.dp
 ) {
     var selectedTag by remember { mutableStateOf<String?>(null) }
-    var animationPlayed by remember { mutableStateOf(false) }
+    val animEnabled = LocalAnimationsEnabled.current
+    var animationPlayed by remember { mutableStateOf(!animEnabled) }
 
     val animProgress by animateFloatAsState(
-        targetValue = if (animationPlayed) 1f else 0f,
-        animationSpec = tween(durationMillis = 800, easing = FastOutSlowInEasing),
+        targetValue = if (animationPlayed || !animEnabled) 1f else 0f,
+        animationSpec = appTween(durationMs = 750, easing = AppleDecelerateEasing),
         label = "bar_chart_anim"
     )
 
-    LaunchedEffect(expenses) {
-        animationPlayed = false
-        animationPlayed = true
+    LaunchedEffect(expenses, animEnabled) {
+        if (animEnabled) {
+            animationPlayed = false
+            kotlinx.coroutines.delay(30)
+            animationPlayed = true
+        } else {
+            animationPlayed = true
+        }
     }
 
     // Extract tags & calculate tag spending breakdown

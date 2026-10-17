@@ -34,6 +34,7 @@ import java.util.Locale
 
 /**
  * Animated odometer-style numeric currency text that smoothly counts up to target amount.
+ * Features fast initial acceleration and smooth deceleration curve (EmphasizedDecelerateEasing).
  */
 @Composable
 fun AnimatedMoneyText(
@@ -44,13 +45,13 @@ fun AnimatedMoneyText(
     color: Color = SleekTextPrimary,
     fontSize: TextUnit = 24.sp,
     fontWeight: FontWeight = FontWeight.Bold,
-    durationMs: Int = 850
+    durationMs: Int = 650
 ) {
     val animationsEnabled = LocalAnimationsEnabled.current
     val animatedAmount by animateFloatAsState(
         targetValue = if (animationsEnabled) amount.toFloat() else amount.toFloat(),
         animationSpec = if (animationsEnabled) {
-            tween(durationMillis = durationMs, easing = FastOutSlowInEasing)
+            tween(durationMillis = durationMs, easing = EmphasizedDecelerateEasing)
         } else {
             snap()
         },
@@ -78,6 +79,7 @@ fun AnimatedMoneyText(
 
 /**
  * Animated Spring-Filled Progress Bar for budget category limits and spend meters.
+ * Uses smooth Apple decelerate easing for natural fluid fill.
  */
 @Composable
 fun AnimatedProgressBar(
@@ -86,7 +88,7 @@ fun AnimatedProgressBar(
     height: Dp = 8.dp,
     color: Color = SleekPrimary,
     trackColor: Color = SleekBorder.copy(alpha = 0.45f),
-    durationMs: Int = 750
+    durationMs: Int = 600
 ) {
     val animationsEnabled = LocalAnimationsEnabled.current
     val clampedTarget = progress.coerceIn(0f, 1f)
@@ -94,7 +96,7 @@ fun AnimatedProgressBar(
     val animatedProgress by animateFloatAsState(
         targetValue = clampedTarget,
         animationSpec = if (animationsEnabled) {
-            tween(durationMillis = durationMs, easing = FastOutSlowInEasing)
+            tween(durationMillis = durationMs, easing = AppleDecelerateEasing)
         } else {
             snap()
         },
